@@ -21,6 +21,7 @@ void main() async {
     serverClientId: dotenv
         .env['922996608924-fj9p1agd5dks20g1ui1mn2hf7n7ssqct.apps.googleusercontent.com'],
   );
+  await Firebase.initializeApp();
 
   runApp(const MyApp());
 }
