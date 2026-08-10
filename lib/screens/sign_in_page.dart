@@ -50,13 +50,22 @@ class _SignInPageState extends State<SignInPage> {
   /// column still fits once the spacers between groups have collapsed.
   bool get _compact => _screenHeight < 700;
 
-  /// Height of the inputs and the two buttons. The third tier is below any
-  /// shipping phone, and only exists so the layout degrades instead of breaking.
-  double get _controlHeight => _screenHeight < 620
-      ? 44
-      : _compact
-      ? 48
-      : 54;
+  /// Continuous interpolation between the 44dp accessibility-minimum tap
+  /// target and the 54dp comfortable size, instead of rigid if/else tiers -
+  /// clamped at both ends so it never drops below 44dp on any phone.
+  double get _controlHeight {
+    final t = ((_screenHeight - 560) / (760 - 560)).clamp(0.0, 1.0);
+    return 44.0 + (54.0 - 44.0) * t;
+  }
+
+  /// Tight typographic gaps (heading → subheading, label → field) - scales
+  /// gently with viewport height instead of a flat magic number.
+  double get _tightGap => (_screenHeight * 0.008).clamp(6.0, 10.0);
+
+  /// Structural gaps between fields, buttons, and dividers inside the card,
+  /// so it "breathes" proportionally instead of using one fixed pixel value
+  /// that's cramped on small phones and stingy on large ones.
+  double get _innerGap => (_screenHeight * 0.015).clamp(12.0, 24.0);
 
   // The card fades and slides in shortly after the first frame.
   @override
@@ -141,9 +150,9 @@ class _SignInPageState extends State<SignInPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        // The column is fixed-height by design, so let the keyboard overlay it
-        // rather than shrinking the body into an overflow.
-        resizeToAvoidBottomInset: false,
+        // Let the keyboard resize the body so the scroll view below can
+        // bring a focused field above it instead of the keyboard covering it.
+        resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
             const Positioned.fill(child: _GradientBackdrop()),
@@ -237,44 +246,64 @@ class _SignInPageState extends State<SignInPage> {
   // ────────────────────────────── form state ───────────────────────────────
 
   Widget _buildForm() {
+    // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
+    // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
+    // so short screens scroll instead of overflowing. IntrinsicHeight gives
+    // the Column a real, bounded height to distribute, which is what lets
+    // the Expanded region below grow to fill a large screen (e.g. S25 Ultra)
+    // instead of leaving the card centered with dead space unused.
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Gaps scale with the viewport instead of a fixed pixel value, so the
-        // header block breathes on tall screens and tightens on short ones.
-        // Expanded/Spacer can't be used here: the ConstrainedBox below only
-        // pins a *minimum* height (so short screens can still scroll instead
-        // of overflowing), which leaves the Column's height unbounded — and
-        // flex children need a bounded height to distribute space into.
-        final topGap = (constraints.maxHeight * 0.05).clamp(16.0, 44.0);
-        final midGap = (constraints.maxHeight * 0.016).clamp(10.0, 14.0);
-        final bottomGap = (constraints.maxHeight * 0.03).clamp(16.0, 24.0);
+        final topPad = (constraints.maxHeight * 0.03).clamp(16.0, 32.0);
+        final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
+        final tabsToCard = (constraints.maxHeight * 0.025).clamp(16.0, 24.0);
+        final bottomPad = (constraints.maxHeight * 0.03).clamp(16.0, 32.0);
 
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: topGap),
-                  _buildBrand(),
-                  const SizedBox(height: 14),
-                  _buildRoleTabs(),
-                  SizedBox(height: midGap),
-                  AnimatedSlide(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeOut,
-                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: _mounted ? 1 : 0,
-                      child: _buildCard(),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: topPad),
+                        _buildBrand(),
+                        SizedBox(height: brandToTabs),
+                        _buildRoleTabs(),
+                        SizedBox(height: tabsToCard),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: bottomGap),
-                ],
+                    Expanded(
+                      // The flexible region grows to fill large screens, but
+                      // the card itself stays naturally sized and top-aligned
+                      // within it - so extra space shows the gradient behind
+                      // it rather than stretching the white card into an
+                      // oversized, mostly-empty box.
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: AnimatedSlide(
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeOut,
+                          offset: _mounted
+                              ? Offset.zero
+                              : const Offset(0, 0.05),
+                          child: AnimatedOpacity(
+                            duration: const Duration(milliseconds: 400),
+                            opacity: _mounted ? 1 : 0,
+                            child: _buildCard(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: bottomPad),
+                  ],
+                ),
               ),
             ),
           ),
@@ -315,6 +344,16 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _buildRoleTabs() {
+    // Fixed outer height (38 tab + 4+4 padding) so the ancestor
+    // IntrinsicHeight's query short-circuits here instead of reaching the
+    // LayoutBuilder below - LayoutBuilder unconditionally can't answer
+    // intrinsic-dimension queries, but a SizedBox with a tight height
+    // returns that height directly without ever asking its child. The
+    // slider's animation, curve, and layout below are untouched.
+    return SizedBox(height: 46, child: _roleTabsContent());
+  }
+
+  Widget _roleTabsContent() {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -396,11 +435,7 @@ class _SignInPageState extends State<SignInPage> {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: _compact ? 20 : 24,
-        vertical: _screenHeight < 620
-            ? 16
-            : _compact
-            ? 20
-            : 28,
+        vertical: _compact ? 20 : 28,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -430,16 +465,16 @@ class _SignInPageState extends State<SignInPage> {
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: _tightGap),
           Text(
             subheading,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: _innerGap),
           _fieldLabel('البريد الإلكتروني'),
-          const SizedBox(height: 8),
+          SizedBox(height: _tightGap),
           _buildInput(
             controller: _emailController,
             hint: 'أدخل بريدك الإلكتروني',
@@ -447,9 +482,9 @@ class _SignInPageState extends State<SignInPage> {
             hasError: emailError,
             keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _fieldLabel('كلمة المرور'),
-          const SizedBox(height: 8),
+          SizedBox(height: _tightGap),
           _buildInput(
             controller: _passwordController,
             hint: 'أدخل كلمة المرور',
@@ -470,7 +505,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: _innerGap * 0.5),
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: GestureDetector(
@@ -489,7 +524,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ),
           if (_error.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: _tightGap),
             Row(
               children: [
                 const Icon(Icons.error_outline, size: 14, color: _danger),
@@ -507,15 +542,15 @@ class _SignInPageState extends State<SignInPage> {
               ],
             ),
           ],
-          const SizedBox(height: 24),
+          SizedBox(height: _innerGap),
           _buildSubmitButton(),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildDivider(),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildGoogleButton(),
-          const SizedBox(height: 26),
+          SizedBox(height: _innerGap),
           _buildSignupPrompt(),
-          const SizedBox(height: 14),
+          SizedBox(height: _tightGap),
           _buildLegalNote(),
         ],
       ),
@@ -726,8 +761,10 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  // The design pins this to a single line (white-space:nowrap), so it is one
-  // rich-text run rather than a Wrap that could grow to two or three lines.
+  // The design pins this to a single line (white-space:nowrap). Rather than
+  // truncating with an ellipsis when it doesn't fit (e.g. at a larger system
+  // font scale), it's scaled down as a whole so the full sentence stays
+  // legible instead of being cut off.
   Widget _buildLegalNote() {
     const linkStyle = TextStyle(
       fontSize: 11.5,
@@ -737,23 +774,26 @@ class _SignInPageState extends State<SignInPage> {
       decorationColor: _teal,
     );
 
-    return Text.rich(
-      TextSpan(
-        children: [
-          const TextSpan(text: 'بالمتابعة، أنت توافق على '),
-          TextSpan(text: 'الشروط', style: linkStyle, recognizer: _termsTap),
-          const TextSpan(text: 'و'),
-          TextSpan(
-            text: 'سياسة الخصوصية',
-            style: linkStyle,
-            recognizer: _privacyTap,
-          ),
-        ],
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: 'بالمتابعة، أنت توافق على '),
+            TextSpan(text: 'الشروط', style: linkStyle, recognizer: _termsTap),
+            const TextSpan(text: 'و'),
+            TextSpan(
+              text: 'سياسة الخصوصية',
+              style: linkStyle,
+              recognizer: _privacyTap,
+            ),
+          ],
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        softWrap: false,
+        style: const TextStyle(fontSize: 11.5, color: _faint),
       ),
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(fontSize: 11.5, color: _faint),
     );
   }
 }
