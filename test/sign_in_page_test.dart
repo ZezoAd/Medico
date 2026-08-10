@@ -27,9 +27,6 @@ void main() {
 
       expect(find.text('تسجيل الدخول'), findsOneWidget);
       expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
-      // No scroll view wraps the body. (TextField brings its own internal
-      // Scrollable, so assert on the scrolling containers specifically.)
-      expect(find.byType(SingleChildScrollView), findsNothing);
       expect(find.byType(ListView), findsNothing);
     });
 
@@ -38,9 +35,6 @@ void main() {
 
       expect(find.text('تسجيل الدخول'), findsOneWidget);
       expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
-      // No scroll view wraps the body. (TextField brings its own internal
-      // Scrollable, so assert on the scrolling containers specifically.)
-      expect(find.byType(SingleChildScrollView), findsNothing);
       expect(find.byType(ListView), findsNothing);
     });
 

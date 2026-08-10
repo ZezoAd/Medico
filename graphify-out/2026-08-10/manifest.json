@@ -1,18 +1,18 @@
 {
   ".claude/settings.json": {
     "mtime": 1786369151.1709077,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "6015071aa217ffda0819a4001848d631",
+    "semantic_hash": "6015071aa217ffda0819a4001848d631"
   },
   ".claude/settings.local.json": {
     "mtime": 1786369737.477613,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "93ed0d3a96c184ff05faeab057c0a643",
+    "semantic_hash": "93ed0d3a96c184ff05faeab057c0a643"
   },
   ".vscode/settings.json": {
     "mtime": 1786241542.8920252,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "588304d481af8236689674c6091b1925",
+    "semantic_hash": "588304d481af8236689674c6091b1925"
   },
   "android/app/build.gradle.kts": {
     "mtime": 1786248890.5288184,
@@ -36,8 +36,8 @@
   },
   "firebase.json": {
     "mtime": 1786248107.9936652,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "116e2d601ae0aebe065bcc9e0672d74f",
+    "semantic_hash": "116e2d601ae0aebe065bcc9e0672d74f"
   },
   "ios/RunnerTests/RunnerTests.swift": {
     "mtime": 1786125099.39665,
@@ -51,13 +51,13 @@
   },
   "ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.1083317,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "31a08e429403e265cabfb31b3d65f049",
+    "semantic_hash": "31a08e429403e265cabfb31b3d65f049"
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
     "mtime": 1784847421.116905,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "b9e927ac17345f2d5f052fe68a3487f9",
+    "semantic_hash": "b9e927ac17345f2d5f052fe68a3487f9"
   },
   "ios/Runner/Runner-Bridging-Header.h": {
     "mtime": 1784847421.1227572,
@@ -80,9 +80,9 @@
     "semantic_hash": "162050f4e7c8506eb1a8404fa7c5b564"
   },
   "lib/screens/sign_in_page.dart": {
-    "mtime": 1786379665.4941235,
-    "ast_hash": "1a259fcc95b513f0367494f898a070bb",
-    "semantic_hash": ""
+    "mtime": 1786327191.747103,
+    "ast_hash": "849f231944d6aef1f7a3522feda602cd",
+    "semantic_hash": "849f231944d6aef1f7a3522feda602cd"
   },
   "lib/screens/sign_in_screen.dart": {
     "mtime": 1786323775.3750637,
@@ -131,8 +131,8 @@
   },
   "macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.170055,
-    "ast_hash": "",
-    "semantic_hash": ""
+    "ast_hash": "1d48e925145d4b573a3b5d7960a1c585",
+    "semantic_hash": "1d48e925145d4b573a3b5d7960a1c585"
   },
   "macos/Runner/MainFlutterWindow.swift": {
     "mtime": 1784847421.1806197,
@@ -140,9 +140,9 @@
     "semantic_hash": "93c22dae2d93f3dc1402e121901f582b"
   },
   "test/sign_in_page_test.dart": {
-    "mtime": 1786378707.1779184,
-    "ast_hash": "c1e52510d43ae5e9c1bcd394fb411da1",
-    "semantic_hash": ""
+    "mtime": 1786327262.3717873,
+    "ast_hash": "fb7c0fc96e4ea45753292c72d6759d66",
+    "semantic_hash": "fb7c0fc96e4ea45753292c72d6759d66"
   },
   "test/widget_test.dart": {
     "mtime": 1786324025.3715363,
@@ -273,20 +273,5 @@
     "mtime": 1784847421.1962008,
     "ast_hash": "028602ab9754bffe716659ada7590d29",
     "semantic_hash": "028602ab9754bffe716659ada7590d29"
-  },
-  "lib/screens/home_screen.dart": {
-    "mtime": 1786379561.0654695,
-    "ast_hash": "ddffde36864ff905a0066133d17c9f54",
-    "semantic_hash": ""
-  },
-  "lib/screens/otp_verification_screen.dart": {
-    "mtime": 1786379671.4578128,
-    "ast_hash": "e59692dcdf70ca519535705b832b8380",
-    "semantic_hash": ""
-  },
-  "lib/screens/sign_up_screen.dart": {
-    "mtime": 1786379553.850366,
-    "ast_hash": "4cc9fdf3889f9c72389a4e054a40acf8",
-    "semantic_hash": ""
   }
 }

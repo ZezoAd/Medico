@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'sign_up_screen.dart';
+
 /// Sign-in screen ported from the "Medico Login - Glass" design.
 ///
 /// The design is RTL Arabic: a teal→blue gradient canvas with two soft
@@ -44,7 +46,7 @@ class _SignInPageState extends State<SignInPage> {
 
   double get _screenHeight => MediaQuery.sizeOf(context).height;
 
-  /// Short phones (iPhone SE and friends) get tighter controls so the fixed
+  /// Short phones (iPhone SE and friends) get tighter controls so the
   /// column still fits once the spacers between groups have collapsed.
   bool get _compact => _screenHeight < 700;
 
@@ -53,16 +55,8 @@ class _SignInPageState extends State<SignInPage> {
   double get _controlHeight => _screenHeight < 620
       ? 44
       : _compact
-          ? 48
-          : 54;
-
-  /// Scales one of the design's fixed spacings to the viewport height, so the
-  /// header block shrinks on short phones instead of squeezing the card.
-  /// 874 is the height of the design's reference canvas.
-  double _gap(double design) {
-    final scale = (MediaQuery.sizeOf(context).height / 874).clamp(0.55, 1.0);
-    return design * scale;
-  }
+      ? 48
+      : 54;
 
   // The card fades and slides in shortly after the first frame.
   @override
@@ -71,6 +65,11 @@ class _SignInPageState extends State<SignInPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
+    _signupTap.onTap = () {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
+    };
   }
 
   @override
@@ -159,9 +158,7 @@ class _SignInPageState extends State<SignInPage> {
               right: -70,
               child: _SoftCircle(size: 220, opacity: 0.05),
             ),
-            SafeArea(
-              child: _success ? _buildSuccess() : _buildForm(),
-            ),
+            SafeArea(child: _success ? _buildSuccess() : _buildForm()),
           ],
         ),
       ),
@@ -189,7 +186,11 @@ class _SignInPageState extends State<SignInPage> {
                 color: Colors.white.withValues(alpha: 0.16),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
               ),
-              child: const Icon(Icons.check_rounded, size: 34, color: Colors.white),
+              child: const Icon(
+                Icons.check_rounded,
+                size: 34,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 18),
             const Text(
@@ -236,34 +237,49 @@ class _SignInPageState extends State<SignInPage> {
   // ────────────────────────────── form state ───────────────────────────────
 
   Widget _buildForm() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          // Header block: a fixed height near the top. Nothing here flexes, so
-          // the card below gets every remaining pixel rather than competing
-          // with spacers for the same free space.
-          SizedBox(height: _gap(44)),
-          _buildBrand(),
-          SizedBox(height: _gap(14)),
-          _buildRoleTabs(),
-          SizedBox(height: _gap(14)),
-          // The card fills whatever is left.
-          Expanded(
-            child: AnimatedSlide(
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOut,
-              offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 400),
-                opacity: _mounted ? 1 : 0,
-                child: _buildCard(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Gaps scale with the viewport instead of a fixed pixel value, so the
+        // header block breathes on tall screens and tightens on short ones.
+        // Expanded/Spacer can't be used here: the ConstrainedBox below only
+        // pins a *minimum* height (so short screens can still scroll instead
+        // of overflowing), which leaves the Column's height unbounded — and
+        // flex children need a bounded height to distribute space into.
+        final topGap = (constraints.maxHeight * 0.05).clamp(16.0, 44.0);
+        final midGap = (constraints.maxHeight * 0.016).clamp(10.0, 14.0);
+        final bottomGap = (constraints.maxHeight * 0.03).clamp(16.0, 24.0);
+
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: topGap),
+                  _buildBrand(),
+                  const SizedBox(height: 14),
+                  _buildRoleTabs(),
+                  SizedBox(height: midGap),
+                  AnimatedSlide(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 400),
+                      opacity: _mounted ? 1 : 0,
+                      child: _buildCard(),
+                    ),
+                  ),
+                  SizedBox(height: bottomGap),
+                ],
               ),
             ),
           ),
-          SizedBox(height: _gap(24)),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -278,7 +294,11 @@ class _SignInPageState extends State<SignInPage> {
             borderRadius: BorderRadius.circular(12),
             color: Colors.white.withValues(alpha: 0.15),
           ),
-          child: const Icon(Icons.monitor_heart_outlined, size: 18, color: Colors.white),
+          child: const Icon(
+            Icons.monitor_heart_outlined,
+            size: 18,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(width: 9),
         const Text(
@@ -362,14 +382,16 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _buildCard() {
-    final heading = _isDoctor ? 'مرحبًا دكتور' : 'أهلًا بعودتك';
+    final heading = _isDoctor ? 'أهلاً دكتور' : 'أهلاً بيك';
     final subheading = _isDoctor
         ? 'تابع مواعيد عيادتك وطابور مرضاك من مكان واحد.'
         : 'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.';
 
     // The design highlights whichever field failed validation.
-    final emailError = _error.isNotEmpty && !_emailController.text.contains('@');
-    final passwordError = _error.isNotEmpty && _passwordController.text.length < 6;
+    final emailError =
+        _error.isNotEmpty && !_emailController.text.contains('@');
+    final passwordError =
+        _error.isNotEmpty && _passwordController.text.length < 6;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -377,8 +399,8 @@ class _SignInPageState extends State<SignInPage> {
         vertical: _screenHeight < 620
             ? 16
             : _compact
-                ? 20
-                : 28,
+            ? 20
+            : 28,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -391,11 +413,10 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ],
       ),
-      // The separations between groups are Spacers weighted by the design's
-      // own spacing values, so the rhythm is preserved at any card height and
-      // every gap collapses toward zero as the card gets shorter. Only the
-      // label→field pairs keep a fixed gap, since those must not close up.
+      // The outer page scrolls as a whole now, so the card just sizes to its
+      // content instead of scrolling internally.
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
@@ -416,7 +437,7 @@ class _SignInPageState extends State<SignInPage> {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
           ),
-          const Spacer(flex: 24),
+          const SizedBox(height: 24),
           _fieldLabel('البريد الإلكتروني'),
           const SizedBox(height: 8),
           _buildInput(
@@ -426,7 +447,7 @@ class _SignInPageState extends State<SignInPage> {
             hasError: emailError,
             keyboardType: TextInputType.emailAddress,
           ),
-          const Spacer(flex: 18),
+          const SizedBox(height: 18),
           _fieldLabel('كلمة المرور'),
           const SizedBox(height: 8),
           _buildInput(
@@ -437,7 +458,9 @@ class _SignInPageState extends State<SignInPage> {
             obscure: !_showPassword,
             suffix: IconButton(
               onPressed: () => setState(() => _showPassword = !_showPassword),
-              tooltip: _showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور',
+              tooltip: _showPassword
+                  ? 'إخفاء كلمة المرور'
+                  : 'إظهار كلمة المرور',
               icon: Icon(
                 _showPassword
                     ? Icons.visibility_outlined
@@ -447,7 +470,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          const Spacer(flex: 12),
+          const SizedBox(height: 12),
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: GestureDetector(
@@ -484,15 +507,15 @@ class _SignInPageState extends State<SignInPage> {
               ],
             ),
           ],
-          const Spacer(flex: 24),
+          const SizedBox(height: 24),
           _buildSubmitButton(),
-          const Spacer(flex: 18),
+          const SizedBox(height: 18),
           _buildDivider(),
-          const Spacer(flex: 18),
+          const SizedBox(height: 18),
           _buildGoogleButton(),
-          const Spacer(flex: 26),
+          const SizedBox(height: 26),
           _buildSignupPrompt(),
-          const Spacer(flex: 14),
+          const SizedBox(height: 14),
           _buildLegalNote(),
         ],
       ),
@@ -523,9 +546,9 @@ class _SignInPageState extends State<SignInPage> {
     final baseBorder = hasError ? _danger : _border;
 
     OutlineInputBorder border(Color color, double width) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: color, width: width),
-        );
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: color, width: width),
+    );
 
     return SizedBox(
       height: _controlHeight,
@@ -543,7 +566,10 @@ class _SignInPageState extends State<SignInPage> {
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: _faint, fontWeight: FontWeight.w400),
+          hintStyle: const TextStyle(
+            color: _faint,
+            fontWeight: FontWeight.w400,
+          ),
           filled: true,
           fillColor: _fieldFill,
           isDense: true,
@@ -574,8 +600,8 @@ class _SignInPageState extends State<SignInPage> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 26,
-            offset: const Offset(0, 12),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -649,7 +675,9 @@ class _SignInPageState extends State<SignInPage> {
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           side: const BorderSide(color: Color(0xFFDADCE0)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -713,11 +741,7 @@ class _SignInPageState extends State<SignInPage> {
       TextSpan(
         children: [
           const TextSpan(text: 'بالمتابعة، أنت توافق على '),
-          TextSpan(
-            text: 'الشروط',
-            style: linkStyle,
-            recognizer: _termsTap,
-          ),
+          TextSpan(text: 'الشروط', style: linkStyle, recognizer: _termsTap),
           const TextSpan(text: 'و'),
           TextSpan(
             text: 'سياسة الخصوصية',
@@ -798,10 +822,22 @@ class _GoogleGlyphPainter extends CustomPainter {
   static const _red = Color(0xFFEA4335);
 
   static const _paths = <(Color, String)>[
-    (_blue, 'M45.1 24.5c0-1.6-.1-3.1-.4-4.6H24v9h11.9c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.5-9.5 6.5-16.7z'),
-    (_green, 'M24 46c5.9 0 10.9-2 14.6-5.3l-7.1-5.6c-2 1.4-4.6 2.2-7.5 2.2-5.8 0-10.7-3.9-12.5-9.1H4.2v5.7C7.9 41.1 15.3 46 24 46z'),
-    (_yellow, 'M11.5 28.2c-.5-1.4-.7-2.9-.7-4.2s.3-2.9.7-4.2v-5.7H4.2C2.8 17 2 20.4 2 24s.8 7 2.2 9.9l7.3-5.7z'),
-    (_red, 'M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4 29.9 2 24 2 15.3 2 7.9 6.9 4.2 14.1l7.3 5.7c1.8-5.2 6.7-9.1 12.5-9.1z'),
+    (
+      _blue,
+      'M45.1 24.5c0-1.6-.1-3.1-.4-4.6H24v9h11.9c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.5-9.5 6.5-16.7z',
+    ),
+    (
+      _green,
+      'M24 46c5.9 0 10.9-2 14.6-5.3l-7.1-5.6c-2 1.4-4.6 2.2-7.5 2.2-5.8 0-10.7-3.9-12.5-9.1H4.2v5.7C7.9 41.1 15.3 46 24 46z',
+    ),
+    (
+      _yellow,
+      'M11.5 28.2c-.5-1.4-.7-2.9-.7-4.2s.3-2.9.7-4.2v-5.7H4.2C2.8 17 2 20.4 2 24s.8 7 2.2 9.9l7.3-5.7z',
+    ),
+    (
+      _red,
+      'M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4 29.9 2 24 2 15.3 2 7.9 6.9 4.2 14.1l7.3 5.7c1.8-5.2 6.7-9.1 12.5-9.1z',
+    ),
   ];
 
   @override
@@ -818,7 +854,9 @@ class _GoogleGlyphPainter extends CustomPainter {
   /// (M, m, L, l, H, h, V, v, C, c, Z).
   static Path _parse(String data) {
     final path = Path();
-    final tokens = RegExp(r'[A-Za-z]|-?\d*\.?\d+').allMatches(data).map((m) => m[0]!);
+    final tokens = RegExp(
+      r'[A-Za-z]|-?\d*\.?\d+',
+    ).allMatches(data).map((m) => m[0]!);
     final it = tokens.iterator;
     var cx = 0.0, cy = 0.0, sx = 0.0, sy = 0.0;
     String? cmd;
