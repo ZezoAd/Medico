@@ -6,12 +6,12 @@
   },
   ".claude/settings.local.json": {
     "mtime": 1786406704.643082,
-    "ast_hash": "756c51f88fbbae4c5704faf20ea4beca",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".vscode/settings.json": {
     "mtime": 1786241542.8920252,
-    "ast_hash": "588304d481af8236689674c6091b1925",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
@@ -36,7 +36,7 @@
   },
   "firebase.json": {
     "mtime": 1786248107.9936652,
-    "ast_hash": "116e2d601ae0aebe065bcc9e0672d74f",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/RunnerTests/RunnerTests.swift": {
@@ -51,12 +51,12 @@
   },
   "ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.1083317,
-    "ast_hash": "31a08e429403e265cabfb31b3d65f049",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
     "mtime": 1784847421.116905,
-    "ast_hash": "b9e927ac17345f2d5f052fe68a3487f9",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/Runner/Runner-Bridging-Header.h": {
@@ -75,9 +75,9 @@
     "semantic_hash": "0f2d19f917efc2e12e3295ba0e223d02"
   },
   "lib/main.dart": {
-    "mtime": 1786324569.1372585,
-    "ast_hash": "162050f4e7c8506eb1a8404fa7c5b564",
-    "semantic_hash": "162050f4e7c8506eb1a8404fa7c5b564"
+    "mtime": 1786454481.3834174,
+    "ast_hash": "3e00342ae46b2b61cd39a9400d0663f3",
+    "semantic_hash": ""
   },
   "lib/screens/sign_in_page.dart": {
     "mtime": 1786405840.4234102,
@@ -131,7 +131,7 @@
   },
   "macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.170055,
-    "ast_hash": "1d48e925145d4b573a3b5d7960a1c585",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "macos/Runner/MainFlutterWindow.swift": {
