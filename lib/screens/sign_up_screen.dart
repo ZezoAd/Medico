@@ -1,7 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../services/profile_service.dart';
+import 'home_screen.dart';
 import 'otp_verification_screen.dart';
 
 /// Sign-up screen matching the visual language of [SignInPage]: the same
@@ -136,17 +139,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  // Google OAuth isn't wired up anywhere in the app yet (see [SignInPage]'s
-  // _handleGoogle) - this is the matching UI-first stub, so both screens gain
-  // the real call at the same time.
+  // Mirrors [SignInPage]'s _handleGoogle: with Google there's no separate
+  // sign-up step — the first successful token exchange creates the account,
+  // so both buttons run the same flow and land in the same place.
   Future<void> _handleGoogleSignUp() async {
     setState(() {
       _formError = null;
       _loading = true;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-    if (!mounted) return;
-    setState(() => _loading = false);
+
+    try {
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      final idToken = googleUser.authentication.idToken;
+      if (idToken == null) {
+        throw Exception('لم يتم استلام رمز الدخول من Google.');
+      }
+      await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+      );
+      await const ProfileService().fetchCurrentProfile();
+      if (!mounted) return;
+      // Clears the auth stack: there's nothing to come back to once signed in.
+      await Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
+      );
+    } on GoogleSignInException catch (e) {
+      if (!mounted) return;
+      // Backing out of the account picker isn't an error worth reporting.
+      if (e.code == GoogleSignInExceptionCode.canceled) return;
+      setState(
+        () => _formError = 'تعذر تسجيل الدخول عبر Google. حاول مرة أخرى.',
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Google sign-in error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      if (!mounted) return;
+      setState(() => _formError = 'حدث خطأ غير متوقع. حاول مرة أخرى.');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override

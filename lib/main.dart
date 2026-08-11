@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'screens/sign_in_screen.dart';
+import 'screens/splash_screen.dart';
 
 class _NoStretchScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -63,7 +63,7 @@ class MedicoApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFAF7F2),
         useMaterial3: true,
       ),
-      home: const SignInScreen(),
+      home: const SplashScreen(),
     );
   }
 }
