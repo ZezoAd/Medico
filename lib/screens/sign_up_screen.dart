@@ -165,30 +165,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildForm() {
-    // Same "Holy Grail" responsive pattern as [SignInPage]: LayoutBuilder
-    // feeds the viewport height to a ConstrainedBox(minHeight:) inside a
-    // SingleChildScrollView, so short screens scroll instead of overflowing.
-    // IntrinsicHeight then gives the Column a real, bounded height even
-    // though the box above it only sets a *minimum* - which is what makes
-    // Spacer work at all here.
+    // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
+    // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
+    // so short screens scroll instead of overflowing. IntrinsicHeight then
+    // gives the Column a real, bounded height even though the box above it
+    // only sets a *minimum* - which is what makes Spacer work at all here.
     //
-    // The two Spacer(flex: 1)s split whatever height is left over after the
-    // content evenly between "above the brand" and "below the card", so the
-    // brand row sits at a fixed position near the top (matching the sign-in
-    // screen) instead of the whole block being centred. On a short phone they
-    // collapse to zero and the SingleChildScrollView takes over.
-    // Guaranteed minimum breathing room above the brand row and below the
-    // card - the Spacers below still absorb whatever height is left over,
-    // but never eat into these floors, matching [SignInPage].
-    const minTopGap = 24.0;
-    const minBottomGap = 24.0;
-
+    // minTopGap/minBottomGap are flat constants, never derived from
+    // constraints or MediaQuery, so they can never shrink below 24px no
+    // matter the screen size or content height - only the two
+    // Spacer(flex: 1)s absorb/shrink with available space.
     return LayoutBuilder(
       builder: (context, constraints) {
         // The brand → card gap scales with the viewport instead of a fixed
         // pixel value, and stays a plain SizedBox so it never flexes.
         final midGap = (constraints.maxHeight * 0.02).clamp(14.0, 20.0);
         final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+        const minTopGap = 24.0;
+        const minBottomGap = 24.0;
 
         return SingleChildScrollView(
           child: ConstrainedBox(
@@ -199,17 +193,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // field above the keyboard instead of it hiding behind it.
                 padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(height: minTopGap),
-                    const Spacer(),
+                    const Spacer(flex: 1),
                     _buildBrand(),
                     SizedBox(height: midGap),
-                    // The card stays naturally sized - the slack lives in the
-                    // Spacers around it, so extra space shows the gradient
-                    // rather than stretching the white card into an oversized,
-                    // mostly-empty box.
                     AnimatedSlide(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeOut,
@@ -220,7 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: _buildCard(),
                       ),
                     ),
-                    const Spacer(),
+                    const Spacer(flex: 1),
                     const SizedBox(height: minBottomGap),
                   ],
                 ),

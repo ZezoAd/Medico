@@ -252,21 +252,16 @@ class _SignInPageState extends State<SignInPage> {
     // gives the Column a real, bounded height even though the box above it
     // only sets a *minimum* - which is what makes Spacer work at all here.
     //
-    // The two Spacer(flex: 1)s split whatever height is left over after the
-    // content evenly between "above the header" and "below the card", so a
-    // tall phone gets proportional breathing room on both ends instead of
-    // one dead patch of gradient. On a short phone they collapse to zero and
-    // the SingleChildScrollView takes over.
-    // Guaranteed minimum breathing room above the brand row and below the
-    // card - the Spacers below still absorb whatever height is left over,
-    // but never eat into these floors, matching [SignUpScreen].
-    const minTopGap = 24.0;
-    const minBottomGap = 24.0;
-
+    // minTopGap/minBottomGap are flat constants, never derived from
+    // constraints or MediaQuery, so they can never shrink below 24px no
+    // matter the screen size or content height - only the two
+    // Spacer(flex: 1)s absorb/shrink with available space.
     return LayoutBuilder(
       builder: (context, constraints) {
         final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
         final tabsToCard = (constraints.maxHeight * 0.025).clamp(16.0, 24.0);
+        const minTopGap = 24.0;
+        const minBottomGap = 24.0;
 
         return SingleChildScrollView(
           child: ConstrainedBox(
@@ -275,19 +270,14 @@ class _SignInPageState extends State<SignInPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(height: minTopGap),
-                    const Spacer(),
+                    const Spacer(flex: 1),
                     _buildBrand(),
                     SizedBox(height: brandToTabs),
                     _buildRoleTabs(),
                     SizedBox(height: tabsToCard),
-                    // The card stays naturally sized - the slack lives in the
-                    // Spacers around it, so extra space shows the gradient
-                    // rather than stretching the white card into an oversized,
-                    // mostly-empty box.
                     AnimatedSlide(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeOut,
@@ -298,7 +288,7 @@ class _SignInPageState extends State<SignInPage> {
                         child: _buildCard(),
                       ),
                     ),
-                    const Spacer(),
+                    const Spacer(flex: 1),
                     const SizedBox(height: minBottomGap),
                   ],
                 ),
