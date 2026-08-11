@@ -1,16 +1,16 @@
 # Graph Report - medico  (2026-08-11)
 
 ## Corpus Check
-- 49 files · ~14,697 words
+- 49 files · ~14,642 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 425 nodes · 516 edges · 29 communities (23 shown, 6 thin omitted)
+- 426 nodes · 517 edges · 29 communities (23 shown, 6 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `22e5b76c`
+- Built from commit: `67c525ee`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -101,7 +101,7 @@ Nodes (10): Any, FlutterAppDelegate, FlutterImplicitEngineBridge, FlutterImplici
 
 ### Community 6 - "sign_up_screen.dart"
 Cohesion: 0.04
-Nodes (55): double get, _agreedToPrivacy, _blue, _border, build, _buildBrand, _buildCard, _buildDivider (+47 more)
+Nodes (56): double get, _agreedToPrivacy, _blue, _border, build, _buildBrand, _buildCard, _buildDivider (+48 more)
 
 ### Community 7 - "wWinMain"
 Cohesion: 0.24
@@ -152,7 +152,7 @@ Cohesion: 0.40
 Nodes (4): SignInPage, _SignInPageState, SignInScreen, sign_in_page.dart
 
 ## Knowledge Gaps
-- **211 isolated node(s):** `supabaseUrl`, `supabaseAnonKey`, `buildOverscrollIndicator`, `main`, `load` (+206 more)
+- **212 isolated node(s):** `_teal`, `_ink`, `_muted`, `_faint`, `_border` (+207 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -165,8 +165,8 @@ _Questions this graph is uniquely positioned to answer:_
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `supabaseUrl`, `supabaseAnonKey`, `buildOverscrollIndicator` to the rest of the system?**
-  _211 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `_teal`, `_ink`, `_muted` to the rest of the system?**
+  _212 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03508771929824561 - nodes in this community are weakly interconnected._
 - **Should `Win32Window` be split into smaller, more focused modules?**
