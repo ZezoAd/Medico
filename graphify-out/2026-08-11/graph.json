@@ -498,8 +498,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statelesswidget",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "statelesswidget"
     },
     {
@@ -729,8 +729,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_gradientbackdrop",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -740,8 +740,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_softcircle",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_softcircle"
     },
     {
@@ -1279,8 +1279,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_gradientbackdrop",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -1290,8 +1290,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_softcircle",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_softcircle"
     },
     {
@@ -1301,8 +1301,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_googleglyph",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_googleglyph"
     },
     {
@@ -1313,7 +1313,7 @@
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_googleglyphpainter",
       "community": 17,
-      "community_name": "_GoogleGlyphPainter",
+      "community_name": "CustomPainter",
       "norm_label": "_googleglyphpainter"
     },
     {
@@ -1324,7 +1324,7 @@
       "_origin": "ast",
       "id": "custompainter",
       "community": 17,
-      "community_name": "_GoogleGlyphPainter",
+      "community_name": "CustomPainter",
       "norm_label": "custompainter"
     },
     {
@@ -1675,8 +1675,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_initstate",
-      "community": 6,
-      "community_name": "sign_up_screen.dart",
+      "community": 27,
+      "community_name": "initState",
       "norm_label": "initstate"
     },
     {
@@ -1686,8 +1686,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "materialpageroute",
-      "community": 6,
-      "community_name": "sign_up_screen.dart",
+      "community": 27,
+      "community_name": "initState",
       "norm_label": "materialpageroute"
     },
     {
@@ -2038,8 +2038,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_gradientbackdrop",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -2049,9 +2049,31 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_softcircle",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "_softcircle"
+    },
+    {
+      "label": "_GoogleGlyph",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_googleglyph",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "_googleglyph"
+    },
+    {
+      "label": "_GoogleGlyphPainter",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_googleglyphpainter",
+      "community": 17,
+      "community_name": "CustomPainter",
+      "norm_label": "_googleglyphpainter"
     },
     {
       "label": "_teal",
@@ -2351,6 +2373,61 @@
       "norm_label": "opacity"
     },
     {
+      "label": "_blue",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_blue",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_blue"
+    },
+    {
+      "label": "_green",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_green",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_green"
+    },
+    {
+      "label": "_yellow",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_yellow",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_yellow"
+    },
+    {
+      "label": "_red",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_red",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_red"
+    },
+    {
+      "label": "_paths",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_paths",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_paths"
+    },
+    {
       "label": "createState",
       "file_type": "code",
       "source_file": "lib/screens/sign_up_screen.dart",
@@ -2401,9 +2478,20 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_handlesubmit",
+      "community": 27,
+      "community_name": "initState",
+      "norm_label": "_handlesubmit"
+    },
+    {
+      "label": "_handleGoogleSignUp",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_handlegooglesignup",
       "community": 6,
       "community_name": "sign_up_screen.dart",
-      "norm_label": "_handlesubmit"
+      "norm_label": "_handlegooglesignup"
     },
     {
       "label": "build",
@@ -2505,6 +2593,28 @@
       "norm_label": "_buildsubmitbutton"
     },
     {
+      "label": "_buildDivider",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_builddivider",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_builddivider"
+    },
+    {
+      "label": "_buildGoogleButton",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_buildgooglebutton",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_buildgooglebutton"
+    },
+    {
       "label": "_buildSignInPrompt",
       "file_type": "code",
       "source_file": "lib/screens/sign_up_screen.dart",
@@ -2514,6 +2624,39 @@
       "community": 6,
       "community_name": "sign_up_screen.dart",
       "norm_label": "_buildsigninprompt"
+    },
+    {
+      "label": "paint",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_paint",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "paint"
+    },
+    {
+      "label": "_parse",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_parse",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_parse"
+    },
+    {
+      "label": "shouldRepaint",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_shouldrepaint",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "shouldrepaint"
     },
     {
       "label": "otp_verification_screen.dart",
@@ -5341,6 +5484,17 @@
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
+      "source": "lib_screens_sign_up_screen_googleglyph",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
       "source": "lib_screens_sign_up_screen_gradientbackdrop",
       "target": "statelesswidget"
     },
@@ -6873,6 +7027,17 @@
       "target": "custompainter"
     },
     {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen_googleglyphpainter",
+      "target": "custompainter"
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -6961,6 +7126,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_blue"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_border"
     },
     {
@@ -7005,6 +7181,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_builddivider"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_buildfieldgroup"
     },
     {
@@ -7017,6 +7204,17 @@
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_buildform"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_buildgooglebutton"
     },
     {
       "relation": "defines",
@@ -7225,7 +7423,51 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_googleglyph"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_googleglyphpainter"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_gradientbackdrop"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_green"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_handlegooglesignup"
     },
     {
       "relation": "defines",
@@ -7313,6 +7555,28 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_paint"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_parse"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_passwordcontroller"
     },
     {
@@ -7335,6 +7599,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_paths"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_privacypolicytap"
     },
     {
@@ -7346,7 +7621,29 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_red"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_screenheight"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_shouldrepaint"
     },
     {
       "relation": "defines",
@@ -7435,6 +7732,17 @@
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_validate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_yellow"
     },
     {
       "relation": "imports",
@@ -10392,5 +10700,5 @@
       "source_file": "CLAUDE.md"
     }
   ],
-  "built_at_commit": "e4aa97396808daaf60a71d23f9c6f4f6bc18c642"
+  "built_at_commit": "966c1a62168c37341a6f1858b0590a3379d6b2b1"
 }

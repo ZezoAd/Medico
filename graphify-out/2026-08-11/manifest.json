@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1786401752.9339602,
-    "ast_hash": "e2dc11facffe618c14f64d912d898f98",
+    "mtime": 1786408585.4874125,
+    "ast_hash": "b7a2fefe8df2b685b1d9935cd9118b9a",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {

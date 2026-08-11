@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 421 nodes · 512 edges · 28 communities (22 shown, 6 thin omitted)
+- 422 nodes · 513 edges · 28 communities (22 shown, 6 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `966c1a62`
+- Built from commit: `86a80ab4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -76,7 +76,7 @@
 
 ### Community 0 - "sign_in_page.dart"
 Cohesion: 0.04
-Nodes (55): _blue, _border, build, _buildBrand, _buildCard, _buildDivider, _buildForm, _buildGoogleButton (+47 more)
+Nodes (56): _blue, _border, build, _buildBrand, _buildCard, _buildDivider, _buildForm, _buildGoogleButton (+48 more)
 
 ### Community 1 - "Win32Window"
 Cohesion: 0.07
@@ -147,7 +147,7 @@ Cohesion: 0.67
 Nodes (3): initState, _handleSubmit, MaterialPageRoute
 
 ## Knowledge Gaps
-- **210 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+205 more)
+- **210 isolated node(s):** `_Role`, `_teal`, `_ink`, `_muted`, `_faint` (+205 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -160,10 +160,10 @@ _Questions this graph is uniquely positioned to answer:_
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
+- **What connects `_Role`, `_teal`, `_ink` to the rest of the system?**
   _210 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
-  _Cohesion score 0.03571428571428571 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.03508771929824561 - nodes in this community are weakly interconnected._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.06594071385359952 - nodes in this community are weakly interconnected._
 - **Should `GeneratedPluginRegistrant.swift` be split into smaller, more focused modules?**
