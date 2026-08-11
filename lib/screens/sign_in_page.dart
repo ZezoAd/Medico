@@ -257,6 +257,12 @@ class _SignInPageState extends State<SignInPage> {
     // tall phone gets proportional breathing room on both ends instead of
     // one dead patch of gradient. On a short phone they collapse to zero and
     // the SingleChildScrollView takes over.
+    // Guaranteed minimum breathing room above the brand row and below the
+    // card - the Spacers below still absorb whatever height is left over,
+    // but never eat into these floors, matching [SignUpScreen].
+    const minTopGap = 24.0;
+    const minBottomGap = 24.0;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
@@ -272,6 +278,7 @@ class _SignInPageState extends State<SignInPage> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const SizedBox(height: minTopGap),
                     const Spacer(),
                     _buildBrand(),
                     SizedBox(height: brandToTabs),
@@ -292,6 +299,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const Spacer(),
+                    const SizedBox(height: minBottomGap),
                   ],
                 ),
               ),

@@ -1,16 +1,16 @@
 # Graph Report - medico  (2026-08-11)
 
 ## Corpus Check
-- 49 files · ~14,566 words
+- 49 files · ~14,601 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 422 nodes · 513 edges · 28 communities (22 shown, 6 thin omitted)
+- 424 nodes · 515 edges · 27 communities (21 shown, 6 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `86a80ab4`
+- Built from commit: `24ec0397`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,7 +29,6 @@
 - SignInPage
 - Linux top-level CMake build config
 - otp_verification_screen.dart
-- StatelessWidget
 - MainActivity.kt
 - .claude/CLAUDE.md graphify trigger instructions
 - CustomPainter
@@ -72,11 +71,11 @@
 - **Firebase service integration via pubspec dependencies** — concept_firebase_core, concept_firebase_messaging, concept_firebase_crashlytics [INFERRED 0.85]
 - **graphify skill trigger configuration across CLAUDE.md files** — claude_claude_md_graphify_trigger, claude_md_graphify_rules, concept_graphify [EXTRACTED 1.00]
 
-## Communities (28 total, 6 thin omitted)
+## Communities (27 total, 6 thin omitted)
 
 ### Community 0 - "sign_in_page.dart"
 Cohesion: 0.04
-Nodes (56): _blue, _border, build, _buildBrand, _buildCard, _buildDivider, _buildForm, _buildGoogleButton (+48 more)
+Nodes (55): _blue, _border, build, _buildBrand, _buildCard, _buildDivider, _buildForm, _buildGoogleButton (+47 more)
 
 ### Community 1 - "Win32Window"
 Cohesion: 0.07
@@ -91,8 +90,8 @@ Cohesion: 0.09
 Nodes (22): FlPluginRegistry, FlView, GApplication, gboolean, gchar, GObject, GtkApplication, fl_register_plugins() (+14 more)
 
 ### Community 4 - "main.dart"
-Cohesion: 0.09
-Nodes (20): android, DefaultFirebaseOptions, ios, macos, web, windows, build, initializeApp (+12 more)
+Cohesion: 0.06
+Nodes (32): android, DefaultFirebaseOptions, ios, macos, web, windows, build, buildOverscrollIndicator (+24 more)
 
 ### Community 5 - "AppDelegate"
 Cohesion: 0.16
@@ -130,10 +129,6 @@ Nodes (6): Linux top-level CMake build config, Linux flutter library CMake targe
 Cohesion: 0.04
 Nodes (44): bool get, home_screen.dart, _border, build, _buildBody, _buildBrand, _buildCard, _buildDigitRow (+36 more)
 
-### Community 14 - "StatelessWidget"
-Cohesion: 0.22
-Nodes (9): _GradientBackdrop, _SoftCircle, _GoogleGlyph, _GradientBackdrop, _SoftCircle, _GoogleGlyph, _GradientBackdrop, _SoftCircle (+1 more)
-
 ### Community 16 - ".claude/CLAUDE.md graphify trigger instructions"
 Cohesion: 1.00
 Nodes (3): .claude/CLAUDE.md graphify trigger instructions, CLAUDE.md graphify usage rules, graphify knowledge graph tool
@@ -147,7 +142,7 @@ Cohesion: 0.67
 Nodes (3): initState, _handleSubmit, MaterialPageRoute
 
 ## Knowledge Gaps
-- **210 isolated node(s):** `_Role`, `_teal`, `_ink`, `_muted`, `_faint` (+205 more)
+- **211 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+206 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -155,15 +150,15 @@ Nodes (3): initState, _handleSubmit, MaterialPageRoute
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `FlutterWindow` connect `Win32Window` to `GeneratedPluginRegistrant.swift`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `MessageHandler` (e.g. with `Destroy` and `GetClientArea`) actually correct?**
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `_Role`, `_teal`, `_ink` to the rest of the system?**
-  _210 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
+  _211 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
-  _Cohesion score 0.03508771929824561 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.03571428571428571 - nodes in this community are weakly interconnected._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.06594071385359952 - nodes in this community are weakly interconnected._
 - **Should `GeneratedPluginRegistrant.swift` be split into smaller, more focused modules?**

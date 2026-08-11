@@ -177,6 +177,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // brand row sits at a fixed position near the top (matching the sign-in
     // screen) instead of the whole block being centred. On a short phone they
     // collapse to zero and the SingleChildScrollView takes over.
+    // Guaranteed minimum breathing room above the brand row and below the
+    // card - the Spacers below still absorb whatever height is left over,
+    // but never eat into these floors, matching [SignInPage].
+    const minTopGap = 24.0;
+    const minBottomGap = 24.0;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // The brand → card gap scales with the viewport instead of a fixed
@@ -196,6 +202,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    const SizedBox(height: minTopGap),
                     const Spacer(),
                     _buildBrand(),
                     SizedBox(height: midGap),
@@ -214,6 +221,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const Spacer(),
+                    const SizedBox(height: minBottomGap),
                   ],
                 ),
               ),

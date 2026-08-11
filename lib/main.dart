@@ -6,6 +6,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/sign_in_screen.dart';
 
+class _NoStretchScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    // No glow, no stretch — scrolling just stops cleanly at the edges.
+    return child;
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -40,6 +52,7 @@ class MedicoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scrollBehavior: _NoStretchScrollBehavior(),
       debugShowCheckedModeBanner: false,
       title: 'Medico',
       theme: ThemeData(
