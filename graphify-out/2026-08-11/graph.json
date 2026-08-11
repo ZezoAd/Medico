@@ -487,8 +487,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_main_medicoapp",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "medicoapp"
     },
     {
@@ -498,8 +498,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statelesswidget",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "statelesswidget"
     },
     {
@@ -729,8 +729,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_gradientbackdrop",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -740,8 +740,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_softcircle",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_softcircle"
     },
     {
@@ -1279,8 +1279,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_gradientbackdrop",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -1290,8 +1290,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_softcircle",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_softcircle"
     },
     {
@@ -1301,8 +1301,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_googleglyph",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_googleglyph"
     },
     {
@@ -1559,15 +1559,26 @@
       "norm_label": "_compact"
     },
     {
-      "label": "_controlHeight",
+      "label": "_tightGap",
       "file_type": "code",
       "source_file": "lib/screens/sign_in_page.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "lib_screens_sign_in_page_controlheight",
+      "id": "lib_screens_sign_in_page_tightgap",
       "community": 0,
       "community_name": "sign_in_page.dart",
-      "norm_label": "_controlheight"
+      "norm_label": "_tightgap"
+    },
+    {
+      "label": "_innerGap",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_in_page_innergap",
+      "community": 0,
+      "community_name": "sign_in_page.dart",
+      "norm_label": "_innergap"
     },
     {
       "label": "size",
@@ -1788,6 +1799,17 @@
       "community": 0,
       "community_name": "sign_in_page.dart",
       "norm_label": "_buildroletabs"
+    },
+    {
+      "label": "_roleTabsContent",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_in_page_roletabscontent",
+      "community": 0,
+      "community_name": "sign_in_page.dart",
+      "norm_label": "_roletabscontent"
     },
     {
       "label": "_roleTab",
@@ -2016,8 +2038,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_gradientbackdrop",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_gradientbackdrop"
     },
     {
@@ -2027,8 +2049,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_softcircle",
-      "community": 14,
-      "community_name": "StatelessWidget",
+      "community": 4,
+      "community_name": "main.dart",
       "norm_label": "_softcircle"
     },
     {
@@ -6297,17 +6319,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_in_page",
-      "target": "lib_screens_sign_in_page_controlheight"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/sign_in_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_screens_sign_in_page",
       "target": "lib_screens_sign_in_page_createstate"
     },
     {
@@ -6484,6 +6495,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_in_page",
+      "target": "lib_screens_sign_in_page_innergap"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_in_page",
       "target": "lib_screens_sign_in_page_isdoctor"
     },
     {
@@ -6639,6 +6661,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_in_page",
+      "target": "lib_screens_sign_in_page_roletabscontent"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_in_page",
       "target": "lib_screens_sign_in_page_screenheight"
     },
     {
@@ -6761,6 +6794,17 @@
       "_origin": "ast",
       "source": "lib_screens_sign_in_page",
       "target": "lib_screens_sign_in_page_termstap"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_in_page",
+      "target": "lib_screens_sign_in_page_tightgap"
     },
     {
       "relation": "defines",

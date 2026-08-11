@@ -123,6 +123,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  // Google OAuth isn't wired up anywhere in the app yet (see [SignInPage]'s
+  // _handleGoogle) - this is the matching UI-first stub, so both screens gain
+  // the real call at the same time.
+  Future<void> _handleGoogleSignUp() async {
+    setState(() {
+      _formError = null;
+      _loading = true;
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 1300));
+    if (!mounted) return;
+    setState(() => _loading = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -152,41 +165,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildForm() {
+    // Same "Holy Grail" responsive pattern as [SignInPage]: LayoutBuilder
+    // feeds the viewport height to a ConstrainedBox(minHeight:) inside a
+    // SingleChildScrollView, so short screens scroll instead of overflowing.
+    // IntrinsicHeight then gives the Column a real, bounded height even
+    // though the box above it only sets a *minimum* - which is what makes
+    // Spacer work at all here.
+    //
+    // The two Spacer(flex: 1)s split whatever height is left over after the
+    // content evenly between "above the brand" and "below the card", so the
+    // brand row sits at a fixed position near the top (matching the sign-in
+    // screen) instead of the whole block being centred. On a short phone they
+    // collapse to zero and the SingleChildScrollView takes over.
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Gaps scale with the viewport instead of a fixed pixel value, so the
-        // header block breathes on tall screens and tightens on short ones.
-        final topGap = (constraints.maxHeight * 0.05).clamp(16.0, 44.0);
+        // The brand → card gap scales with the viewport instead of a fixed
+        // pixel value, and stays a plain SizedBox so it never flexes.
         final midGap = (constraints.maxHeight * 0.02).clamp(14.0, 20.0);
-        final bottomGap = (constraints.maxHeight * 0.03).clamp(16.0, 24.0);
         final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
 
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              // Extra bottom padding lets the scroll view carry a focused
-              // field above the keyboard instead of it hiding behind it.
-              padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: topGap),
-                  _buildBrand(),
-                  SizedBox(height: midGap),
-                  AnimatedSlide(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeOut,
-                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                    child: AnimatedOpacity(
+            child: IntrinsicHeight(
+              child: Padding(
+                // Extra bottom padding lets the scroll view carry a focused
+                // field above the keyboard instead of it hiding behind it.
+                padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Spacer(),
+                    _buildBrand(),
+                    SizedBox(height: midGap),
+                    // The card stays naturally sized - the slack lives in the
+                    // Spacers around it, so extra space shows the gradient
+                    // rather than stretching the white card into an oversized,
+                    // mostly-empty box.
+                    AnimatedSlide(
                       duration: const Duration(milliseconds: 400),
-                      opacity: _mounted ? 1 : 0,
-                      child: _buildCard(),
+                      curve: Curves.easeOut,
+                      offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 400),
+                        opacity: _mounted ? 1 : 0,
+                        child: _buildCard(),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: bottomGap),
-                ],
+                    const Spacer(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -336,6 +365,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(height: 18),
           _buildSubmitButton(),
           const SizedBox(height: 18),
+          _buildDivider(),
+          const SizedBox(height: 18),
+          _buildGoogleButton(),
+          const SizedBox(height: 26),
           _buildSignInPrompt(),
         ],
       ),
@@ -556,6 +589,61 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  Widget _buildDivider() {
+    return const Row(
+      children: [
+        Expanded(child: Divider(height: 1, color: _border)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            'أو',
+            style: TextStyle(
+              fontSize: 11.5,
+              color: _faint,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(height: 1, color: _border)),
+      ],
+    );
+  }
+
+  Widget _buildGoogleButton() {
+    return SizedBox(
+      height: _controlHeight,
+      child: OutlinedButton(
+        onPressed: _loading ? null : _handleGoogleSignUp,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          side: const BorderSide(color: Color(0xFFDADCE0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _GoogleGlyph(size: 20),
+            SizedBox(width: 12),
+            Flexible(
+              child: Text(
+                'الاستمرار بحساب Google',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w700,
+                  color: _ink,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSignInPrompt() {
     return Text.rich(
       TextSpan(
@@ -620,4 +708,140 @@ class _SoftCircle extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Google "G" mark, painted so no asset or extra dependency is needed —
+/// mirrors [SignInPage]'s glyph, like the backdrop and circles above.
+class _GoogleGlyph extends StatelessWidget {
+  const _GoogleGlyph({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(painter: _GoogleGlyphPainter()),
+    );
+  }
+}
+
+class _GoogleGlyphPainter extends CustomPainter {
+  // Paths lifted from the design's 48×48 viewBox and scaled to the widget.
+  static const _blue = Color(0xFF4285F4);
+  static const _green = Color(0xFF34A853);
+  static const _yellow = Color(0xFFFBBC05);
+  static const _red = Color(0xFFEA4335);
+
+  static const _paths = <(Color, String)>[
+    (
+      _blue,
+      'M45.1 24.5c0-1.6-.1-3.1-.4-4.6H24v9h11.9c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.5-9.5 6.5-16.7z',
+    ),
+    (
+      _green,
+      'M24 46c5.9 0 10.9-2 14.6-5.3l-7.1-5.6c-2 1.4-4.6 2.2-7.5 2.2-5.8 0-10.7-3.9-12.5-9.1H4.2v5.7C7.9 41.1 15.3 46 24 46z',
+    ),
+    (
+      _yellow,
+      'M11.5 28.2c-.5-1.4-.7-2.9-.7-4.2s.3-2.9.7-4.2v-5.7H4.2C2.8 17 2 20.4 2 24s.8 7 2.2 9.9l7.3-5.7z',
+    ),
+    (
+      _red,
+      'M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4 29.9 2 24 2 15.3 2 7.9 6.9 4.2 14.1l7.3 5.7c1.8-5.2 6.7-9.1 12.5-9.1z',
+    ),
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.scale(size.width / 48, size.height / 48);
+    for (final (color, data) in _paths) {
+      canvas.drawPath(_parse(data), Paint()..color = color);
+    }
+    canvas.restore();
+  }
+
+  /// Minimal SVG path parser covering the commands used by the Google mark
+  /// (M, m, L, l, H, h, V, v, C, c, Z).
+  static Path _parse(String data) {
+    final path = Path();
+    final tokens = RegExp(
+      r'[A-Za-z]|-?\d*\.?\d+',
+    ).allMatches(data).map((m) => m[0]!);
+    final it = tokens.iterator;
+    var cx = 0.0, cy = 0.0, sx = 0.0, sy = 0.0;
+    String? cmd;
+    String? pending;
+
+    double num_() {
+      if (pending != null) {
+        final v = double.parse(pending!);
+        pending = null;
+        return v;
+      }
+      it.moveNext();
+      return double.parse(it.current);
+    }
+
+    while (true) {
+      if (pending == null) {
+        if (!it.moveNext()) break;
+        final t = it.current;
+        if (RegExp(r'^[A-Za-z]$').hasMatch(t)) {
+          cmd = t;
+        } else {
+          pending = t; // repeated coordinate set for the previous command
+        }
+      }
+      if (cmd == null) break;
+
+      switch (cmd) {
+        case 'M' || 'm':
+          final rel = cmd == 'm';
+          final x = num_(), y = num_();
+          cx = rel ? cx + x : x;
+          cy = rel ? cy + y : y;
+          sx = cx;
+          sy = cy;
+          path.moveTo(cx, cy);
+          cmd = rel ? 'l' : 'L';
+        case 'L' || 'l':
+          final rel = cmd == 'l';
+          final x = num_(), y = num_();
+          cx = rel ? cx + x : x;
+          cy = rel ? cy + y : y;
+          path.lineTo(cx, cy);
+        case 'H' || 'h':
+          final x = num_();
+          cx = cmd == 'h' ? cx + x : x;
+          path.lineTo(cx, cy);
+        case 'V' || 'v':
+          final y = num_();
+          cy = cmd == 'v' ? cy + y : y;
+          path.lineTo(cx, cy);
+        case 'C' || 'c':
+          final rel = cmd == 'c';
+          final dx = rel ? cx : 0.0;
+          final dy = rel ? cy : 0.0;
+          final x1 = dx + num_(), y1 = dy + num_();
+          final x2 = dx + num_(), y2 = dy + num_();
+          final x = dx + num_(), y = dy + num_();
+          path.cubicTo(x1, y1, x2, y2, x, y);
+          cx = x;
+          cy = y;
+        case 'Z' || 'z':
+          path.close();
+          cx = sx;
+          cy = sy;
+        default:
+          return path; // unsupported command — stop rather than misdraw
+      }
+    }
+    return path;
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

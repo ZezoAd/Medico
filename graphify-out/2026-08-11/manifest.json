@@ -5,7 +5,7 @@
     "semantic_hash": ""
   },
   ".claude/settings.local.json": {
-    "mtime": 1786369737.477613,
+    "mtime": 1786402919.8179853,
     "ast_hash": "",
     "semantic_hash": ""
   },
@@ -80,8 +80,8 @@
     "semantic_hash": "162050f4e7c8506eb1a8404fa7c5b564"
   },
   "lib/screens/sign_in_page.dart": {
-    "mtime": 1786402838.7551098,
-    "ast_hash": "e9e7d04cfaf1af887df4253a84d65e75",
+    "mtime": 1786405840.4234102,
+    "ast_hash": "112de14c748e54cd74b2519ff3dadfd8",
     "semantic_hash": ""
   },
   "lib/screens/sign_in_screen.dart": {

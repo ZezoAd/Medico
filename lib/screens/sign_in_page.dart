@@ -248,16 +248,19 @@ class _SignInPageState extends State<SignInPage> {
   Widget _buildForm() {
     // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
     // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
-    // so short screens scroll instead of overflowing. IntrinsicHeight gives
-    // the Column a real, bounded height to distribute, which is what lets
-    // the Expanded region below grow to fill a large screen (e.g. S25 Ultra)
-    // instead of leaving the card centered with dead space unused.
+    // so short screens scroll instead of overflowing. IntrinsicHeight then
+    // gives the Column a real, bounded height even though the box above it
+    // only sets a *minimum* - which is what makes Spacer work at all here.
+    //
+    // The two Spacer(flex: 1)s split whatever height is left over after the
+    // content evenly between "above the header" and "below the card", so a
+    // tall phone gets proportional breathing room on both ends instead of
+    // one dead patch of gradient. On a short phone they collapse to zero and
+    // the SingleChildScrollView takes over.
     return LayoutBuilder(
       builder: (context, constraints) {
-        final topPad = (constraints.maxHeight * 0.03).clamp(16.0, 32.0);
         final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
         final tabsToCard = (constraints.maxHeight * 0.025).clamp(16.0, 24.0);
-        final bottomPad = (constraints.maxHeight * 0.03).clamp(16.0, 32.0);
 
         return SingleChildScrollView(
           child: ConstrainedBox(
@@ -267,41 +270,28 @@ class _SignInPageState extends State<SignInPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(height: topPad),
-                        _buildBrand(),
-                        SizedBox(height: brandToTabs),
-                        _buildRoleTabs(),
-                        SizedBox(height: tabsToCard),
-                      ],
-                    ),
-                    Expanded(
-                      // The flexible region grows to fill large screens, but
-                      // the card itself stays naturally sized and top-aligned
-                      // within it - so extra space shows the gradient behind
-                      // it rather than stretching the white card into an
-                      // oversized, mostly-empty box.
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: AnimatedSlide(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeOut,
-                          offset: _mounted
-                              ? Offset.zero
-                              : const Offset(0, 0.05),
-                          child: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 400),
-                            opacity: _mounted ? 1 : 0,
-                            child: _buildCard(),
-                          ),
-                        ),
+                    const Spacer(),
+                    _buildBrand(),
+                    SizedBox(height: brandToTabs),
+                    _buildRoleTabs(),
+                    SizedBox(height: tabsToCard),
+                    // The card stays naturally sized - the slack lives in the
+                    // Spacers around it, so extra space shows the gradient
+                    // rather than stretching the white card into an oversized,
+                    // mostly-empty box.
+                    AnimatedSlide(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOut,
+                      offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 400),
+                        opacity: _mounted ? 1 : 0,
+                        child: _buildCard(),
                       ),
                     ),
-                    SizedBox(height: bottomPad),
+                    const Spacer(),
                   ],
                 ),
               ),

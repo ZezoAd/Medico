@@ -1,4 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "PowerShell(flutter analyze lib/screens/sign_up_screen.dart lib/screens/sign_in_page.dart)",
+      "PowerShell(flutter test test/sign_up_screen_test.dart test/sign_in_page_test.dart)",
+      "Bash(flutter emulators *)",
+      "Bash(adb shell *)",
+      "Bash(adb devices *)",
+      "Bash(adb emu *)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

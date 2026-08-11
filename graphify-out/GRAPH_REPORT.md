@@ -1,16 +1,16 @@
 # Graph Report - medico  (2026-08-11)
 
 ## Corpus Check
-- 49 files · ~13,467 words
+- 49 files · ~14,566 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 408 nodes · 497 edges · 26 communities (19 shown, 7 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
+- 421 nodes · 512 edges · 28 communities (22 shown, 6 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e4aa9739`
+- Built from commit: `966c1a62`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,14 +29,16 @@
 - SignInPage
 - Linux top-level CMake build config
 - otp_verification_screen.dart
+- StatelessWidget
 - MainActivity.kt
 - .claude/CLAUDE.md graphify trigger instructions
-- _GoogleGlyphPainter
+- CustomPainter
 - Flutter DevTools configuration
 - iOS LaunchImage asset instructions
 - medico project README
 - String?
 - RegisterPlugins
+- initState
 
 ## God Nodes (most connected - your core abstractions)
 1. `Win32Window` - 22 edges
@@ -70,7 +72,7 @@
 - **Firebase service integration via pubspec dependencies** — concept_firebase_core, concept_firebase_messaging, concept_firebase_crashlytics [INFERRED 0.85]
 - **graphify skill trigger configuration across CLAUDE.md files** — claude_claude_md_graphify_trigger, claude_md_graphify_rules, concept_graphify [EXTRACTED 1.00]
 
-## Communities (26 total, 7 thin omitted)
+## Communities (28 total, 6 thin omitted)
 
 ### Community 0 - "sign_in_page.dart"
 Cohesion: 0.04
@@ -89,8 +91,8 @@ Cohesion: 0.09
 Nodes (22): FlPluginRegistry, FlView, GApplication, gboolean, gchar, GObject, GtkApplication, fl_register_plugins() (+14 more)
 
 ### Community 4 - "main.dart"
-Cohesion: 0.07
-Nodes (28): android, DefaultFirebaseOptions, ios, macos, web, windows, build, initializeApp (+20 more)
+Cohesion: 0.09
+Nodes (20): android, DefaultFirebaseOptions, ios, macos, web, windows, build, initializeApp (+12 more)
 
 ### Community 5 - "AppDelegate"
 Cohesion: 0.16
@@ -98,7 +100,7 @@ Nodes (10): Any, FlutterAppDelegate, FlutterImplicitEngineBridge, FlutterImplici
 
 ### Community 6 - "sign_up_screen.dart"
 Cohesion: 0.04
-Nodes (47): double get, initState, _agreedToPrivacy, _border, build, _buildBrand, _buildCard, _buildFieldGroup (+39 more)
+Nodes (55): double get, _agreedToPrivacy, _blue, _border, build, _buildBrand, _buildCard, _buildDivider (+47 more)
 
 ### Community 7 - "wWinMain"
 Cohesion: 0.24
@@ -128,29 +130,41 @@ Nodes (6): Linux top-level CMake build config, Linux flutter library CMake targe
 Cohesion: 0.04
 Nodes (44): bool get, home_screen.dart, _border, build, _buildBody, _buildBrand, _buildCard, _buildDigitRow (+36 more)
 
+### Community 14 - "StatelessWidget"
+Cohesion: 0.22
+Nodes (9): _GradientBackdrop, _SoftCircle, _GoogleGlyph, _GradientBackdrop, _SoftCircle, _GoogleGlyph, _GradientBackdrop, _SoftCircle (+1 more)
+
 ### Community 16 - ".claude/CLAUDE.md graphify trigger instructions"
 Cohesion: 1.00
 Nodes (3): .claude/CLAUDE.md graphify trigger instructions, CLAUDE.md graphify usage rules, graphify knowledge graph tool
 
+### Community 17 - "CustomPainter"
+Cohesion: 0.67
+Nodes (3): CustomPainter, _GoogleGlyphPainter, _GoogleGlyphPainter
+
+### Community 27 - "initState"
+Cohesion: 0.67
+Nodes (3): initState, _handleSubmit, MaterialPageRoute
+
 ## Knowledge Gaps
-- **199 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+194 more)
+- **210 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+205 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `FlutterWindow` connect `Win32Window` to `GeneratedPluginRegistrant.swift`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `MessageHandler` (e.g. with `Destroy` and `GetClientArea`) actually correct?**
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 2 inferred relationships involving `WndProc` (e.g. with `GetThisFromHandle` and `MessageHandler`) actually correct?**
-  _`WndProc` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
-  _199 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _210 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03571428571428571 - nodes in this community are weakly interconnected._
 - **Should `Win32Window` be split into smaller, more focused modules?**
   _Cohesion score 0.06594071385359952 - nodes in this community are weakly interconnected._
+- **Should `GeneratedPluginRegistrant.swift` be split into smaller, more focused modules?**
+  _Cohesion score 0.07196969696969698 - nodes in this community are weakly interconnected._
