@@ -48,13 +48,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   double get _screenHeight => MediaQuery.sizeOf(context).height;
 
+  /// Short phones (iPhone SE and friends) get tighter controls so the
+  /// column still fits once the spacers between groups have collapsed.
   bool get _compact => _screenHeight < 700;
 
-  double get _controlHeight => _screenHeight < 620
-      ? 44
-      : _compact
-      ? 48
-      : 54;
+  /// Continuous interpolation between the 44dp accessibility-minimum tap
+  /// target and the 54dp comfortable size, instead of rigid if/else tiers -
+  /// clamped at both ends so it never drops below 44dp on any phone.
+  double get _controlHeight {
+    final t = ((_screenHeight - 560) / (760 - 560)).clamp(0.0, 1.0);
+    return 44.0 + (54.0 - 44.0) * t;
+  }
+
+  /// Tight typographic gaps (heading → subheading, label → field) - scales
+  /// gently with viewport height instead of a flat magic number.
+  double get _tightGap => (_screenHeight * 0.008).clamp(6.0, 10.0);
+
+  /// Structural gaps between fields, buttons, and dividers inside the card,
+  /// so it "breathes" proportionally instead of using one fixed pixel value
+  /// that's cramped on small phones and stingy on large ones.
+  double get _innerGap => (_screenHeight * 0.015).clamp(12.0, 24.0);
 
   @override
   void initState() {
@@ -292,14 +305,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: _tightGap),
           const Text(
             'أنشئ حسابك للبدء في استخدام Medico.',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: _innerGap),
           _buildFieldGroup(
             label: 'الاسم الكامل',
             controller: _fullNameController,
@@ -307,7 +320,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             icon: Icons.person_outline_rounded,
             error: _fullNameError,
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: _innerGap),
           _buildFieldGroup(
             label: 'البريد الإلكتروني',
             controller: _emailController,
@@ -316,7 +329,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             error: _emailError,
             keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: _innerGap),
           _buildFieldGroup(
             label: 'كلمة المرور',
             controller: _passwordController,
@@ -357,15 +370,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
           ],
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildPrivacyCheckbox(),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildSubmitButton(),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildDivider(),
-          const SizedBox(height: 18),
+          SizedBox(height: _innerGap),
           _buildGoogleButton(),
-          const SizedBox(height: 26),
+          SizedBox(height: _innerGap),
           _buildSignInPrompt(),
         ],
       ),
@@ -386,7 +399,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _fieldLabel(label),
-        const SizedBox(height: 8),
+        SizedBox(height: _tightGap),
         _buildInput(
           controller: controller,
           hint: hint,
