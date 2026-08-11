@@ -303,5 +303,10 @@
     "mtime": 1786473430.015159,
     "ast_hash": "37beab1afcebcddd9fd2185d9af4dd27",
     "semantic_hash": ""
+  },
+  "lib/Supabase/migrations/002_doctors.sql": {
+    "mtime": 1786474326.3459888,
+    "ast_hash": "1ccdf2e37b8e4c99ce57c63639a52d4e",
+    "semantic_hash": ""
   }
 }
