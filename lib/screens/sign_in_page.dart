@@ -1,6 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../models/user_profile.dart';
+import '../services/profile_service.dart';
+import 'home_screen.dart';
 import 'sign_up_screen.dart';
 
 /// Sign-in screen ported from the "Medico Login - Glass" design.
@@ -29,6 +33,8 @@ class _SignInPageState extends State<SignInPage> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  final _profileService = const ProfileService();
 
   // Recognizers for the inline links in the footer rich-text runs.
   final _signupTap = TapGestureRecognizer();
@@ -99,7 +105,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> _handleSubmit() async {
-    final email = _emailController.text;
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (!email.contains('@') || email.length < 5) {
@@ -115,12 +121,40 @@ class _SignInPageState extends State<SignInPage> {
       _error = '';
       _loading = true;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-    if (!mounted) return;
-    setState(() {
-      _loading = false;
-      _success = true;
-    });
+
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      // The طبيب/مستخدم tab above only picks the heading copy — the account's
+      // real role lives in `profiles.role`, so signing in under the wrong tab
+      // still succeeds and still lands wherever the database says it should.
+      final profile = await _profileService.fetchCurrentProfile();
+      if (!mounted) return;
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => _destination(profile)),
+      );
+    } on AuthException {
+      if (!mounted) return;
+      setState(() => _error = 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'تعذر تسجيل الدخول. حاول مرة أخرى.');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  /// Both roles land on [HomeScreen] for now — the doctor-side dashboard
+  /// doesn't exist yet. The branch stays here so adding it is a one-line
+  /// change, and so the destination is visibly driven by [UserProfile.role]
+  /// rather than by the tab the user happened to be on.
+  Widget _destination(UserProfile? profile) {
+    return switch (profile?.role) {
+      UserRole.doctor => const HomeScreen(),
+      UserRole.patient || null => const HomeScreen(),
+    };
   }
 
   Future<void> _handleGoogle() async {
