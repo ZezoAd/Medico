@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 445 nodes · 540 edges · 29 communities (23 shown, 6 thin omitted)
+- 446 nodes · 541 edges · 29 communities (23 shown, 6 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bac9c438`
+- Built from commit: `47a23458`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -148,11 +148,11 @@ Cohesion: 0.67
 Nodes (3): initState, _handleSubmit, MaterialPageRoute
 
 ### Community 28 - "user_profile.dart"
-Cohesion: 0.13
-Nodes (14): bool get, doctor, fromMap, fromText, fullName, id, isDoctor, phone (+6 more)
+Cohesion: 0.12
+Nodes (15): bool get, doctor, fromMap, fromText, fullName, id, isDoctor, phone (+7 more)
 
 ## Knowledge Gaps
-- **227 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+222 more)
+- **227 isolated node(s):** `UserRole`, `UserProfile`, `doctor`, `text`, `id` (+222 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -165,7 +165,7 @@ _Questions this graph is uniquely positioned to answer:_
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
+- **What connects `UserRole`, `UserProfile`, `doctor` to the rest of the system?**
   _227 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03389830508474576 - nodes in this community are weakly interconnected._
