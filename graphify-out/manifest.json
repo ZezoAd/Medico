@@ -311,7 +311,17 @@
   },
   "supabase/migrations/003_grants.sql": {
     "mtime": 1786484560.1339877,
-    "ast_hash": "9c8d3ebe2e3e759c4f8e10bdb0d1b4e4",
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/001_profiles_and_signup_trigger.sql": {
+    "mtime": 1786474323.8471074,
+    "ast_hash": "4865e23c18736acc9c423bda29f9b618",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/002_doctors.sql": {
+    "mtime": 1786474326.3459888,
+    "ast_hash": "1ccdf2e37b8e4c99ce57c63639a52d4e",
     "semantic_hash": ""
   }
 }

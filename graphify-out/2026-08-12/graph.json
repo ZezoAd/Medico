@@ -509,8 +509,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_main_medicoapp",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "medicoapp"
     },
     {
@@ -641,20 +641,20 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_supabase_flutter_supabase_flutter_dart",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "package:supabase_flutter/supabase_flutter.dart"
     },
     {
-      "label": "screens/sign_in_screen.dart",
+      "label": "screens/splash_screen.dart",
       "file_type": "code",
       "source_file": null,
       "source_location": null,
       "_origin": "ast",
-      "id": "screens_sign_in_screen_dart",
+      "id": "screens_splash_screen_dart",
       "community": 4,
       "community_name": "main.dart",
-      "norm_label": "screens/sign_in_screen.dart"
+      "norm_label": "screens/splash_screen.dart"
     },
     {
       "label": "user_profile.dart",
@@ -894,8 +894,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreen",
-      "community": 11,
-      "community_name": "SignInPage",
+      "community": 13,
+      "community_name": "otp_verification_screen.dart",
       "norm_label": "otpverificationscreen"
     },
     {
@@ -916,8 +916,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreenstate",
-      "community": 11,
-      "community_name": "SignInPage",
+      "community": 13,
+      "community_name": "otp_verification_screen.dart",
       "norm_label": "_otpverificationscreenstate"
     },
     {
@@ -1400,8 +1400,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_screen_dart",
-      "community": 13,
-      "community_name": "otp_verification_screen.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "home_screen.dart"
     },
     {
@@ -2159,8 +2159,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_user_profile_dart",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "../models/user_profile.dart"
     },
     {
@@ -2170,8 +2170,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_profile_service_dart",
-      "community": 0,
-      "community_name": "sign_in_page.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "../services/profile_service.dart"
     },
     {
@@ -2901,14 +2901,69 @@
       "norm_label": "otp_verification_screen.dart"
     },
     {
+      "label": "splash_screen.dart",
+      "file_type": "code",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_splash_screen",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "splash_screen.dart"
+    },
+    {
+      "label": "SplashScreen",
+      "file_type": "code",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_splash_screen_splashscreen",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "splashscreen"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_splash_screen_build",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "build"
+    },
+    {
+      "label": "_bootstrap",
+      "file_type": "code",
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_splash_screen_bootstrap",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "_bootstrap"
+    },
+    {
+      "label": "sign_in_screen.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "sign_in_screen_dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
+      "norm_label": "sign_in_screen.dart"
+    },
+    {
       "label": "profile_service.dart",
       "file_type": "code",
       "source_file": "lib/services/profile_service.dart",
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_profile_service",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "profile_service.dart"
     },
     {
@@ -2918,8 +2973,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_profile_service_profileservice",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "profileservice"
     },
     {
@@ -2929,8 +2984,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_profile_service_fetchcurrentprofile",
-      "community": 4,
-      "community_name": "main.dart",
+      "community": 14,
+      "community_name": "StatelessWidget",
       "norm_label": "fetchcurrentprofile"
     },
     {
@@ -5683,7 +5738,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_main",
-      "target": "screens_sign_in_screen_dart"
+      "target": "screens_splash_screen_dart"
     },
     {
       "relation": "inherits",
@@ -5807,6 +5862,17 @@
       "target": "statelesswidget"
     },
     {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen_splashscreen",
+      "target": "statelesswidget"
+    },
+    {
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -5854,6 +5920,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "test/sign_in_page_test.dart",
       "source_location": null,
       "weight": 1.0,
@@ -5887,6 +5964,28 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_in_page",
+      "target": "package_google_sign_in_google_sign_in_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "package_google_sign_in_google_sign_in_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/otp_verification_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -5914,6 +6013,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "package_supabase_flutter_supabase_flutter_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
       "target": "package_supabase_flutter_supabase_flutter_dart"
     },
     {
@@ -6776,6 +6886,28 @@
       "target": "home_screen_dart"
     },
     {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "home_screen_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "home_screen_dart"
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -7628,6 +7760,28 @@
       "target": "models_user_profile_dart"
     },
     {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
+      "target": "services_profile_service_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "services_profile_service_dart"
+    },
+    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -8331,6 +8485,50 @@
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen_signupscreenstate",
       "target": "lib_screens_sign_up_screen_signupscreen"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "lib_screens_splash_screen_bootstrap"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "lib_screens_splash_screen_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "lib_screens_splash_screen_splashscreen"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/splash_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_splash_screen",
+      "target": "sign_in_screen_dart"
     },
     {
       "relation": "defines",
