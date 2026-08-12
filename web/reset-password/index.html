@@ -226,6 +226,7 @@
     </div>
     <div class="state-title">انتهت صلاحية الرابط</div>
     <div class="state-text">هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.</div>
+    <div class="state-text" id="debug-error" style="margin-top:14px;font-size:11px;color:#B0AFAF;direction:ltr;word-break:break-all;"></div>
   </div>
 
   <!-- SET NEW PASSWORD FORM -->
@@ -303,6 +304,7 @@
   const otpType = params.get('type') || 'recovery';
 
   if (!tokenHash) {
+    document.getElementById('debug-error').textContent = 'DEBUG: no token_hash found in URL. Full URL: ' + window.location.href;
     showScreen('invalid');
   }
 
@@ -319,6 +321,7 @@
       if (error) throw error;
       showScreen('form');
     } catch (err) {
+      document.getElementById('debug-error').textContent = 'DEBUG: ' + (err && err.message ? err.message : String(err)) + ' | token_hash used: ' + tokenHash + ' | type: ' + otpType;
       showScreen('invalid');
     }
   });
