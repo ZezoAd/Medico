@@ -1,17 +1,17 @@
 {
   ".claude/settings.json": {
     "mtime": 1786409214.4085643,
-    "ast_hash": "e8e628a2cd60b1c48b11e27399668b21",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".claude/settings.local.json": {
     "mtime": 1786406704.643082,
-    "ast_hash": "756c51f88fbbae4c5704faf20ea4beca",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".vscode/settings.json": {
     "mtime": 1786241542.8920252,
-    "ast_hash": "588304d481af8236689674c6091b1925",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
@@ -36,7 +36,7 @@
   },
   "firebase.json": {
     "mtime": 1786248107.9936652,
-    "ast_hash": "116e2d601ae0aebe065bcc9e0672d74f",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/RunnerTests/RunnerTests.swift": {
@@ -51,12 +51,12 @@
   },
   "ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.1083317,
-    "ast_hash": "31a08e429403e265cabfb31b3d65f049",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
     "mtime": 1784847421.116905,
-    "ast_hash": "b9e927ac17345f2d5f052fe68a3487f9",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "ios/Runner/Runner-Bridging-Header.h": {
@@ -131,7 +131,7 @@
   },
   "macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1784847421.170055,
-    "ast_hash": "1d48e925145d4b573a3b5d7960a1c585",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "macos/Runner/MainFlutterWindow.swift": {
@@ -311,17 +311,17 @@
   },
   "supabase/migrations/003_grants.sql": {
     "mtime": 1786484560.1339877,
-    "ast_hash": "9c8d3ebe2e3e759c4f8e10bdb0d1b4e4",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/001_profiles_and_signup_trigger.sql": {
     "mtime": 1786474323.8471074,
-    "ast_hash": "4865e23c18736acc9c423bda29f9b618",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "supabase/migrations/002_doctors.sql": {
     "mtime": 1786474326.3459888,
-    "ast_hash": "1ccdf2e37b8e4c99ce57c63639a52d4e",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   "lib/utils/auth_error_mapper.dart": {
