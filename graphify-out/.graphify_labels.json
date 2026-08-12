@@ -4,7 +4,7 @@
   "2": "GeneratedPluginRegistrant.swift",
   "3": "my_application.cc",
   "4": "main.dart",
-  "5": "auth_error_mapper.dart",
+  "5": "splash_screen.dart",
   "6": "sign_up_screen.dart",
   "7": "wWinMain",
   "8": "sign_up_screen_test.dart",
@@ -16,7 +16,7 @@
   "14": "auth_error_banner.dart",
   "15": "MainActivity.kt",
   "16": ".claude/CLAUDE.md graphify trigger instructions",
-  "17": "RegisterPlugins",
+  "17": "auth_error_mapper.dart",
   "18": "app/build.gradle.kts",
   "19": "android/build.gradle.kts",
   "20": "settings.gradle.kts",
@@ -27,5 +27,6 @@
   "25": "String?",
   "26": "StatelessWidget",
   "27": "initState",
-  "28": "user_profile.dart"
+  "28": "user_profile.dart",
+  "29": "package:supabase_flutter/supabase_flutter.dart"
 }
