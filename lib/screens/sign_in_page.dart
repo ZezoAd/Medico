@@ -8,6 +8,7 @@ import '../models/user_profile.dart';
 import '../services/profile_service.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
+import '../widgets/forgot_password_sheet.dart';
 import 'home_screen.dart';
 import 'sign_up_screen.dart';
 
@@ -628,7 +629,7 @@ class _SignInPageState extends State<SignInPage> {
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () => showForgotPasswordSheet(context),
               child: const Padding(
                 padding: EdgeInsets.all(4),
                 child: Text(
@@ -648,8 +649,12 @@ class _SignInPageState extends State<SignInPage> {
           _buildDivider(),
           SizedBox(height: _innerGap),
           _buildGoogleButton(),
-          SizedBox(height: _innerGap),
-          _buildSignupPrompt(),
+          // Doctors are onboarded manually via the separate mini-app — no
+          // self-serve signup, so this only appears on the patient tab.
+          if (!_isDoctor) ...[
+            SizedBox(height: _innerGap),
+            _buildSignupPrompt(),
+          ],
           SizedBox(height: _tightGap),
           _buildLegalNote(),
         ],
@@ -875,11 +880,13 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  // Only reached from the patient tab — doctors are onboarded manually via
+  // the separate mini-app and never see a signup prompt here.
   Widget _buildSignupPrompt() {
     return Text.rich(
       TextSpan(
         children: [
-          TextSpan(text: _isDoctor ? 'دكتور جديد؟' : 'مستخدم جديد؟'),
+          const TextSpan(text: 'مستخدم جديد؟'),
           const TextSpan(text: ' '),
           TextSpan(
             text: 'إنشاء حساب',

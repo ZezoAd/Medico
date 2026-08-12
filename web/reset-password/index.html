@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إعادة تعيين كلمة المرور — Medico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #2A93C9;
+    --green: #1D9E75;
+    --gradient: linear-gradient(135deg, var(--teal) 0%, var(--green) 100%);
+    --field-bg: #EEF3F1;
+    --text-dark: #1E2A27;
+    --text-muted: #6B7C78;
+    --error: #E4483A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--gradient);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .header {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+  }
+  .blob1 { width: 220px; height: 220px; top: -100px; right: -60px; }
+  .blob2 { width: 160px; height: 160px; bottom: -90px; left: -50px; background: rgba(255,255,255,0.10); }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+  }
+  .brand-icon {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon svg { width: 20px; height: 20px; }
+  .brand-name {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+  }
+  .sheet {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    flex: 1;
+    border-radius: 28px 28px 0 0;
+    margin-top: -28px;
+    padding: 40px 28px 48px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+  h1 { font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; }
+  .subtitle { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
+  .field-group { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--text-dark); margin-bottom: 8px; }
+  .field-wrap { position: relative; }
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    background: var(--field-bg);
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+    padding: 14px 44px 14px 16px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--teal); }
+  input.error { border-color: var(--error); }
+  .field-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  .toggle-visibility {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 4px;
+  }
+  .field-error {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    color: var(--error);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .field-error.show { max-height: 30px; margin-top: 6px; }
+  .submit-btn {
+    background: var(--gradient);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 16px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .submit-btn .spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+  .submit-btn.loading .btn-text { display: none; }
+  .submit-btn.loading .spinner { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* State screens */
+  .state-screen { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .state-screen.active { display: flex; }
+  .big-spinner {
+    width: 46px; height: 46px;
+    border: 4px solid var(--field-bg);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+  .check-circle {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+    animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .check-circle svg { width: 42px; height: 42px; }
+  @keyframes pop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .state-title { font-size: 19px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+  .state-text { font-size: 14px; color: var(--text-muted); line-height: 1.7; max-width: 300px; }
+  .error-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #FDEDEB;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .error-icon svg { width: 30px; height: 30px; color: var(--error); }
+  .form-screen { display: none; flex-direction: column; }
+  .form-screen.active { display: flex; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 12h4l2-8 4 16 2-8h6"/></svg>
+    </div>
+    <div class="brand-name">Medico</div>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <!-- LOADING / VALIDATING LINK -->
+  <div class="state-screen active" id="state-validating">
+    <div class="big-spinner"></div>
+    <div class="state-title">جارِ التحقق من الرابط</div>
+    <div class="state-text">لحظات من فضلك...</div>
+  </div>
+
+  <!-- INVALID / EXPIRED LINK -->
+  <div class="state-screen" id="state-invalid">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+    </div>
+    <div class="state-title">انتهت صلاحية الرابط</div>
+    <div class="state-text">هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.</div>
+  </div>
+
+  <!-- SET NEW PASSWORD FORM -->
+  <div class="form-screen" id="state-form">
+    <h1>كلمة مرور جديدة</h1>
+    <div class="subtitle">أدخل كلمة مرور جديدة لحسابك في Medico.</div>
+
+    <div class="field-group">
+      <label>كلمة المرور الجديدة</label>
+      <div class="field-wrap">
+        <input type="password" id="password" placeholder="8 أحرف على الأقل">
+        <button type="button" class="toggle-visibility" data-target="password">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="field-error" id="error-password">كلمة المرور يجب أن تكون 8 أحرف على الأقل</div>
+    </div>
+
+    <div class="field-group">
+      <label>تأكيد كلمة المرور</label>
+      <div class="field-wrap">
+        <input type="password" id="confirmPassword" placeholder="أعد كتابة كلمة المرور">
+        <button type="button" class="toggle-visibility" data-target="confirmPassword">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="field-error" id="error-confirm">كلمتا المرور غير متطابقتين</div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn">
+      <span class="btn-text">حفظ كلمة المرور</span>
+      <span class="spinner"></span>
+    </button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="state-screen" id="state-success">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="state-title">تم تغيير كلمة المرور بنجاح</div>
+    <div class="state-text">يمكنك الآن العودة إلى تطبيق Medico وتسجيل الدخول بكلمة المرور الجديدة.</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // ── Fill these in from your Supabase project settings (Bitwarden has them) ──
+  const SUPABASE_URL = 'https://nfsvvifxkwxpyrtwsxxj.supabase.co';
+  const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_PUBLIC_KEY_HERE';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const screens = {
+    validating: document.getElementById('state-validating'),
+    invalid: document.getElementById('state-invalid'),
+    form: document.getElementById('state-form'),
+    success: document.getElementById('state-success'),
+  };
+  function showScreen(name) {
+    Object.values(screens).forEach(el => el.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  // Supabase's recovery link can fire SIGNED_IN before/instead of PASSWORD_RECOVERY
+  // in some setups — treat either as "the recovery session is ready."
+  let recoveryReady = false;
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session && !recoveryReady) {
+      recoveryReady = true;
+      showScreen('form');
+    }
+  });
+  // If no valid recovery session shows up within a few seconds, the link is
+  // dead (expired, already used, or tampered with).
+  setTimeout(() => { if (!recoveryReady) showScreen('invalid'); }, 4000);
+
+  // Toggle password visibility
+  document.querySelectorAll('.toggle-visibility').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirmPassword');
+  const errorPassword = document.getElementById('error-password');
+  const errorConfirm = document.getElementById('error-confirm');
+  const submitBtn = document.getElementById('submit-btn');
+
+  function validate() {
+    let valid = true;
+    if (passwordInput.value.length < 8) {
+      errorPassword.classList.add('show');
+      passwordInput.classList.add('error');
+      valid = false;
+    } else {
+      errorPassword.classList.remove('show');
+      passwordInput.classList.remove('error');
+    }
+    if (confirmInput.value.length > 0 && confirmInput.value !== passwordInput.value) {
+      errorConfirm.classList.add('show');
+      confirmInput.classList.add('error');
+      valid = false;
+    } else {
+      errorConfirm.classList.remove('show');
+      confirmInput.classList.remove('error');
+    }
+    return valid;
+  }
+  passwordInput.addEventListener('blur', validate);
+  confirmInput.addEventListener('blur', validate);
+
+  submitBtn.addEventListener('click', async () => {
+    if (!validate()) return;
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+    try {
+      const { error } = await supabaseClient.auth.updateUser({ password: passwordInput.value });
+      if (error) throw error;
+      await supabaseClient.auth.signOut();
+      showScreen('success');
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      errorPassword.textContent = 'حدث خطأ، حاول مرة أخرى';
+      errorPassword.classList.add('show');
+      passwordInput.classList.add('error');
+    }
+  });
+</script>
+</body>
+</html>
