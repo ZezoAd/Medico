@@ -26,7 +26,7 @@ void main() {
       await pumpAt(tester, iphoneSe, 2.0);
 
       expect(find.text('تسجيل الدخول'), findsOneWidget);
-      expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
+      expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
       expect(find.byType(ListView), findsNothing);
     });
 
@@ -34,19 +34,19 @@ void main() {
       await pumpAt(tester, pixel8Pro, 2.625);
 
       expect(find.text('تسجيل الدخول'), findsOneWidget);
-      expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
+      expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
       expect(find.byType(ListView), findsNothing);
     });
 
     testWidgets('iPhone 15 Pro Max', (tester) async {
       await pumpAt(tester, const Size(430, 932), 3.0);
-      expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
+      expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
     });
 
     testWidgets('very short viewport still lays out', (tester) async {
       // Below anything shipping, to prove the gaps collapse rather than break.
       await pumpAt(tester, const Size(320, 568), 2.0);
-      expect(find.text('الاستمرار بحساب Google'), findsOneWidget);
+      expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
     });
   });
 
@@ -68,11 +68,12 @@ void main() {
   testWidgets('validation error fits on the smallest screen', (tester) async {
     await pumpAt(tester, iphoneSe, 2.0);
 
-    // The error row is an extra child in an already-full column.
+    // The error rows are extra children in an already-full column.
     await tester.tap(find.text('تسجيل الدخول'));
     await tester.pumpAndSettle();
 
-    expect(find.text('أدخل بريدًا إلكترونيًا صحيحًا.'), findsOneWidget);
+    expect(find.text('الرجاء إدخال البريد الإلكتروني'), findsOneWidget);
+    expect(find.text('الرجاء إدخال كلمة المرور'), findsOneWidget);
   });
 
   testWidgets('success state renders after a valid submit', (tester) async {

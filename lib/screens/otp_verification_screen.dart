@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../utils/auth_error_mapper.dart';
+import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
 
 enum _OtpStatus { empty, filling, loading, success, failure }
@@ -25,6 +27,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   static const _border = Color(0xFFE2E8F0);
   static const _fieldFill = Color(0xFFF1F5F9);
   static const _danger = Color(0xFFDC2626);
+  static const _successGreen = Color(0xFF16A34A);
   static const _digitCount = 6;
 
   final _digitControllers = List.generate(
@@ -70,17 +73,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         email: widget.email,
         shouldCreateUser: false,
       );
-    } on AuthException catch (e) {
+    } catch (e) {
       if (!mounted) return;
       setState(() {
         _sendFailed = true;
-        _errorMessage = e.message;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _sendFailed = true;
-        _errorMessage = 'تعذر إرسال الرمز. تحقق من اتصالك وحاول مرة أخرى.';
+        _errorMessage = mapAuthError(e).message;
       });
     }
   }
@@ -133,23 +130,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     });
 
     try {
-      await Supabase.instance.client.auth.verifyOTP(
-        email: widget.email,
-        token: _code,
-        type: OtpType.email,
-      );
+      await Supabase.instance.client.auth
+          .verifyOTP(email: widget.email, token: _code, type: OtpType.email)
+          .timeout(const Duration(seconds: 15));
       if (!mounted) return;
       setState(() => _status = _OtpStatus.success);
-      await Future<void>.delayed(const Duration(milliseconds: 900));
+      await Future<void>.delayed(const Duration(milliseconds: 1200));
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
         (route) => false,
       );
-    } on AuthException catch (e) {
-      _handleFailure(e.message);
-    } catch (_) {
-      _handleFailure('تعذر التحقق من الرمز. حاول مرة أخرى.');
+    } catch (e) {
+      _handleFailure(mapAuthError(e).message);
     }
   }
 
@@ -164,6 +157,25 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
     _digitFocusNodes.first.requestFocus();
   }
+
+  /// The banner's "try again" action — clears whatever was typed and drops
+  /// back to a blank, idle field row instead of leaving the failed code (or
+  /// the stale send failure) on screen.
+  void _resetToIdle() {
+    setState(() {
+      _status = _OtpStatus.empty;
+      _errorMessage = null;
+      _sendFailed = false;
+    });
+    for (final c in _digitControllers) {
+      c.clear();
+    }
+    _digitFocusNodes.first.requestFocus();
+  }
+
+  bool get _showBanner => _errorMessage != null && (_sendFailed || _status == _OtpStatus.failure);
+
+  VoidCallback? get _bannerRetry => _sendFailed ? _sendCode : _resetToIdle;
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +197,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               child: _SoftCircle(size: 220, opacity: 0.05),
             ),
             SafeArea(child: _buildBody()),
+            if (_showBanner)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: AuthErrorBanner(
+                      message: _errorMessage!,
+                      onRetry: _bannerRetry,
+                      onDismiss: () => setState(() {
+                        _errorMessage = null;
+                        _sendFailed = false;
+                      }),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -264,14 +296,18 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         ],
       ),
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_status == _OtpStatus.success)
-              _buildSuccess()
-            else
-              _buildForm(),
-          ],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 350),
+          switchInCurve: Curves.easeOutBack,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(scale: animation, child: child),
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(_status == _OtpStatus.success),
+            child: _status == _OtpStatus.success ? _buildSuccess() : _buildForm(),
+          ),
         ),
       ),
     );
@@ -311,82 +347,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             ],
           ),
         ),
-        if (_sendFailed) ...[
-          const SizedBox(height: 12),
-          _buildErrorBanner(
-            _errorMessage ?? 'تعذر إرسال الرمز.',
-            onRetry: _sendCode,
-          ),
-        ],
         const SizedBox(height: 24),
         _buildDigitRow(disabled: disabled, hasError: hasError),
-        if (hasError && _errorMessage != null) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.error_outline, size: 14, color: _danger),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: _danger,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
         const SizedBox(height: 24),
         _buildVerifyButton(),
         const SizedBox(height: 18),
         _buildResendRow(),
       ],
-    );
-  }
-
-  Widget _buildErrorBanner(String message, {required VoidCallback onRetry}) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: _danger.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _danger.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline, size: 14, color: _danger),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                fontSize: 12,
-                color: _danger,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: onRetry,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text(
-              'إعادة المحاولة',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: _danger,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -547,6 +514,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
+  // Copy considered: "تم التحقق، أهلاً بيك" (this one) vs. the flatter
+  // "تم التحقق بنجاح" and the more playful "اتأكد الرمز، يلا بينا" — this
+  // reads warmest without tipping into filler, matching the Aurora sheet's
+  // calm-not-corporate tone.
   Widget _buildSuccess() {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -555,15 +526,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         Container(
           width: 64,
           height: 64,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            color: _teal.withValues(alpha: 0.12),
+            color: _successGreen,
           ),
-          child: const Icon(Icons.check_rounded, size: 32, color: _teal),
+          child: const Icon(
+            Icons.check_rounded,
+            size: 34,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 18),
         const Text(
-          'تم التحقق بنجاح',
+          'تم التحقق، أهلاً بيك',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -572,7 +547,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         ),
         const SizedBox(height: 8),
         const Text(
-          'جاري تحويلك…',
+          'بنجهز كل حاجة… لحظات وتوصل.',
           style: TextStyle(fontSize: 13.5, color: _muted),
         ),
       ],

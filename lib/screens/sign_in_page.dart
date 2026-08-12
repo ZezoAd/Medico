@@ -1,10 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
+import '../utils/auth_error_mapper.dart';
+import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
 import 'sign_up_screen.dart';
 
@@ -15,7 +18,12 @@ import 'sign_up_screen.dart';
 /// holding the credential form. Submitting swaps the whole screen for a
 /// success state.
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  const SignInPage({super.key, this.initialErrorMessage});
+
+  /// Shown as a dismissible banner as soon as this screen builds — used by
+  /// [SplashScreen] to explain a forced sign-out instead of silently
+  /// bouncing here with no context.
+  final String? initialErrorMessage;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -32,8 +40,15 @@ class _SignInPageState extends State<SignInPage> {
   static const _fieldFill = Color(0xFFF1F5F9);
   static const _danger = Color(0xFFDC2626);
 
+  static const _networkTimeout = Duration(seconds: 15);
+
+  static final _emailPattern = RegExp(
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+  );
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
 
   final _profileService = const ProfileService();
 
@@ -47,7 +62,9 @@ class _SignInPageState extends State<SignInPage> {
   bool _loading = false;
   bool _success = false;
   bool _mounted = false;
-  String _error = '';
+  String? _emailError;
+  String? _passwordError;
+  AuthErrorInfo? _banner;
 
   bool get _isDoctor => _role == _Role.doctor;
 
@@ -78,6 +95,9 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialErrorMessage != null) {
+      _banner = AuthErrorInfo(widget.initialErrorMessage!);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
@@ -86,12 +106,16 @@ class _SignInPageState extends State<SignInPage> {
         context,
       ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
     };
+    _emailFocusNode.addListener(_onEmailFocusChange);
+    _passwordFocusNode.addListener(_onPasswordFocusChange);
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     _signupTap.dispose();
     _termsTap.dispose();
     _privacyTap.dispose();
@@ -99,35 +123,61 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _setRole(_Role role) {
-    setState(() {
-      _role = role;
-      _error = '';
-    });
+    setState(() => _role = role);
+  }
+
+  /// Empty → required copy, non-empty-but-malformed → format copy. Runs on
+  /// blur and on submit, never on every keystroke.
+  String? _validateEmail(String value) {
+    if (value.isEmpty) return 'الرجاء إدخال البريد الإلكتروني';
+    if (!_emailPattern.hasMatch(value)) {
+      return 'الرجاء إدخال بريد إلكتروني صحيح';
+    }
+    return null;
+  }
+
+  /// Mirrors Sign Up's strength rule so a password is held to the same bar
+  /// everywhere it's typed.
+  String? _validatePassword(String value) {
+    if (value.isEmpty) return 'الرجاء إدخال كلمة المرور';
+    return value.length >= 8 ? null : 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+  }
+
+  void _onEmailFocusChange() {
+    if (_emailFocusNode.hasFocus) return;
+    final error = _validateEmail(_emailController.text.trim());
+    if (error != _emailError) setState(() => _emailError = error);
+  }
+
+  void _onPasswordFocusChange() {
+    if (_passwordFocusNode.hasFocus) return;
+    final error = _validatePassword(_passwordController.text);
+    if (error != _passwordError) setState(() => _passwordError = error);
   }
 
   Future<void> _handleSubmit() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (!email.contains('@') || email.length < 5) {
-      setState(() => _error = 'أدخل بريدًا إلكترونيًا صحيحًا.');
-      return;
-    }
-    if (password.length < 6) {
-      setState(() => _error = 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
+    final emailError = _validateEmail(email);
+    final passwordError = _validatePassword(password);
+    if (emailError != null || passwordError != null) {
+      setState(() {
+        _emailError = emailError;
+        _passwordError = passwordError;
+      });
       return;
     }
 
     setState(() {
-      _error = '';
+      _banner = null;
       _loading = true;
     });
 
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      await Supabase.instance.client.auth
+          .signInWithPassword(email: email, password: password)
+          .timeout(_networkTimeout);
       // The طبيب/مستخدم tab above only picks the heading copy — the account's
       // real role lives in `profiles.role`, so signing in under the wrong tab
       // still succeeds and still lands wherever the database says it should.
@@ -136,12 +186,9 @@ class _SignInPageState extends State<SignInPage> {
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => _destination(profile)),
       );
-    } on AuthException {
+    } catch (e) {
       if (!mounted) return;
-      setState(() => _error = 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _error = 'تعذر تسجيل الدخول. حاول مرة أخرى.');
+      setState(() => _banner = mapAuthError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -160,22 +207,23 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _handleGoogle() async {
     setState(() {
-      _error = '';
+      _banner = null;
       _loading = true;
     });
 
     try {
       // Native Google sign-in hands back an ID token, which Supabase exchanges
       // for a session directly — no browser round-trip, no redirect URL.
-      final googleUser = await GoogleSignIn.instance.authenticate();
+      final googleUser = await GoogleSignIn.instance.authenticate().timeout(
+        _networkTimeout,
+      );
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
         throw Exception('لم يتم استلام رمز الدخول من Google.');
       }
-      await Supabase.instance.client.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-      );
+      await Supabase.instance.client.auth
+          .signInWithIdToken(provider: OAuthProvider.google, idToken: idToken)
+          .timeout(_networkTimeout);
       final profile = await _profileService.fetchCurrentProfile();
       if (!mounted) return;
       // Clears the auth stack: there's nothing to come back to once signed in.
@@ -184,15 +232,16 @@ class _SignInPageState extends State<SignInPage> {
         (route) => false,
       );
     } on GoogleSignInException catch (e) {
-      if (!mounted) return;
       // Backing out of the account picker isn't an error worth reporting.
       if (e.code == GoogleSignInExceptionCode.canceled) return;
-      setState(() => _error = 'تعذر تسجيل الدخول عبر Google. حاول مرة أخرى.');
+      debugPrint('Google sign-in error: $e');
+      if (!mounted) return;
+      setState(() => _banner = mapAuthError(e));
     } catch (e, stackTrace) {
       debugPrint('Google sign-in error: $e');
       debugPrint('Stack trace: $stackTrace');
       if (!mounted) return;
-      setState(() => _error = 'حدث خطأ غير متوقع. حاول مرة أخرى.');
+      setState(() => _banner = mapAuthError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -203,7 +252,8 @@ class _SignInPageState extends State<SignInPage> {
     _passwordController.clear();
     setState(() {
       _success = false;
-      _error = '';
+      _emailError = null;
+      _passwordError = null;
     });
   }
 
@@ -230,6 +280,23 @@ class _SignInPageState extends State<SignInPage> {
               child: _SoftCircle(size: 220, opacity: 0.05),
             ),
             SafeArea(child: _success ? _buildSuccess() : _buildForm()),
+            if (_banner != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: AuthErrorBanner(
+                      message: _banner!.message,
+                      severity: _banner!.severity,
+                      onDismiss: () => setState(() => _banner = null),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -476,12 +543,6 @@ class _SignInPageState extends State<SignInPage> {
         ? 'تابع مواعيد عيادتك وطابور مرضاك من مكان واحد.'
         : 'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.';
 
-    // The design highlights whichever field failed validation.
-    final emailError =
-        _error.isNotEmpty && !_emailController.text.contains('@');
-    final passwordError =
-        _error.isNotEmpty && _passwordController.text.length < 6;
-
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: _compact ? 20 : 24,
@@ -527,19 +588,22 @@ class _SignInPageState extends State<SignInPage> {
           SizedBox(height: _tightGap),
           _buildInput(
             controller: _emailController,
+            focusNode: _emailFocusNode,
             hint: 'أدخل بريدك الإلكتروني',
             icon: Icons.mail_outline_rounded,
-            hasError: emailError,
+            hasError: _emailError != null,
             keyboardType: TextInputType.emailAddress,
           ),
+          _buildFieldError(_emailError),
           SizedBox(height: _innerGap),
           _fieldLabel('كلمة المرور'),
           SizedBox(height: _tightGap),
           _buildInput(
             controller: _passwordController,
+            focusNode: _passwordFocusNode,
             hint: 'أدخل كلمة المرور',
             icon: Icons.lock_outline_rounded,
-            hasError: passwordError,
+            hasError: _passwordError != null,
             obscure: !_showPassword,
             suffix: IconButton(
               onPressed: () => setState(() => _showPassword = !_showPassword),
@@ -555,6 +619,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
+          _buildFieldError(_passwordError),
           SizedBox(height: _innerGap * 0.5),
           Align(
             alignment: AlignmentDirectional.centerEnd,
@@ -573,25 +638,6 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          if (_error.isNotEmpty) ...[
-            SizedBox(height: _tightGap),
-            Row(
-              children: [
-                const Icon(Icons.error_outline, size: 14, color: _danger),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    _error,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: _danger,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
           SizedBox(height: _innerGap),
           _buildSubmitButton(),
           SizedBox(height: _innerGap),
@@ -619,11 +665,44 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  /// The error line under a field - collapses to zero height when there's
+  /// nothing to show instead of popping in/out instantly, so the controls
+  /// below (e.g. "نسيت كلمة المرور؟", the submit button) shift smoothly.
+  Widget _buildFieldError(String? error) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      alignment: Alignment.topCenter,
+      curve: Curves.easeOut,
+      child: error == null
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Row(
+                children: [
+                  const Icon(Icons.error_outline, size: 13, color: _danger),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      error,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: _danger,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
   Widget _buildInput({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
     required bool hasError,
+    FocusNode? focusNode,
     bool obscure = false,
     Widget? suffix,
     TextInputType? keyboardType,
@@ -639,10 +718,11 @@ class _SignInPageState extends State<SignInPage> {
       height: _controlHeight,
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
         obscureText: obscure,
         keyboardType: keyboardType,
         onChanged: (_) {
-          if (_error.isNotEmpty) setState(() => _error = '');
+          if (_banner != null) setState(() => _banner = null);
         },
         style: const TextStyle(
           fontSize: 15,
@@ -759,24 +839,28 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: _loading ? null : _handleGoogle,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFDADCE0)),
+          side: const BorderSide(color: Color(0xFF747775)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _GoogleGlyph(size: 20),
-            SizedBox(width: 12),
-            Flexible(
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: SvgPicture.asset('assets/icons/google_logo.svg'),
+            ),
+            const SizedBox(width: 12),
+            const Flexible(
               child: Text(
-                'الاستمرار بحساب Google',
+                'الاستمرار باستخدام Google',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 14.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   color: _ink,
                 ),
               ),
@@ -886,139 +970,4 @@ class _SoftCircle extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Google "G" mark, painted so no asset or extra dependency is needed.
-class _GoogleGlyph extends StatelessWidget {
-  const _GoogleGlyph({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(painter: _GoogleGlyphPainter()),
-    );
-  }
-}
-
-class _GoogleGlyphPainter extends CustomPainter {
-  // Paths lifted from the design's 48×48 viewBox and scaled to the widget.
-  static const _blue = Color(0xFF4285F4);
-  static const _green = Color(0xFF34A853);
-  static const _yellow = Color(0xFFFBBC05);
-  static const _red = Color(0xFFEA4335);
-
-  static const _paths = <(Color, String)>[
-    (
-      _blue,
-      'M45.1 24.5c0-1.6-.1-3.1-.4-4.6H24v9h11.9c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.5-9.5 6.5-16.7z',
-    ),
-    (
-      _green,
-      'M24 46c5.9 0 10.9-2 14.6-5.3l-7.1-5.6c-2 1.4-4.6 2.2-7.5 2.2-5.8 0-10.7-3.9-12.5-9.1H4.2v5.7C7.9 41.1 15.3 46 24 46z',
-    ),
-    (
-      _yellow,
-      'M11.5 28.2c-.5-1.4-.7-2.9-.7-4.2s.3-2.9.7-4.2v-5.7H4.2C2.8 17 2 20.4 2 24s.8 7 2.2 9.9l7.3-5.7z',
-    ),
-    (
-      _red,
-      'M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4 29.9 2 24 2 15.3 2 7.9 6.9 4.2 14.1l7.3 5.7c1.8-5.2 6.7-9.1 12.5-9.1z',
-    ),
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 48, size.height / 48);
-    for (final (color, data) in _paths) {
-      canvas.drawPath(_parse(data), Paint()..color = color);
-    }
-    canvas.restore();
-  }
-
-  /// Minimal SVG path parser covering the commands used by the Google mark
-  /// (M, m, L, l, H, h, V, v, C, c, Z).
-  static Path _parse(String data) {
-    final path = Path();
-    final tokens = RegExp(
-      r'[A-Za-z]|-?\d*\.?\d+',
-    ).allMatches(data).map((m) => m[0]!);
-    final it = tokens.iterator;
-    var cx = 0.0, cy = 0.0, sx = 0.0, sy = 0.0;
-    String? cmd;
-    String? pending;
-
-    double num_() {
-      if (pending != null) {
-        final v = double.parse(pending!);
-        pending = null;
-        return v;
-      }
-      it.moveNext();
-      return double.parse(it.current);
-    }
-
-    while (true) {
-      if (pending == null) {
-        if (!it.moveNext()) break;
-        final t = it.current;
-        if (RegExp(r'^[A-Za-z]$').hasMatch(t)) {
-          cmd = t;
-        } else {
-          pending = t; // repeated coordinate set for the previous command
-        }
-      }
-      if (cmd == null) break;
-
-      switch (cmd) {
-        case 'M' || 'm':
-          final rel = cmd == 'm';
-          final x = num_(), y = num_();
-          cx = rel ? cx + x : x;
-          cy = rel ? cy + y : y;
-          sx = cx;
-          sy = cy;
-          path.moveTo(cx, cy);
-          cmd = rel ? 'l' : 'L';
-        case 'L' || 'l':
-          final rel = cmd == 'l';
-          final x = num_(), y = num_();
-          cx = rel ? cx + x : x;
-          cy = rel ? cy + y : y;
-          path.lineTo(cx, cy);
-        case 'H' || 'h':
-          final x = num_();
-          cx = cmd == 'h' ? cx + x : x;
-          path.lineTo(cx, cy);
-        case 'V' || 'v':
-          final y = num_();
-          cy = cmd == 'v' ? cy + y : y;
-          path.lineTo(cx, cy);
-        case 'C' || 'c':
-          final rel = cmd == 'c';
-          final dx = rel ? cx : 0.0;
-          final dy = rel ? cy : 0.0;
-          final x1 = dx + num_(), y1 = dy + num_();
-          final x2 = dx + num_(), y2 = dy + num_();
-          final x = dx + num_(), y = dy + num_();
-          path.cubicTo(x1, y1, x2, y2, x, y);
-          cx = x;
-          cy = y;
-        case 'Z' || 'z':
-          path.close();
-          cx = sx;
-          cy = sy;
-        default:
-          return path; // unsupported command — stop rather than misdraw
-      }
-    }
-    return path;
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

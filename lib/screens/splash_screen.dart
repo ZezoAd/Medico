@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/profile_service.dart';
+import '../utils/auth_error_mapper.dart';
 import 'home_screen.dart';
 import 'sign_in_screen.dart';
 
@@ -40,18 +44,14 @@ class SplashScreen extends StatelessWidget {
     Widget destination;
     try {
       final session = Supabase.instance.client.auth.currentSession;
-      if (session == null) {
-        destination = const SignInScreen();
-      } else {
-        // Fetched here rather than on HomeScreen so the role-based routing
-        // that replaces this line later has what it needs at the decision
-        // point. For now every role lands on the same screen.
-        await const ProfileService().fetchCurrentProfile();
-        destination = const HomeScreen();
-      }
+      destination = session == null
+          ? const SignInScreen()
+          : await _destinationForSession();
     } catch (_) {
-      // Supabase not initialized, or the profile read failed — the sign-in
-      // screen is the safe landing spot either way.
+      // Supabase not initialized, or a plain network/timeout hiccup while
+      // checking the session — the sign-in screen is the safe landing spot
+      // either way, and the session (if any) is left untouched so a normal
+      // retry on next launch can still walk straight past it.
       destination = const SignInScreen();
     }
 
@@ -59,5 +59,44 @@ class SplashScreen extends StatelessWidget {
     await navigator.pushReplacement(
       MaterialPageRoute(builder: (_) => destination),
     );
+  }
+
+  /// Resolves where a *present* session should land. Network-shaped failures
+  /// (no connectivity, a timeout, gotrue's own retryable-fetch error) are
+  /// rethrown untouched so the caller's catch-all handles them without
+  /// touching the stored session — only a genuine rejection (revoked token,
+  /// or the `profiles` row gone) is treated as the session actually being
+  /// invalid.
+  Future<Widget> _destinationForSession() async {
+    try {
+      // A round-trip, unlike `currentUser` — catches a token that was
+      // revoked server-side even though the local copy still looks live.
+      final userResponse = await Supabase.instance.client.auth.getUser();
+      if (userResponse.user == null) {
+        throw const AuthException('Session user not found');
+      }
+      // Fetched here rather than on HomeScreen so the role-based routing
+      // that replaces this line later has what it needs at the decision
+      // point. For now every role lands on the same screen. A null profile
+      // means the `profiles` row is gone (e.g. deleted directly in the
+      // database) even though the auth session itself is still valid.
+      final profile = await const ProfileService().fetchCurrentProfile();
+      if (profile == null) {
+        throw const AuthException('Profile not found');
+      }
+      return const HomeScreen();
+    } on SocketException {
+      rethrow;
+    } on TimeoutException {
+      rethrow;
+    } on AuthRetryableFetchException {
+      rethrow;
+    } catch (_) {
+      // The stored session no longer corresponds to a real, usable account —
+      // sign out for real so the stale token can't silently keep coming
+      // back, and say so instead of bouncing to Sign In with no explanation.
+      await Supabase.instance.client.auth.signOut();
+      return const SignInScreen(initialErrorMessage: sessionInvalidMessage);
+    }
   }
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/profile_service.dart';
+import '../utils/auth_error_mapper.dart';
+import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
 import 'otp_verification_screen.dart';
 
@@ -30,10 +33,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   static final _emailPattern = RegExp(
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
+  static const _networkTimeout = Duration(seconds: 15);
 
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _fullNameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
 
   // Recognizers for the inline links in the footer rich-text runs.
   final _privacyPolicyTap = TapGestureRecognizer();
@@ -47,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _fullNameError;
   String? _emailError;
   String? _passwordError;
-  String? _formError;
+  AuthErrorInfo? _banner;
 
   double get _screenHeight => MediaQuery.sizeOf(context).height;
 
@@ -79,6 +86,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (mounted) setState(() => _mounted = true);
     });
     _signInTap.onTap = () => Navigator.of(context).maybePop();
+    _fullNameFocusNode.addListener(_onFullNameFocusChange);
+    _emailFocusNode.addListener(_onEmailFocusChange);
+    _passwordFocusNode.addListener(_onPasswordFocusChange);
   }
 
   @override
@@ -86,9 +96,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _fullNameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     _privacyPolicyTap.dispose();
     _signInTap.dispose();
     super.dispose();
+  }
+
+  String? _validateFullName(String value) {
+    return value.isEmpty ? 'الرجاء إدخال الاسم الكامل.' : null;
+  }
+
+  /// Empty → required copy, non-empty-but-malformed → format copy. Runs on
+  /// blur and on submit, never on every keystroke.
+  String? _validateEmail(String value) {
+    if (value.isEmpty) return 'الرجاء إدخال البريد الإلكتروني';
+    if (!_emailPattern.hasMatch(value)) {
+      return 'الرجاء إدخال بريد إلكتروني صحيح';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String value) {
+    if (value.isEmpty) return 'الرجاء إدخال كلمة المرور';
+    return value.length >= 8 ? null : 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+  }
+
+  void _onFullNameFocusChange() {
+    if (_fullNameFocusNode.hasFocus) return;
+    final error = _validateFullName(_fullNameController.text.trim());
+    if (error != _fullNameError) setState(() => _fullNameError = error);
+  }
+
+  void _onEmailFocusChange() {
+    if (_emailFocusNode.hasFocus) return;
+    final error = _validateEmail(_emailController.text.trim());
+    if (error != _emailError) setState(() => _emailError = error);
+  }
+
+  void _onPasswordFocusChange() {
+    if (_passwordFocusNode.hasFocus) return;
+    final error = _validatePassword(_passwordController.text);
+    if (error != _passwordError) setState(() => _passwordError = error);
   }
 
   bool _validate() {
@@ -97,13 +147,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final password = _passwordController.text;
 
     setState(() {
-      _fullNameError = fullName.isEmpty ? 'الرجاء إدخال الاسم الكامل.' : null;
-      _emailError = _emailPattern.hasMatch(email)
-          ? null
-          : 'أدخل بريدًا إلكترونيًا صحيحًا.';
-      _passwordError = password.length < 8
-          ? 'يجب أن تكون كلمة المرور 8 أحرف على الأقل.'
-          : null;
+      _fullNameError = _validateFullName(fullName);
+      _emailError = _validateEmail(email);
+      _passwordError = _validatePassword(password);
     });
 
     return _fullNameError == null &&
@@ -112,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _handleSubmit() async {
-    setState(() => _formError = null);
+    setState(() => _banner = null);
     if (!_validate()) return;
 
     final fullName = _fullNameController.text.trim();
@@ -121,19 +167,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     setState(() => _loading = true);
     try {
-      await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        data: {'full_name': fullName},
-      );
+      await Supabase.instance.client.auth
+          .signUp(
+            email: email,
+            password: password,
+            data: {'full_name': fullName},
+          )
+          .timeout(_networkTimeout);
       if (!mounted) return;
       await Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)),
       );
-    } on AuthException catch (e) {
-      setState(() => _formError = e.message);
-    } catch (_) {
-      setState(() => _formError = 'تعذر إنشاء الحساب. حاول مرة أخرى.');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _banner = mapAuthError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -144,20 +191,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   // so both buttons run the same flow and land in the same place.
   Future<void> _handleGoogleSignUp() async {
     setState(() {
-      _formError = null;
+      _banner = null;
       _loading = true;
     });
 
     try {
-      final googleUser = await GoogleSignIn.instance.authenticate();
+      final googleUser = await GoogleSignIn.instance.authenticate().timeout(
+        _networkTimeout,
+      );
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
         throw Exception('لم يتم استلام رمز الدخول من Google.');
       }
-      await Supabase.instance.client.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-      );
+      await Supabase.instance.client.auth
+          .signInWithIdToken(provider: OAuthProvider.google, idToken: idToken)
+          .timeout(_networkTimeout);
       await const ProfileService().fetchCurrentProfile();
       if (!mounted) return;
       // Clears the auth stack: there's nothing to come back to once signed in.
@@ -166,17 +214,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         (route) => false,
       );
     } on GoogleSignInException catch (e) {
-      if (!mounted) return;
       // Backing out of the account picker isn't an error worth reporting.
       if (e.code == GoogleSignInExceptionCode.canceled) return;
-      setState(
-        () => _formError = 'تعذر تسجيل الدخول عبر Google. حاول مرة أخرى.',
-      );
+      debugPrint('Google sign-in error: $e');
+      if (!mounted) return;
+      setState(() => _banner = mapAuthError(e));
     } catch (e, stackTrace) {
       debugPrint('Google sign-in error: $e');
       debugPrint('Stack trace: $stackTrace');
       if (!mounted) return;
-      setState(() => _formError = 'حدث خطأ غير متوقع. حاول مرة أخرى.');
+      setState(() => _banner = mapAuthError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -204,6 +251,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: _SoftCircle(size: 220, opacity: 0.05),
             ),
             SafeArea(child: _buildForm()),
+            if (_banner != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: AuthErrorBanner(
+                      message: _banner!.message,
+                      severity: _banner!.severity,
+                      onDismiss: () => setState(() => _banner = null),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -349,6 +413,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _buildFieldGroup(
             label: 'الاسم الكامل',
             controller: _fullNameController,
+            focusNode: _fullNameFocusNode,
             hint: 'أدخل اسمك الكامل',
             icon: Icons.person_outline_rounded,
             error: _fullNameError,
@@ -357,6 +422,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _buildFieldGroup(
             label: 'البريد الإلكتروني',
             controller: _emailController,
+            focusNode: _emailFocusNode,
             hint: 'أدخل بريدك الإلكتروني',
             icon: Icons.mail_outline_rounded,
             error: _emailError,
@@ -366,6 +432,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _buildFieldGroup(
             label: 'كلمة المرور',
             controller: _passwordController,
+            focusNode: _passwordFocusNode,
             hint: 'أدخل كلمة المرور',
             icon: Icons.lock_outline_rounded,
             error: _passwordError,
@@ -384,25 +451,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
           ),
-          if (_formError != null) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(Icons.error_outline, size: 14, color: _danger),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    _formError!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: _danger,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
           SizedBox(height: _innerGap),
           _buildPrivacyCheckbox(),
           SizedBox(height: _innerGap),
@@ -423,6 +471,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    FocusNode? focusNode,
     String? error,
     bool obscure = false,
     Widget? suffix,
@@ -435,6 +484,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         SizedBox(height: _tightGap),
         _buildInput(
           controller: controller,
+          focusNode: focusNode,
           hint: hint,
           icon: icon,
           hasError: error != null,
@@ -442,17 +492,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
           suffix: suffix,
           keyboardType: keyboardType,
         ),
-        if (error != null) ...[
-          const SizedBox(height: 6),
-          Text(
-            error,
-            style: const TextStyle(
-              fontSize: 11.5,
-              color: _danger,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          alignment: Alignment.topCenter,
+          curve: Curves.easeOut,
+          child: error == null
+              ? const SizedBox(width: double.infinity)
+              : Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline, size: 13, color: _danger),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          error,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: _danger,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
       ],
     );
   }
@@ -474,6 +539,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     required String hint,
     required IconData icon,
     required bool hasError,
+    FocusNode? focusNode,
     bool obscure = false,
     Widget? suffix,
     TextInputType? keyboardType,
@@ -489,10 +555,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       height: _controlHeight,
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
         obscureText: obscure,
         keyboardType: keyboardType,
         onChanged: (_) {
-          if (_formError != null) setState(() => _formError = null);
+          if (_banner != null) setState(() => _banner = null);
         },
         style: const TextStyle(
           fontSize: 15,
@@ -659,24 +726,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
         onPressed: _loading ? null : _handleGoogleSignUp,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFDADCE0)),
+          side: const BorderSide(color: Color(0xFF747775)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _GoogleGlyph(size: 20),
-            SizedBox(width: 12),
-            Flexible(
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: SvgPicture.asset('assets/icons/google_logo.svg'),
+            ),
+            const SizedBox(width: 12),
+            const Flexible(
               child: Text(
-                'الاستمرار بحساب Google',
+                'الاستمرار باستخدام Google',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 14.5,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   color: _ink,
                 ),
               ),
@@ -751,140 +822,4 @@ class _SoftCircle extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Google "G" mark, painted so no asset or extra dependency is needed —
-/// mirrors [SignInPage]'s glyph, like the backdrop and circles above.
-class _GoogleGlyph extends StatelessWidget {
-  const _GoogleGlyph({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(painter: _GoogleGlyphPainter()),
-    );
-  }
-}
-
-class _GoogleGlyphPainter extends CustomPainter {
-  // Paths lifted from the design's 48×48 viewBox and scaled to the widget.
-  static const _blue = Color(0xFF4285F4);
-  static const _green = Color(0xFF34A853);
-  static const _yellow = Color(0xFFFBBC05);
-  static const _red = Color(0xFFEA4335);
-
-  static const _paths = <(Color, String)>[
-    (
-      _blue,
-      'M45.1 24.5c0-1.6-.1-3.1-.4-4.6H24v9h11.9c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.5-9.5 6.5-16.7z',
-    ),
-    (
-      _green,
-      'M24 46c5.9 0 10.9-2 14.6-5.3l-7.1-5.6c-2 1.4-4.6 2.2-7.5 2.2-5.8 0-10.7-3.9-12.5-9.1H4.2v5.7C7.9 41.1 15.3 46 24 46z',
-    ),
-    (
-      _yellow,
-      'M11.5 28.2c-.5-1.4-.7-2.9-.7-4.2s.3-2.9.7-4.2v-5.7H4.2C2.8 17 2 20.4 2 24s.8 7 2.2 9.9l7.3-5.7z',
-    ),
-    (
-      _red,
-      'M24 10.7c3.2 0 6 1.1 8.3 3.2l6.3-6.3C34.9 4 29.9 2 24 2 15.3 2 7.9 6.9 4.2 14.1l7.3 5.7c1.8-5.2 6.7-9.1 12.5-9.1z',
-    ),
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 48, size.height / 48);
-    for (final (color, data) in _paths) {
-      canvas.drawPath(_parse(data), Paint()..color = color);
-    }
-    canvas.restore();
-  }
-
-  /// Minimal SVG path parser covering the commands used by the Google mark
-  /// (M, m, L, l, H, h, V, v, C, c, Z).
-  static Path _parse(String data) {
-    final path = Path();
-    final tokens = RegExp(
-      r'[A-Za-z]|-?\d*\.?\d+',
-    ).allMatches(data).map((m) => m[0]!);
-    final it = tokens.iterator;
-    var cx = 0.0, cy = 0.0, sx = 0.0, sy = 0.0;
-    String? cmd;
-    String? pending;
-
-    double num_() {
-      if (pending != null) {
-        final v = double.parse(pending!);
-        pending = null;
-        return v;
-      }
-      it.moveNext();
-      return double.parse(it.current);
-    }
-
-    while (true) {
-      if (pending == null) {
-        if (!it.moveNext()) break;
-        final t = it.current;
-        if (RegExp(r'^[A-Za-z]$').hasMatch(t)) {
-          cmd = t;
-        } else {
-          pending = t; // repeated coordinate set for the previous command
-        }
-      }
-      if (cmd == null) break;
-
-      switch (cmd) {
-        case 'M' || 'm':
-          final rel = cmd == 'm';
-          final x = num_(), y = num_();
-          cx = rel ? cx + x : x;
-          cy = rel ? cy + y : y;
-          sx = cx;
-          sy = cy;
-          path.moveTo(cx, cy);
-          cmd = rel ? 'l' : 'L';
-        case 'L' || 'l':
-          final rel = cmd == 'l';
-          final x = num_(), y = num_();
-          cx = rel ? cx + x : x;
-          cy = rel ? cy + y : y;
-          path.lineTo(cx, cy);
-        case 'H' || 'h':
-          final x = num_();
-          cx = cmd == 'h' ? cx + x : x;
-          path.lineTo(cx, cy);
-        case 'V' || 'v':
-          final y = num_();
-          cy = cmd == 'v' ? cy + y : y;
-          path.lineTo(cx, cy);
-        case 'C' || 'c':
-          final rel = cmd == 'c';
-          final dx = rel ? cx : 0.0;
-          final dy = rel ? cy : 0.0;
-          final x1 = dx + num_(), y1 = dy + num_();
-          final x2 = dx + num_(), y2 = dy + num_();
-          final x = dx + num_(), y = dy + num_();
-          path.cubicTo(x1, y1, x2, y2, x, y);
-          cx = x;
-          cy = y;
-        case 'Z' || 'z':
-          path.close();
-          cx = sx;
-          cy = sy;
-        default:
-          return path; // unsupported command — stop rather than misdraw
-      }
-    }
-    return path;
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
