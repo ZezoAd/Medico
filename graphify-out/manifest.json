@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "lib/screens/sign_in_page.dart": {
-    "mtime": 1786499019.9436805,
-    "ast_hash": "cb8682edf3cb646e02ec2e24fd08aa70",
+    "mtime": 1786499477.0910602,
+    "ast_hash": "c169caa9cb0ba6adc893e0389482d697",
     "semantic_hash": ""
   },
   "lib/screens/sign_in_screen.dart": {
@@ -205,14 +205,14 @@
     "semantic_hash": "7569387d58711ab975940f4df3b4bcda"
   },
   ".claude/CLAUDE.md": {
-    "mtime": 1786497142.404279,
-    "ast_hash": "a93805760b2bbf871868fd998e123278",
+    "mtime": 1786499164.8266444,
+    "ast_hash": "c293266c34e64d0ac3efab2b65b64cdc",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786369151.1679106,
-    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
-    "semantic_hash": "8a6643a420fdad6bfb583523bc6cef16"
+    "mtime": 1786499161.8410072,
+    "ast_hash": "3dfdf81cb3860f644c9bb9db605afa10",
+    "semantic_hash": ""
   },
   "README.md": {
     "mtime": 1786125099.531001,
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1786498920.4416301,
-    "ast_hash": "7b0cd27b6321e3b57fb33058ff7db4e0",
+    "mtime": 1786499488.0391848,
+    "ast_hash": "daa9955a4f3e1cc5757646f0bc776cbc",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {

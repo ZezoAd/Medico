@@ -237,38 +237,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Let the keyboard resize the body so the scroll view below can
         // bring a focused field above it instead of the keyboard covering it.
         resizeToAvoidBottomInset: true,
-        body: Stack(
-          children: [
-            const Positioned.fill(child: _GradientBackdrop()),
-            Positioned(
-              top: -120,
-              left: -100,
-              child: _SoftCircle(size: 280, opacity: 0.06),
-            ),
-            Positioned(
-              bottom: -80,
-              right: -70,
-              child: _SoftCircle(size: 220, opacity: 0.05),
-            ),
-            SafeArea(child: _buildForm()),
-            if (_banner != null)
+        body: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Stack(
+            children: [
+              const Positioned.fill(child: _GradientBackdrop()),
               Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: AuthErrorBanner(
-                      message: _banner!.message,
-                      severity: _banner!.severity,
-                      onDismiss: () => setState(() => _banner = null),
+                top: -120,
+                left: -100,
+                child: _SoftCircle(size: 280, opacity: 0.06),
+              ),
+              Positioned(
+                bottom: -80,
+                right: -70,
+                child: _SoftCircle(size: 220, opacity: 0.05),
+              ),
+              SafeArea(child: _buildForm()),
+              if (_banner != null)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: AuthErrorBanner(
+                        message: _banner!.message,
+                        severity: _banner!.severity,
+                        onDismiss: () => setState(() => _banner = null),
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
