@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/auth_error_mapper.dart';
 import 'auth_error_banner.dart';
 
-const _resetPasswordRedirect = 'https://medico.dpdns.org/reset-password';
+const _resetPasswordRedirect = 'https://reset.medico.dpdns.org';
 
 /// Same neutral copy whether the address is registered or not — Supabase's
 /// API already avoids leaking that, so the UI must not undo it by branching

@@ -30,7 +30,18 @@ Future<void> main() async {
       supabaseUrl.isNotEmpty &&
       supabaseAnonKey != null &&
       supabaseAnonKey.isNotEmpty) {
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+      // Password recovery links open in a separate mobile browser that has
+      // no access to the app's local storage, so the PKCE code verifier
+      // can never be exchanged there — implicit flow delivers the session
+      // directly in the URL fragment instead, which reset-password.html
+      // already listens for via onAuthStateChange/detectSessionInUrl.
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.implicit,
+      ),
+    );
   } else {
     debugPrint(
       'Supabase environment variables are missing; continuing without init.',
