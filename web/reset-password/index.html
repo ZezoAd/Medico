@@ -199,8 +199,21 @@
 
 <div class="sheet">
 
+  <!-- CONFIRM STEP (requires a real tap — email security scanners can't click this) -->
+  <div class="state-screen active" id="state-confirm">
+    <div class="brand-icon" style="width:64px;height:64px;background:var(--field-bg);border-radius:20px;margin-bottom:22px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2A93C9" stroke-width="2" width="30" height="30"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    </div>
+    <div class="state-title">تأكيد إعادة تعيين كلمة المرور</div>
+    <div class="state-text" style="margin-bottom:24px;">اضغط أدناه للمتابعة وتعيين كلمة مرور جديدة.</div>
+    <button class="submit-btn" id="confirm-btn" style="max-width:260px;">
+      <span class="btn-text">متابعة</span>
+      <span class="spinner"></span>
+    </button>
+  </div>
+
   <!-- LOADING / VALIDATING LINK -->
-  <div class="state-screen active" id="state-validating">
+  <div class="state-screen" id="state-validating">
     <div class="big-spinner"></div>
     <div class="state-title">جارِ التحقق من الرابط</div>
     <div class="state-text">لحظات من فضلك...</div>
@@ -269,6 +282,7 @@
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const screens = {
+    confirm: document.getElementById('state-confirm'),
     validating: document.getElementById('state-validating'),
     invalid: document.getElementById('state-invalid'),
     form: document.getElementById('state-form'),
@@ -279,18 +293,35 @@
     screens[name].classList.add('active');
   }
 
-  // Supabase's recovery link can fire SIGNED_IN before/instead of PASSWORD_RECOVERY
-  // in some setups — treat either as "the recovery session is ready."
-  let recoveryReady = false;
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session && !recoveryReady) {
-      recoveryReady = true;
+  // Read the token straight from the URL. This page is only ever reached
+  // via the email link, which now carries ?token_hash=...&type=recovery
+  // instead of Supabase's old auto-consuming confirmation URL — a plain
+  // security-scanner GET on this page can't trigger anything, since
+  // redeeming the token requires an actual button tap below.
+  const params = new URLSearchParams(window.location.search);
+  const tokenHash = params.get('token_hash');
+  const otpType = params.get('type') || 'recovery';
+
+  if (!tokenHash) {
+    showScreen('invalid');
+  }
+
+  const confirmBtn = document.getElementById('confirm-btn');
+  confirmBtn.addEventListener('click', async () => {
+    confirmBtn.disabled = true;
+    confirmBtn.classList.add('loading');
+    showScreen('validating');
+    try {
+      const { error } = await supabaseClient.auth.verifyOtp({
+        token_hash: tokenHash,
+        type: otpType,
+      });
+      if (error) throw error;
       showScreen('form');
+    } catch (err) {
+      showScreen('invalid');
     }
   });
-  // If no valid recovery session shows up within a few seconds, the link is
-  // dead (expired, already used, or tampered with).
-  setTimeout(() => { if (!recoveryReady) showScreen('invalid'); }, 4000);
 
   // Toggle password visibility
   document.querySelectorAll('.toggle-visibility').forEach(btn => {
