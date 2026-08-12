@@ -122,6 +122,13 @@
     gap: 6px;
   }
   .field-error.show { max-height: 30px; margin-top: 6px; }
+  .field-hint {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    margin-top: 6px;
+    transition: color 0.2s;
+  }
+  .field-hint.invalid { color: var(--error); }
   .submit-btn {
     background: var(--gradient);
     color: #fff;
@@ -199,21 +206,8 @@
 
 <div class="sheet">
 
-  <!-- CONFIRM STEP (requires a real tap — email security scanners can't click this) -->
-  <div class="state-screen active" id="state-confirm">
-    <div class="brand-icon" style="width:64px;height:64px;background:var(--field-bg);border-radius:20px;margin-bottom:22px;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#2A93C9" stroke-width="2" width="30" height="30"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-    </div>
-    <div class="state-title">تأكيد إعادة تعيين كلمة المرور</div>
-    <div class="state-text" style="margin-bottom:24px;">اضغط أدناه للمتابعة وتعيين كلمة مرور جديدة.</div>
-    <button class="submit-btn" id="confirm-btn" style="max-width:260px;">
-      <span class="btn-text">متابعة</span>
-      <span class="spinner"></span>
-    </button>
-  </div>
-
   <!-- LOADING / VALIDATING LINK -->
-  <div class="state-screen" id="state-validating">
+  <div class="state-screen active" id="state-validating">
     <div class="big-spinner"></div>
     <div class="state-title">جارِ التحقق من الرابط</div>
     <div class="state-text">لحظات من فضلك...</div>
@@ -235,14 +229,14 @@
     <div class="subtitle">أدخل كلمة مرور جديدة لحسابك في Medico.</div>
 
     <div class="field-group">
-      <label>كلمة المرور الجديدة</label>
+      <label>أدخل كلمة المرور الجديدة</label>
       <div class="field-wrap">
-        <input type="password" id="password" placeholder="8 أحرف على الأقل">
+        <input type="password" id="password" placeholder="كلمة المرور الجديدة">
         <button type="button" class="toggle-visibility" data-target="password">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-      <div class="field-error" id="error-password">كلمة المرور يجب أن تكون 8 أحرف على الأقل</div>
+      <div class="field-hint" id="hint-password">يجب أن تكون كلمة المرور 8 أحرف على الأقل</div>
     </div>
 
     <div class="field-group">
@@ -294,25 +288,20 @@
     screens[name].classList.add('active');
   }
 
-  // Read the token straight from the URL. This page is only ever reached
-  // via the email link, which now carries ?token_hash=...&type=recovery
-  // instead of Supabase's old auto-consuming confirmation URL — a plain
-  // security-scanner GET on this page can't trigger anything, since
-  // redeeming the token requires an actual button tap below.
+  // Read the token straight from the URL, then verify it immediately —
+  // this still requires real JavaScript execution (not just an HTTP GET),
+  // which is what protects against email security scanners that only
+  // prefetch a page's raw content without running its scripts.
   const params = new URLSearchParams(window.location.search);
   const tokenHash = params.get('token_hash');
   const otpType = params.get('type') || 'recovery';
 
-  if (!tokenHash) {
-    document.getElementById('debug-error').textContent = 'DEBUG: no token_hash found in URL. Full URL: ' + window.location.href;
-    showScreen('invalid');
-  }
-
-  const confirmBtn = document.getElementById('confirm-btn');
-  confirmBtn.addEventListener('click', async () => {
-    confirmBtn.disabled = true;
-    confirmBtn.classList.add('loading');
-    showScreen('validating');
+  (async () => {
+    if (!tokenHash) {
+      document.getElementById('debug-error').textContent = 'DEBUG: no token_hash found in URL. Full URL: ' + window.location.href;
+      showScreen('invalid');
+      return;
+    }
     try {
       const { error } = await supabaseClient.auth.verifyOtp({
         token_hash: tokenHash,
@@ -324,7 +313,7 @@
       document.getElementById('debug-error').textContent = 'DEBUG: ' + (err && err.message ? err.message : String(err)) + ' | token_hash used: ' + tokenHash + ' | type: ' + otpType;
       showScreen('invalid');
     }
-  });
+  })();
 
   // Toggle password visibility
   document.querySelectorAll('.toggle-visibility').forEach(btn => {
@@ -336,18 +325,18 @@
 
   const passwordInput = document.getElementById('password');
   const confirmInput = document.getElementById('confirmPassword');
-  const errorPassword = document.getElementById('error-password');
+  const hintPassword = document.getElementById('hint-password');
   const errorConfirm = document.getElementById('error-confirm');
   const submitBtn = document.getElementById('submit-btn');
 
   function validate() {
     let valid = true;
     if (passwordInput.value.length < 8) {
-      errorPassword.classList.add('show');
+      hintPassword.classList.add('invalid');
       passwordInput.classList.add('error');
       valid = false;
     } else {
-      errorPassword.classList.remove('show');
+      hintPassword.classList.remove('invalid');
       passwordInput.classList.remove('error');
     }
     if (confirmInput.value.length > 0 && confirmInput.value !== passwordInput.value) {
@@ -375,8 +364,8 @@
     } catch (err) {
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
-      errorPassword.textContent = 'حدث خطأ، حاول مرة أخرى';
-      errorPassword.classList.add('show');
+      hintPassword.textContent = 'حدث خطأ، حاول مرة أخرى';
+      hintPassword.classList.add('invalid');
       passwordInput.classList.add('error');
     }
   });
