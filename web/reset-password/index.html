@@ -218,8 +218,8 @@
     <div class="error-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
     </div>
-    <div class="state-title">انتهت صلاحية الرابط</div>
-    <div class="state-text">هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.</div>
+    <div class="state-title" id="invalid-title">انتهت صلاحية الرابط</div>
+    <div class="state-text" id="invalid-text">هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.</div>
     <div class="state-text" id="debug-error" style="margin-top:14px;font-size:11px;color:#B0AFAF;direction:ltr;word-break:break-all;"></div>
   </div>
 
@@ -276,6 +276,38 @@
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // ── Error message mapping ───────────────────────────────────────────────
+  // Independent of lib/utils/auth_error_mapper.dart (this page is plain JS,
+  // not Dart), but follows the same rule: raw GoTrue/network text never
+  // reaches the screen, only specific Arabic copy or the generic fallback.
+  const GENERIC_ERROR_MESSAGE = 'حدث خطأ غير متوقع. حاول مرة أخرى.';
+  const NETWORK_ERROR_MESSAGE = 'تعذر الاتصال بالإنترنت. تأكد من اتصالك بشبكة Wi‑Fi أو بيانات الهاتف وحاول مرة أخرى.';
+
+  // Keyed on GoTrue's `error_code`, covering what updateUser() can realistically
+  // return here: reusing the current password, or a password GoTrue itself
+  // considers too weak.
+  const ERROR_CODE_MESSAGES = {
+    same_password: 'كلمة المرور الجديدة مطابقة للحالية. اختر كلمة مرور مختلفة.',
+    weak_password: 'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
+  };
+
+  function isNetworkError(err) {
+    const text = ((err && err.message) || String(err)).toLowerCase();
+    return text.includes('failed to fetch') ||
+      text.includes('networkerror') ||
+      text.includes('load failed') ||
+      text.includes('network request failed');
+  }
+
+  // Maps an error from updateUser() to the inline hint text under the
+  // password field.
+  function mapUpdatePasswordError(err) {
+    if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
+    const code = err && err.code;
+    if (code && ERROR_CODE_MESSAGES[code]) return ERROR_CODE_MESSAGES[code];
+    return GENERIC_ERROR_MESSAGE;
+  }
+
   const screens = {
     confirm: document.getElementById('state-confirm'),
     validating: document.getElementById('state-validating'),
@@ -311,6 +343,15 @@
       showScreen('form');
     } catch (err) {
       document.getElementById('debug-error').textContent = 'DEBUG: ' + (err && err.message ? err.message : String(err)) + ' | token_hash used: ' + tokenHash + ' | type: ' + otpType;
+      // A dropped connection never actually asked Supabase about the link,
+      // so it must not be reported as if the link itself were the problem.
+      if (isNetworkError(err)) {
+        document.getElementById('invalid-title').textContent = 'تعذر الاتصال بالإنترنت';
+        document.getElementById('invalid-text').textContent = NETWORK_ERROR_MESSAGE;
+      } else {
+        document.getElementById('invalid-title').textContent = 'انتهت صلاحية الرابط';
+        document.getElementById('invalid-text').textContent = 'هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.';
+      }
       showScreen('invalid');
     }
   })();
@@ -329,8 +370,14 @@
   const errorConfirm = document.getElementById('error-confirm');
   const submitBtn = document.getElementById('submit-btn');
 
+  const defaultPasswordHint = hintPassword.textContent;
+
   function validate() {
     let valid = true;
+    // Restores the length hint over whatever server-error text a previous
+    // submit attempt may have left behind, so that text doesn't linger as a
+    // stale, no-longer-true message once the field is edited again.
+    hintPassword.textContent = defaultPasswordHint;
     if (passwordInput.value.length < 8) {
       hintPassword.classList.add('invalid');
       passwordInput.classList.add('error');
@@ -364,7 +411,7 @@
     } catch (err) {
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
-      hintPassword.textContent = 'حدث خطأ، حاول مرة أخرى';
+      hintPassword.textContent = mapUpdatePasswordError(err);
       hintPassword.classList.add('invalid');
       passwordInput.classList.add('error');
     }

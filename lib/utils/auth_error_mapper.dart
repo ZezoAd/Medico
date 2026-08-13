@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../widgets/auth_error_banner.dart';
@@ -24,6 +25,11 @@ class AuthErrorInfo {
 /// back silently.
 const sessionInvalidMessage = 'جلستك لم تعد صالحة. الرجاء تسجيل الدخول مرة أخرى.';
 
+/// Shown for any connectivity failure — no route to Supabase at all, as
+/// opposed to Supabase answering with a rejection.
+const networkErrorMessage =
+    'تعذر الاتصال بالإنترنت. تأكد من اتصالك بشبكة Wi‑Fi أو بيانات الهاتف وحاول مرة أخرى.';
+
 /// The last resort for anything unrecognised. GoTrue's own text is English
 /// and frequently internal ("Database error saving new user"), so it never
 /// reaches the UI verbatim — the raw exception belongs in the logs via the
@@ -31,10 +37,11 @@ const sessionInvalidMessage = 'جلستك لم تعد صالحة. الرجاء �
 const genericAuthErrorMessage = 'حدث خطأ غير متوقع. حاول مرة أخرى.';
 
 /// Sign-in against an account whose email was never verified — the one auth
-/// failure whose fix is "finish the signup you already started" rather than
-/// "try again".
+/// failure whose fix is "send a fresh code" rather than "try again". Doesn't
+/// point back at the original signup email, which by the time someone hits
+/// this is likely long expired.
 const emailNotConfirmedMessage =
-    'لم يتم تفعيل بريدك الإلكتروني بعد. افتح رسالة التفعيل المرسلة إليك وأكمل التحقق ثم سجّل الدخول.';
+    'لم يتم تفعيل هذا الحساب بعد. يمكنك طلب رمز تحقق جديد لإكمال التفعيل.';
 
 /// Signing up with an address that already has an account. Also shown by
 /// [SignUpScreen] for the *silent* version of this case, which returns 200
@@ -142,6 +149,31 @@ bool _isOtpCodeRejected(Object error) {
           (message.contains('expired') || message.contains('invalid')));
 }
 
+/// Message fragments that show up in a network-level failure's text — for
+/// exceptions that carry no dedicated type, e.g. a raw `ClientException` or
+/// an `AuthRetryableFetchException` wrapping one, whose message is just
+/// `error.toString()` of whatever the underlying HTTP client threw.
+const _networkMessageFragments = {
+  'failed host lookup',
+  'connection closed',
+  'connection refused',
+  'network is unreachable',
+};
+
+/// True when [error] means the request never reached Supabase at all, as
+/// opposed to Supabase answering with a rejection.
+bool _isNetworkFailure(Object error) {
+  if (error is SocketException ||
+      error is TimeoutException ||
+      error is AuthRetryableFetchException ||
+      error is ClientException) {
+    return true;
+  }
+  final text = (error is AuthException ? error.message : error.toString())
+      .toLowerCase();
+  return _networkMessageFragments.any(text.contains);
+}
+
 /// Maps a failure from `verifyOTP` — the one call site that can tell a
 /// mistyped code from a stale one.
 ///
@@ -180,8 +212,13 @@ AuthErrorInfo mapOtpVerifyError(
 /// `GoogleSignInExceptionCode.canceled` themselves — backing out of the
 /// account picker isn't an error and should never reach this mapper.
 AuthErrorInfo mapAuthError(Object error) {
-  if (error is SocketException || error is TimeoutException) {
-    return const AuthErrorInfo('لا يوجد اتصال بالإنترنت. تحقق من الشبكة وحاول مرة أخرى.');
+  // Checked before the AuthException branch below: AuthRetryableFetchException
+  // is itself an AuthException (GoTrue's wrapper around any non-HTTP-response
+  // failure, e.g. a SocketException from airplane mode), so without this
+  // early check it would fall through to the generic fallback instead of
+  // being reported as what it actually is — no connection.
+  if (_isNetworkFailure(error)) {
+    return const AuthErrorInfo(networkErrorMessage);
   }
 
   if (error is GoogleSignInException) {
@@ -230,4 +267,23 @@ AuthErrorInfo mapAuthError(Object error) {
   }
 
   return const AuthErrorInfo(genericAuthErrorMessage);
+}
+
+/// True when [error] is Supabase rejecting a wrong email/password pair on
+/// sign-in — the one case [SignInPage] marks on both fields inline instead
+/// of showing as a banner, since Supabase deliberately won't say which of
+/// the two was wrong.
+bool isInvalidCredentialsError(Object error) {
+  if (error is! AuthException) return false;
+  if (error.code == 'invalid_credentials') return true;
+  return error.message.toLowerCase().contains('invalid login credentials');
+}
+
+/// True when [error] is Supabase refusing sign-in because the account's
+/// email was never confirmed — the case [SignInPage] offers a "resend code"
+/// action for, instead of leaving the person at a dead end.
+bool isEmailNotConfirmedError(Object error) {
+  if (error is! AuthException) return false;
+  if (error.code == 'email_not_confirmed') return true;
+  return error.message.toLowerCase().contains('email not confirmed');
 }

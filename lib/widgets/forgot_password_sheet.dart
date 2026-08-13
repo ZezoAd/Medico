@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -118,11 +117,10 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
       _startCooldown();
     } catch (e) {
       if (!mounted) return;
-      // A network failure never reached Supabase, so it shouldn't burn the
-      // 60s cooldown meant to protect its rate limit.
-      final reachedServer = e is! SocketException && e is! TimeoutException;
+      // Mirrors otp_verification_screen's _sendCode: only a send that
+      // actually went out starts the cooldown, so a failure of any kind
+      // leaves the button immediately tappable again.
       setState(() => _banner = mapAuthError(e));
-      if (reachedServer) _startCooldown();
     } finally {
       if (mounted) setState(() => _loading = false);
     }

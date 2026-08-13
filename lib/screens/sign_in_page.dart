@@ -10,6 +10,7 @@ import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
 import '../widgets/forgot_password_sheet.dart';
 import 'home_screen.dart';
+import 'otp_verification_screen.dart';
 import 'sign_up_screen.dart';
 
 /// Sign-in screen ported from the "Medico Login - Glass" design.
@@ -66,6 +67,17 @@ class _SignInPageState extends State<SignInPage> {
   String? _emailError;
   String? _passwordError;
   AuthErrorInfo? _banner;
+
+  /// Set instead of [_banner] when Supabase rejects the email/password pair
+  /// — shown as a shared inline message under the password field, with both
+  /// fields marked red, since Supabase won't say which one was wrong.
+  String? _credentialsError;
+
+  /// The email that just failed sign-in with "email not confirmed" — set
+  /// alongside [_banner] so its retry action knows which address to resend
+  /// a code to. Cleared whenever the banner is cleared.
+  String? _pendingUnconfirmedEmail;
+  bool _resendingConfirmation = false;
 
   bool get _isDoctor => _role == _Role.doctor;
 
@@ -171,7 +183,8 @@ class _SignInPageState extends State<SignInPage> {
     }
 
     setState(() {
-      _banner = null;
+      _clearBanner();
+      _credentialsError = null;
       _loading = true;
     });
 
@@ -189,9 +202,51 @@ class _SignInPageState extends State<SignInPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _banner = mapAuthError(e));
+      // Supabase deliberately won't say which of the two was wrong (email
+      // enumeration protection), so this goes inline on both fields rather
+      // than guessing; email-not-confirmed gets a "resend code" action
+      // instead of a dead-end banner; everything else stays a top banner.
+      if (isInvalidCredentialsError(e)) {
+        setState(() => _credentialsError = mapAuthError(e).message);
+      } else if (isEmailNotConfirmedError(e)) {
+        setState(() {
+          _banner = mapAuthError(e);
+          _pendingUnconfirmedEmail = email;
+        });
+      } else {
+        setState(() => _banner = mapAuthError(e));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _clearBanner() {
+    _banner = null;
+    _pendingUnconfirmedEmail = null;
+  }
+
+  /// The sign-in banner's action for an unconfirmed account — resends the
+  /// signup confirmation code and hands the person straight to the OTP
+  /// screen to enter it, instead of leaving them stuck on a dead banner.
+  Future<void> _resendConfirmation() async {
+    final email = _pendingUnconfirmedEmail;
+    if (email == null || _resendingConfirmation) return;
+    setState(() => _resendingConfirmation = true);
+    try {
+      await Supabase.instance.client.auth
+          .resend(type: OtpType.signup, email: email)
+          .timeout(_networkTimeout);
+      if (!mounted) return;
+      setState(_clearBanner);
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _banner = mapAuthError(e));
+    } finally {
+      if (mounted) setState(() => _resendingConfirmation = false);
     }
   }
 
@@ -208,7 +263,8 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _handleGoogle() async {
     setState(() {
-      _banner = null;
+      _clearBanner();
+      _credentialsError = null;
       _loading = true;
     });
 
@@ -255,6 +311,7 @@ class _SignInPageState extends State<SignInPage> {
       _success = false;
       _emailError = null;
       _passwordError = null;
+      _credentialsError = null;
     });
   }
 
@@ -296,7 +353,13 @@ class _SignInPageState extends State<SignInPage> {
                       child: AuthErrorBanner(
                         message: _banner!.message,
                         severity: _banner!.severity,
-                        onDismiss: () => setState(() => _banner = null),
+                        onRetry: _pendingUnconfirmedEmail != null
+                            ? _resendConfirmation
+                            : null,
+                        retryLabel: _pendingUnconfirmedEmail != null
+                            ? 'إرسال رمز تحقق جديد'
+                            : null,
+                        onDismiss: () => setState(_clearBanner),
                       ),
                     ),
                   ),
@@ -596,7 +659,7 @@ class _SignInPageState extends State<SignInPage> {
             focusNode: _emailFocusNode,
             hint: 'أدخل بريدك الإلكتروني',
             icon: Icons.mail_outline_rounded,
-            hasError: _emailError != null,
+            hasError: _emailError != null || _credentialsError != null,
             keyboardType: TextInputType.emailAddress,
           ),
           _buildFieldError(_emailError),
@@ -608,7 +671,7 @@ class _SignInPageState extends State<SignInPage> {
             focusNode: _passwordFocusNode,
             hint: 'أدخل كلمة المرور',
             icon: Icons.lock_outline_rounded,
-            hasError: _passwordError != null,
+            hasError: _passwordError != null || _credentialsError != null,
             obscure: !_showPassword,
             suffix: IconButton(
               onPressed: () => setState(() => _showPassword = !_showPassword),
@@ -624,7 +687,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          _buildFieldError(_passwordError),
+          _buildFieldError(_passwordError ?? _credentialsError),
           SizedBox(height: _innerGap * 0.5),
           Align(
             alignment: AlignmentDirectional.centerEnd,
@@ -731,7 +794,12 @@ class _SignInPageState extends State<SignInPage> {
         obscureText: obscure,
         keyboardType: keyboardType,
         onChanged: (_) {
-          if (_banner != null) setState(() => _banner = null);
+          if (_banner != null || _credentialsError != null) {
+            setState(() {
+              _clearBanner();
+              _credentialsError = null;
+            });
+          }
         },
         style: const TextStyle(
           fontSize: 15,

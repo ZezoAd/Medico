@@ -191,22 +191,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     _pinFocusNode.requestFocus();
   }
 
-  /// The banner's "try again" action — clears whatever was typed and drops
-  /// back to a blank, idle field row instead of leaving the failed code (or
-  /// the stale send failure) on screen.
-  void _resetToIdle() {
-    setState(() {
-      _status = _OtpStatus.empty;
-      _errorMessage = null;
-      _sendFailed = false;
-    });
-    _pinController.clear();
-    _pinFocusNode.requestFocus();
-  }
-
   bool get _showBanner => _errorMessage != null && (_sendFailed || _status == _OtpStatus.failure);
 
-  VoidCallback? get _bannerRetry => _sendFailed ? _sendCode : _resetToIdle;
+  // On a verify failure, _handleFailure already clears the field and
+  // refocuses it — a retry action here would do nothing visible. Only a
+  // send failure has something real to retry.
+  VoidCallback? get _bannerRetry => _sendFailed ? _sendCode : null;
 
   @override
   Widget build(BuildContext context) {
