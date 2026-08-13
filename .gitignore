@@ -45,4 +45,7 @@ app.*.map.json
 /android/app/release
 .env
 **/google-services.json
-**/GoogleService-Info.plistgraphify/
+**/GoogleService-Info.plist
+
+# Vendored graphify checkout — a nested git repo, not part of this project
+graphify/

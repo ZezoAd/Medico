@@ -157,6 +157,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _passwordError == null;
   }
 
+  /// True when `signUp` quietly did nothing because the address already
+  /// belongs to a confirmed account.
+  ///
+  /// With Supabase's email-enumeration protection enabled, that case is not
+  /// an error: the call returns 200 with an obfuscated user — fabricated id,
+  /// no session, and, the one reliable tell, an **empty** `identities` list —
+  /// and no email is sent. A real new signup comes back with exactly one
+  /// identity. Navigating to [OtpVerificationScreen] here would park the
+  /// person in front of a code that is never going to arrive.
+  ///
+  /// A null `identities` means the field was absent rather than empty, which
+  /// is not the same signal, so it deliberately does not count.
+  bool _isAlreadyRegistered(AuthResponse response) {
+    final identities = response.user?.identities;
+    return identities != null && identities.isEmpty;
+  }
+
   Future<void> _handleSubmit() async {
     setState(() => _banner = null);
     if (!_validate()) return;
@@ -167,7 +184,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     setState(() => _loading = true);
     try {
-      await Supabase.instance.client.auth
+      final response = await Supabase.instance.client.auth
           .signUp(
             email: email,
             password: password,
@@ -175,6 +192,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           )
           .timeout(_networkTimeout);
       if (!mounted) return;
+      if (_isAlreadyRegistered(response)) {
+        setState(
+          () => _banner = const AuthErrorInfo(
+            accountAlreadyExistsMessage,
+            severity: AuthErrorSeverity.warning,
+          ),
+        );
+        return;
+      }
       await Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)),
       );

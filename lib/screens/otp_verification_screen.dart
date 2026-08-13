@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -31,6 +33,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   static const _danger = Color(0xFFDC2626);
   static const _successGreen = Color(0xFF16A34A);
   static const _digitCount = 6;
+  static const _resendCooldown = Duration(seconds: 60);
 
   final _pinController = TextEditingController();
   final _pinFocusNode = FocusNode();
@@ -41,13 +44,31 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   bool _sendFailed = false;
   bool _mounted = false;
 
+  /// When the code being verified was sent — the only thing that separates a
+  /// mistyped code from an expired one, since Supabase reports both the same
+  /// way (see [mapOtpVerifyError]). `signUp` sends the email immediately
+  /// before this screen is pushed, so screen entry is the send time; [_resend]
+  /// re-stamps it.
+  late DateTime _codeSentAt;
+
+  /// Seconds left before "إعادة إرسال الرمز" becomes tappable again; 0 means
+  /// no cooldown is running. Driven by [_cooldownTimer].
+  int _resendSeconds = 0;
+  Timer? _cooldownTimer;
+
   String get _code => _pinController.text;
 
   bool get _isComplete => _code.length == _digitCount;
 
+  bool get _coolingDown => _resendSeconds > 0;
+
   @override
   void initState() {
     super.initState();
+    _codeSentAt = DateTime.now();
+    // `signUp` already sent the first code just before this screen was
+    // pushed, so the cooldown starts on entry, not on the first resend.
+    _startResendCooldown();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
@@ -55,9 +76,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     _pinController.dispose();
     _pinFocusNode.dispose();
     super.dispose();
+  }
+
+  void _startResendCooldown() {
+    _cooldownTimer?.cancel();
+    _resendSeconds = _resendCooldown.inSeconds;
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _resendSeconds--);
+      if (_resendSeconds <= 0) {
+        timer.cancel();
+        _cooldownTimer = null;
+      }
+    });
   }
 
   Future<void> _sendCode() async {
@@ -67,6 +105,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         type: OtpType.signup,
         email: widget.email,
       );
+      _codeSentAt = DateTime.now();
+      // Only a code that actually went out starts the clock — a failed send
+      // must leave the link tappable so the user can retry immediately.
+      if (mounted) setState(_startResendCooldown);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -77,6 +119,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   Future<void> _resend() async {
+    // The link is already untappable while a send is in flight or the
+    // cooldown is running; this guard just makes a stray call harmless.
+    if (_resending || _coolingDown) return;
     setState(() {
       _resending = true;
       _status = _OtpStatus.empty;
@@ -111,9 +156,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     });
 
     try {
-      // TEMP: confirms the assembled code is true left-to-right numeric
-      // order before it's sent — remove once the RTL fix is verified.
-      debugPrint('OTP code sent to verifyOTP: $_code');
       await Supabase.instance.client.auth
           .verifyOTP(email: widget.email, token: _code, type: OtpType.signup)
           .timeout(const Duration(seconds: 15));
@@ -126,7 +168,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         (route) => false,
       );
     } catch (e) {
-      _handleFailure(mapAuthError(e).message);
+      _handleFailure(
+        mapOtpVerifyError(
+          e,
+          sinceCodeSent: DateTime.now().difference(_codeSentAt),
+        ).message,
+      );
     }
   }
 
@@ -455,10 +502,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   Widget _buildResendRow() {
-    final showResend = _status == _OtpStatus.failure || _sendFailed;
-    if (!showResend) {
-      return const SizedBox.shrink();
-    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -468,13 +511,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         ),
         const SizedBox(width: 4),
         GestureDetector(
-          onTap: _resending ? null : _resend,
+          onTap: (_resending || _coolingDown) ? null : _resend,
           child: Text(
-            _resending ? 'جاري الإرسال…' : 'إعادة إرسال الرمز',
-            style: const TextStyle(
+            _resending
+                ? 'جاري الإرسال…'
+                : _coolingDown
+                    ? 'إعادة الإرسال خلال $_resendSeconds'
+                    : 'إعادة إرسال الرمز',
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: _teal,
+              color: _coolingDown ? _muted : _teal,
             ),
           ),
         ),

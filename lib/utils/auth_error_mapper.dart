@@ -24,6 +24,24 @@ class AuthErrorInfo {
 /// back silently.
 const sessionInvalidMessage = 'جلستك لم تعد صالحة. الرجاء تسجيل الدخول مرة أخرى.';
 
+/// The last resort for anything unrecognised. GoTrue's own text is English
+/// and frequently internal ("Database error saving new user"), so it never
+/// reaches the UI verbatim — the raw exception belongs in the logs via the
+/// `debugPrint` calls at the catch sites.
+const genericAuthErrorMessage = 'حدث خطأ غير متوقع. حاول مرة أخرى.';
+
+/// Sign-in against an account whose email was never verified — the one auth
+/// failure whose fix is "finish the signup you already started" rather than
+/// "try again".
+const emailNotConfirmedMessage =
+    'لم يتم تفعيل بريدك الإلكتروني بعد. افتح رسالة التفعيل المرسلة إليك وأكمل التحقق ثم سجّل الدخول.';
+
+/// Signing up with an address that already has an account. Also shown by
+/// [SignUpScreen] for the *silent* version of this case, which returns 200
+/// with an empty `identities` list instead of raising at all.
+const accountAlreadyExistsMessage =
+    'هذا البريد الإلكتروني مسجل بالفعل. سجّل الدخول بدلاً من إنشاء حساب جديد.';
+
 const _rateLimitCodes = {
   'over_request_rate_limit',
   'over_email_send_rate_limit',
@@ -31,6 +49,127 @@ const _rateLimitCodes = {
 };
 
 const _otpCodes = {'otp_expired'};
+
+/// GoTrue `error_code` → Arabic copy, covering what the calls this app
+/// actually makes can return: `signUp`, `signInWithPassword`,
+/// `signInWithIdToken`, `resend`, `resetPasswordForEmail`, and `getUser`.
+///
+/// Deliberately absent: `user_not_found`. Answering it specifically would
+/// confirm whether an address is registered, undoing the enumeration
+/// protection the sign-in and forgot-password flows are built around — it
+/// falls through to [genericAuthErrorMessage] instead.
+const _codeMessages = <String, String>{
+  // Not in gotrue's `ErrorCode` enum, but the live server sends it for a
+  // wrong email/password pair; `AuthException.code` is the raw JSON string,
+  // so it arrives regardless of what the Dart enum knows about.
+  'invalid_credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+  'email_not_confirmed': emailNotConfirmedMessage,
+  'phone_not_confirmed': emailNotConfirmedMessage,
+  'email_exists': accountAlreadyExistsMessage,
+  'user_already_exists': accountAlreadyExistsMessage,
+  'weak_password': 'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
+  'same_password': 'كلمة المرور الجديدة مطابقة للحالية. اختر كلمة مرور مختلفة.',
+  'validation_failed': 'تحقق من البيانات المُدخلة وحاول مرة أخرى.',
+  'bad_json': 'تحقق من البيانات المُدخلة وحاول مرة أخرى.',
+  'signup_disabled': 'إنشاء الحسابات متوقف مؤقتًا. حاول لاحقًا.',
+  'email_provider_disabled': 'تسجيل الدخول بالبريد الإلكتروني غير متاح حاليًا.',
+  'provider_disabled': 'طريقة تسجيل الدخول هذه غير متاحة حاليًا.',
+  'anonymous_provider_disabled': 'طريقة تسجيل الدخول هذه غير متاحة حاليًا.',
+  'otp_disabled': 'تسجيل الدخول برمز التحقق غير متاح حاليًا.',
+  'user_banned': 'تم إيقاف هذا الحساب. تواصل مع الدعم للمساعدة.',
+  'captcha_failed': 'فشل التحقق الأمني. حاول مرة أخرى.',
+  'session_not_found': sessionInvalidMessage,
+  'session_expired': sessionInvalidMessage,
+  'session_missing': sessionInvalidMessage,
+  'bad_jwt': sessionInvalidMessage,
+  'no_authorization': sessionInvalidMessage,
+  'request_timeout': 'استغرق الاتصال وقتًا طويلاً. حاول مرة أخرى.',
+  'unexpected_failure': genericAuthErrorMessage,
+};
+
+/// The same conditions keyed on the English message text, for responses that
+/// carry no `error_code` at all — older GoTrue versions, and errors raised
+/// before the structured code is attached. Checked in order, so the more
+/// specific phrases must come first.
+const _messageFragments = <String, String>{
+  'email not confirmed': emailNotConfirmedMessage,
+  'invalid login credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+  'user already registered': accountAlreadyExistsMessage,
+  'already registered': accountAlreadyExistsMessage,
+  'password should be': 'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
+  'signups not allowed': 'إنشاء الحسابات متوقف مؤقتًا. حاول لاحقًا.',
+  'unable to validate email address': 'الرجاء إدخال بريد إلكتروني صحيح.',
+};
+
+/// Conditions the person can act on themselves read as a caution, not a
+/// hard failure — same reasoning as the rate-limit branch.
+const _warningCodes = {
+  'email_not_confirmed',
+  'phone_not_confirmed',
+  'email_exists',
+  'user_already_exists',
+};
+
+/// How long a signup OTP stays valid. Must mirror the project's
+/// Auth → Providers → Email → "Email OTP Expiration" setting in the Supabase
+/// dashboard, currently 300s; [mapOtpVerifyError] has no other way to know the
+/// window, so if that setting changes, change this too.
+const otpValidityWindow = Duration(minutes: 5);
+
+/// Shown when the entered code is past [otpValidityWindow].
+const otpExpiredMessage = 'انتهت صلاحية الرمز، يرجى طلب رمز جديد';
+
+/// Shown when the entered code was rejected while still inside the window,
+/// i.e. it was almost certainly mistyped.
+const otpIncorrectMessage = 'الرمز الذي أدخلته غير صحيح، يرجى المحاولة مرة أخرى';
+
+/// True when [error] is GoTrue rejecting the submitted code itself, as opposed
+/// to a network drop, a rate limit, or any other auth failure.
+bool _isOtpCodeRejected(Object error) {
+  if (error is! AuthException) return false;
+
+  final code = error.code;
+  // A 429 during verification is a rate limit, not a verdict on the code.
+  if (error.statusCode == '429' ||
+      (code != null && _rateLimitCodes.contains(code))) {
+    return false;
+  }
+
+  final message = error.message.toLowerCase();
+  return (code != null && _otpCodes.contains(code)) ||
+      message.contains('otp') ||
+      (message.contains('token') &&
+          (message.contains('expired') || message.contains('invalid')));
+}
+
+/// Maps a failure from `verifyOTP` — the one call site that can tell a
+/// mistyped code from a stale one.
+///
+/// GoTrue answers both cases *identically*: HTTP 403, `error_code`
+/// `otp_expired`, `msg` "Token has expired or is invalid" — verified against
+/// the live project by submitting a code that was never issued, which still
+/// comes back as `otp_expired`. That collapse is deliberate on Supabase's
+/// side; splitting them server-side would let the endpoint confirm that a
+/// guessed code was real and merely late. `otp_expired` is therefore the
+/// generic OTP-failure code, not an expiry signal, and no response field
+/// distinguishes the two.
+///
+/// So the split is made here instead, on [sinceCodeSent] — how long ago we
+/// sent the code the person is answering. It is a heuristic, not ground
+/// truth: a wrong code typed after the window will be reported as expired.
+/// That errs toward the action that actually unblocks them (request a new
+/// code), which is why it leans this way rather than the other.
+AuthErrorInfo mapOtpVerifyError(
+  Object error, {
+  required Duration sinceCodeSent,
+}) {
+  if (_isOtpCodeRejected(error)) {
+    return AuthErrorInfo(
+      sinceCodeSent >= otpValidityWindow ? otpExpiredMessage : otpIncorrectMessage,
+    );
+  }
+  return mapAuthError(error);
+}
 
 /// Turns a caught exception from a Supabase auth call, Google sign-in, or a
 /// plain network failure into a message the person on screen can act on.
@@ -61,21 +200,34 @@ AuthErrorInfo mapAuthError(Object error) {
       );
     }
 
-    if ((code != null && _otpCodes.contains(code)) ||
-        message.contains('otp') ||
-        (message.contains('token') &&
-            (message.contains('expired') || message.contains('invalid')))) {
+    // Callers that can't date the code they're verifying (anything other than
+    // the OTP screen) keep the combined wording; see [mapOtpVerifyError] for
+    // why the two cases can't be told apart from the response alone.
+    if (_isOtpCodeRejected(error)) {
       return const AuthErrorInfo('الرمز غير صحيح أو منتهي الصلاحية. حاول مرة أخرى.');
     }
 
-    if (message.contains('invalid login credentials')) {
-      return const AuthErrorInfo('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+    if (code != null) {
+      final mapped = _codeMessages[code];
+      if (mapped != null) {
+        return AuthErrorInfo(
+          mapped,
+          severity: _warningCodes.contains(code)
+              ? AuthErrorSeverity.warning
+              : AuthErrorSeverity.error,
+        );
+      }
     }
 
-    return AuthErrorInfo(
-      error.message.isNotEmpty ? error.message : 'حدث خطأ غير متوقع. حاول مرة أخرى.',
-    );
+    for (final entry in _messageFragments.entries) {
+      if (message.contains(entry.key)) return AuthErrorInfo(entry.value);
+    }
+
+    // Anything still unrecognised stops here rather than being echoed: raw
+    // GoTrue text is English, and some of it is internal detail the person
+    // on screen can neither read nor act on.
+    return const AuthErrorInfo(genericAuthErrorMessage);
   }
 
-  return const AuthErrorInfo('حدث خطأ غير متوقع. حاول مرة أخرى.');
+  return const AuthErrorInfo(genericAuthErrorMessage);
 }
