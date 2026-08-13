@@ -1,11 +1,11 @@
 # Graph Report - medico  (2026-08-13)
 
 ## Corpus Check
-- 58 files · ~19,722 words
+- 58 files · ~20,398 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 539 nodes · 671 edges · 30 communities (24 shown, 6 thin omitted)
+- 546 nodes · 678 edges · 27 communities (22 shown, 5 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 23 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
@@ -32,15 +32,12 @@
 - auth_error_banner.dart
 - MainActivity.kt
 - .claude/CLAUDE.md graphify trigger instructions
-- State
 - Flutter DevTools configuration
 - iOS LaunchImage asset instructions
 - medico project README
 - String?
-- SignInPage
 - initState
 - user_profile.dart
-- RegisterPlugins
 
 ## God Nodes (most connected - your core abstractions)
 1. `Win32Window` - 22 edges
@@ -74,15 +71,15 @@
 - **Firebase service integration via pubspec dependencies** — concept_firebase_core, concept_firebase_messaging, concept_firebase_crashlytics [INFERRED 0.85]
 - **graphify skill trigger configuration across CLAUDE.md files** — claude_claude_md_graphify_trigger, claude_md_graphify_rules, concept_graphify [EXTRACTED 1.00]
 
-## Communities (30 total, 6 thin omitted)
+## Communities (27 total, 5 thin omitted)
 
 ### Community 0 - "sign_in_page.dart"
 Cohesion: 0.03
 Nodes (62): _banner, _border, build, _buildBrand, _buildCard, _buildDivider, _buildFieldError, _buildForm (+54 more)
 
 ### Community 1 - "Win32Window"
-Cohesion: 0.07
-Nodes (51): Point, RECT, Size, unique_ptr, DartProject, HWND, LPARAM, LRESULT (+43 more)
+Cohesion: 0.06
+Nodes (53): PluginRegistry, Point, RECT, Size, unique_ptr, RegisterPlugins(), DartProject, HWND (+45 more)
 
 ### Community 2 - "GeneratedPluginRegistrant.swift"
 Cohesion: 0.05
@@ -97,12 +94,12 @@ Cohesion: 0.06
 Nodes (30): android, DefaultFirebaseOptions, ios, macos, web, windows, build, buildOverscrollIndicator (+22 more)
 
 ### Community 5 - "auth_error_mapper.dart"
-Cohesion: 0.12
-Nodes (16): AuthErrorInfo, code, error, _isOtpCodeRejected, mapAuthError, mapOtpVerifyError, message, _otpCodes (+8 more)
+Cohesion: 0.09
+Nodes (22): accountAlreadyExistsMessage, AuthErrorInfo, code, _codeMessages, emailNotConfirmedMessage, error, genericAuthErrorMessage, _isOtpCodeRejected (+14 more)
 
 ### Community 6 - "sign_up_screen.dart"
 Cohesion: 0.03
-Nodes (58): double get, _agreedToPrivacy, _banner, _border, build, _buildBrand, _buildCard, _buildDivider (+50 more)
+Nodes (59): double get, _agreedToPrivacy, _banner, _border, build, _buildBrand, _buildCard, _buildDivider (+51 more)
 
 ### Community 7 - "wWinMain"
 Cohesion: 0.24
@@ -122,7 +119,7 @@ Nodes (10): background_color, description, display, icons, name, orientation, pr
 
 ### Community 11 - "forgot_password_sheet.dart"
 Cohesion: 0.05
-Nodes (44): auth_error_banner.dart, dart:async, dart:io, home_screen.dart, _bootstrap, build, _destinationForSession, fetchCurrentProfile (+36 more)
+Nodes (42): auth_error_banner.dart, dart:async, dart:io, home_screen.dart, _bootstrap, build, _destinationForSession, fetchCurrentProfile (+34 more)
 
 ### Community 12 - "Linux top-level CMake build config"
 Cohesion: 0.60
@@ -133,20 +130,12 @@ Cohesion: 0.04
 Nodes (50): DateTime, _bannerRetry, _border, build, _buildBody, _buildBrand, _buildCard, _buildForm (+42 more)
 
 ### Community 14 - "auth_error_banner.dart"
-Cohesion: 0.08
-Nodes (24): _amber, AuthErrorBanner, _AuthErrorBannerState, _autoDismissDelay, _autoDismissTimer, build, createState, didUpdateWidget (+16 more)
+Cohesion: 0.06
+Nodes (36): OtpVerificationScreen, _OtpVerificationScreenState, SignInPage, _SignInPageState, SignInScreen, SignUpScreen, _SignUpScreenState, _amber (+28 more)
 
 ### Community 16 - ".claude/CLAUDE.md graphify trigger instructions"
 Cohesion: 1.00
 Nodes (3): .claude/CLAUDE.md graphify trigger instructions, CLAUDE.md graphify usage rules, graphify knowledge graph tool
-
-### Community 17 - "State"
-Cohesion: 0.40
-Nodes (6): OtpVerificationScreen, _OtpVerificationScreenState, SignUpScreen, _SignUpScreenState, State, StatefulWidget
-
-### Community 26 - "SignInPage"
-Cohesion: 0.40
-Nodes (4): SignInPage, _SignInPageState, SignInScreen, sign_in_page.dart
 
 ### Community 27 - "initState"
 Cohesion: 0.67
@@ -157,24 +146,24 @@ Cohesion: 0.13
 Nodes (14): bool get, doctor, fromMap, fromText, fullName, id, isDoctor, phone (+6 more)
 
 ## Knowledge Gaps
-- **303 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+298 more)
+- **310 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+305 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `FlutterWindow` connect `Win32Window` to `GeneratedPluginRegistrant.swift`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `AuthErrorInfo` connect `auth_error_mapper.dart` to `sign_in_page.dart`, `forgot_password_sheet.dart`, `sign_up_screen.dart`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `MessageHandler` (e.g. with `Destroy` and `GetClientArea`) actually correct?**
   _`MessageHandler` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `Create` (e.g. with `Destroy` and `UpdateTheme`) actually correct?**
   _`Create` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
-  _303 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _310 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.031746031746031744 - nodes in this community are weakly interconnected._
 - **Should `Win32Window` be split into smaller, more focused modules?**
-  _Cohesion score 0.06594071385359952 - nodes in this community are weakly interconnected._
-- **Should `GeneratedPluginRegistrant.swift` be split into smaller, more focused modules?**
-  _Cohesion score 0.05087881591119334 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0597567424643046 - nodes in this community are weakly interconnected._

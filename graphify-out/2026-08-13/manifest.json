@@ -280,13 +280,13 @@
     "semantic_hash": ""
   },
   "lib/screens/otp_verification_screen.dart": {
-    "mtime": 1786634272.9475224,
-    "ast_hash": "45df7ad17d91f2f70752fa6eff76bbb1",
+    "mtime": 1786645017.8766713,
+    "ast_hash": "52598727512421a1a987d393acd9fd95",
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1786499488.0391848,
-    "ast_hash": "daa9955a4f3e1cc5757646f0bc776cbc",
+    "mtime": 1786645017.8814008,
+    "ast_hash": "0c60c08b60524689ab08a103b5644655",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {
@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "lib/utils/auth_error_mapper.dart": {
-    "mtime": 1786631882.2465758,
-    "ast_hash": "1f3efa91d974145dee8d5548cb353ca2",
+    "mtime": 1786645017.8814008,
+    "ast_hash": "e1b66f919cbb60459e073dc1a7101d19",
     "semantic_hash": ""
   },
   "lib/widgets/auth_error_banner.dart": {

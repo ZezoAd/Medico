@@ -894,8 +894,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreen",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "otpverificationscreen"
     },
     {
@@ -905,8 +905,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statefulwidget",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "statefulwidget"
     },
     {
@@ -916,8 +916,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreenstate",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "_otpverificationscreenstate"
     },
     {
@@ -927,8 +927,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "state",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "state"
     },
     {
@@ -1576,8 +1576,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_signinpage",
-      "community": 26,
-      "community_name": "SignInPage",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "signinpage"
     },
     {
@@ -1598,8 +1598,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_signinpagestate",
-      "community": 26,
-      "community_name": "SignInPage",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "_signinpagestate"
     },
     {
@@ -2390,8 +2390,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_screen",
-      "community": 26,
-      "community_name": "SignInPage",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "sign_in_screen.dart"
     },
     {
@@ -2401,8 +2401,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_screen_signinscreen",
-      "community": 26,
-      "community_name": "SignInPage",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "signinscreen"
     },
     {
@@ -2412,8 +2412,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "sign_in_page_dart",
-      "community": 26,
-      "community_name": "SignInPage",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "sign_in_page.dart"
     },
     {
@@ -2434,8 +2434,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_signupscreen",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "signupscreen"
     },
     {
@@ -2445,8 +2445,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_signupscreenstate",
-      "community": 17,
-      "community_name": "State",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "_signupscreenstate"
     },
     {
@@ -2923,6 +2923,17 @@
       "norm_label": "_validate"
     },
     {
+      "label": "_isAlreadyRegistered",
+      "file_type": "code",
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_sign_up_screen_isalreadyregistered",
+      "community": 6,
+      "community_name": "sign_up_screen.dart",
+      "norm_label": "_isalreadyregistered"
+    },
+    {
       "label": "_handleSubmit",
       "file_type": "code",
       "source_file": "lib/screens/sign_up_screen.dart",
@@ -3253,6 +3264,39 @@
       "norm_label": "sessioninvalidmessage"
     },
     {
+      "label": "genericAuthErrorMessage",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_genericautherrormessage",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "genericautherrormessage"
+    },
+    {
+      "label": "emailNotConfirmedMessage",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_emailnotconfirmedmessage",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "emailnotconfirmedmessage"
+    },
+    {
+      "label": "accountAlreadyExistsMessage",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_accountalreadyexistsmessage",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "accountalreadyexistsmessage"
+    },
+    {
       "label": "_rateLimitCodes",
       "file_type": "code",
       "source_file": "lib/utils/auth_error_mapper.dart",
@@ -3273,6 +3317,39 @@
       "community": 5,
       "community_name": "auth_error_mapper.dart",
       "norm_label": "_otpcodes"
+    },
+    {
+      "label": "_codeMessages",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_codemessages",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "_codemessages"
+    },
+    {
+      "label": "_messageFragments",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_messagefragments",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "_messagefragments"
+    },
+    {
+      "label": "_warningCodes",
+      "file_type": "code",
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_utils_auth_error_mapper_warningcodes",
+      "community": 5,
+      "community_name": "auth_error_mapper.dart",
+      "norm_label": "_warningcodes"
     },
     {
       "label": "otpValidityWindow",
@@ -3644,8 +3721,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_forgot_password_sheet_forgotpasswordsheet",
-      "community": 11,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "forgotpasswordsheet"
     },
     {
@@ -3655,8 +3732,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_forgot_password_sheet_forgotpasswordsheetstate",
-      "community": 11,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 14,
+      "community_name": "auth_error_banner.dart",
       "norm_label": "_forgotpasswordsheetstate"
     },
     {
@@ -4954,8 +5031,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "windows_flutter_generated_plugin_registrant_cc_windows_flutter_generated_plugin_registrant",
-      "community": 29,
-      "community_name": "RegisterPlugins",
+      "community": 1,
+      "community_name": "Win32Window",
       "norm_label": "windows/flutter/generated_plugin_registrant.cc"
     },
     {
@@ -4966,8 +5043,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "windows_flutter_generated_plugin_registrant_registerplugins",
-      "community": 29,
-      "community_name": "RegisterPlugins",
+      "community": 1,
+      "community_name": "Win32Window",
       "norm_label": "registerplugins()"
     },
     {
@@ -4977,8 +5054,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "pluginregistry",
-      "community": 29,
-      "community_name": "RegisterPlugins",
+      "community": 1,
+      "community_name": "Win32Window",
       "norm_label": "pluginregistry"
     },
     {
@@ -4988,8 +5065,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "windows_flutter_generated_plugin_registrant_h_windows_flutter_generated_plugin_registrant",
-      "community": 29,
-      "community_name": "RegisterPlugins",
+      "community": 1,
+      "community_name": "Win32Window",
       "norm_label": "windows/flutter/generated_plugin_registrant.h"
     },
     {
@@ -9649,6 +9726,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
+      "target": "lib_screens_sign_up_screen_isalreadyregistered"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_up_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_up_screen",
       "target": "lib_screens_sign_up_screen_loading"
     },
     {
@@ -10068,6 +10156,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_accountalreadyexistsmessage"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
       "target": "lib_utils_auth_error_mapper_autherrorinfo"
     },
     {
@@ -10090,7 +10189,40 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_codemessages"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_emailnotconfirmedmessage"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
       "target": "lib_utils_auth_error_mapper_error"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_genericautherrormessage"
     },
     {
       "relation": "defines",
@@ -10135,6 +10267,17 @@
       "_origin": "ast",
       "source": "lib_utils_auth_error_mapper",
       "target": "lib_utils_auth_error_mapper_message"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_messagefragments"
     },
     {
       "relation": "defines",
@@ -10212,6 +10355,17 @@
       "_origin": "ast",
       "source": "lib_utils_auth_error_mapper",
       "target": "lib_utils_auth_error_mapper_severity"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/utils/auth_error_mapper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_utils_auth_error_mapper",
+      "target": "lib_utils_auth_error_mapper_warningcodes"
     },
     {
       "relation": "references",
