@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:pinput/pinput.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../utils/auth_error_mapper.dart';
@@ -8,9 +8,11 @@ import 'home_screen.dart';
 
 enum _OtpStatus { empty, filling, loading, success, failure }
 
-/// Six-digit email OTP verification screen matching [SignInPage]'s visual
-/// language. Sends the code via Supabase's `signInWithOtp` email flow on
-/// entry, then verifies whatever the user types with `verifyOTP`.
+/// Six-digit signup confirmation screen matching [SignInPage]'s visual
+/// language. `signUp` (called before this screen is pushed) already sends
+/// the "Confirm signup" email, so this screen only verifies what the user
+/// types via `verifyOTP(type: OtpType.signup)`; resending re-sends that same
+/// signup-confirmation email via `resend(type: OtpType.signup)`.
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key, required this.email});
 
@@ -30,11 +32,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   static const _successGreen = Color(0xFF16A34A);
   static const _digitCount = 6;
 
-  final _digitControllers = List.generate(
-    _digitCount,
-    (_) => TextEditingController(),
-  );
-  final _digitFocusNodes = List.generate(_digitCount, (_) => FocusNode());
+  final _pinController = TextEditingController();
+  final _pinFocusNode = FocusNode();
 
   _OtpStatus _status = _OtpStatus.empty;
   String? _errorMessage;
@@ -42,7 +41,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   bool _sendFailed = false;
   bool _mounted = false;
 
-  String get _code => _digitControllers.map((c) => c.text).join();
+  String get _code => _pinController.text;
 
   bool get _isComplete => _code.length == _digitCount;
 
@@ -52,26 +51,21 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
-    _sendCode();
   }
 
   @override
   void dispose() {
-    for (final c in _digitControllers) {
-      c.dispose();
-    }
-    for (final f in _digitFocusNodes) {
-      f.dispose();
-    }
+    _pinController.dispose();
+    _pinFocusNode.dispose();
     super.dispose();
   }
 
   Future<void> _sendCode() async {
     setState(() => _sendFailed = false);
     try {
-      await Supabase.instance.client.auth.signInWithOtp(
+      await Supabase.instance.client.auth.resend(
+        type: OtpType.signup,
         email: widget.email,
-        shouldCreateUser: false,
       );
     } catch (e) {
       if (!mounted) return;
@@ -88,14 +82,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       _status = _OtpStatus.empty;
       _errorMessage = null;
     });
-    for (final c in _digitControllers) {
-      c.clear();
-    }
+    _pinController.clear();
     await _sendCode();
     if (!mounted) return;
     setState(() => _resending = false);
     if (!_sendFailed) {
-      _digitFocusNodes.first.requestFocus();
+      _pinFocusNode.requestFocus();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('تم إرسال رمز جديد إلى بريدك الإلكتروني.'),
@@ -104,22 +96,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
   }
 
-  void _onDigitChanged(int index, String value) {
-    if (value.isNotEmpty && index < _digitCount - 1) {
-      _digitFocusNodes[index + 1].requestFocus();
-    }
+  void _onPinChanged(String value) {
     setState(() {
       _errorMessage = null;
-      _status = _code.isEmpty ? _OtpStatus.empty : _OtpStatus.filling;
+      _status = value.isEmpty ? _OtpStatus.empty : _OtpStatus.filling;
     });
-    if (_isComplete) _verify();
-  }
-
-  void _onDigitBackspace(int index) {
-    if (_digitControllers[index].text.isEmpty && index > 0) {
-      _digitFocusNodes[index - 1].requestFocus();
-      _digitControllers[index - 1].clear();
-    }
   }
 
   Future<void> _verify() async {
@@ -130,8 +111,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     });
 
     try {
+      // TEMP: confirms the assembled code is true left-to-right numeric
+      // order before it's sent — remove once the RTL fix is verified.
+      debugPrint('OTP code sent to verifyOTP: $_code');
       await Supabase.instance.client.auth
-          .verifyOTP(email: widget.email, token: _code, type: OtpType.email)
+          .verifyOTP(email: widget.email, token: _code, type: OtpType.signup)
           .timeout(const Duration(seconds: 15));
       if (!mounted) return;
       setState(() => _status = _OtpStatus.success);
@@ -148,14 +132,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void _handleFailure(String message) {
     if (!mounted) return;
+    // Pinput's controller fires onChanged on programmatic clears too, so
+    // clearing first (while onChanged still resets to the empty/idle state)
+    // and setting the failure state after keeps it from immediately
+    // clobbering the banner and error theme this method is trying to show.
+    _pinController.clear();
     setState(() {
       _status = _OtpStatus.failure;
       _errorMessage = message;
     });
-    for (final c in _digitControllers) {
-      c.clear();
-    }
-    _digitFocusNodes.first.requestFocus();
+    _pinFocusNode.requestFocus();
   }
 
   /// The banner's "try again" action — clears whatever was typed and drops
@@ -167,10 +153,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       _errorMessage = null;
       _sendFailed = false;
     });
-    for (final c in _digitControllers) {
-      c.clear();
-    }
-    _digitFocusNodes.first.requestFocus();
+    _pinController.clear();
+    _pinFocusNode.requestFocus();
   }
 
   bool get _showBanner => _errorMessage != null && (_sendFailed || _status == _OtpStatus.failure);
@@ -348,7 +332,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        _buildDigitRow(disabled: disabled, hasError: hasError),
+        _buildPinInput(disabled: disabled, hasError: hasError),
         const SizedBox(height: 24),
         _buildVerifyButton(),
         const SizedBox(height: 18),
@@ -357,75 +341,59 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
-  Widget _buildDigitRow({required bool disabled, required bool hasError}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(_digitCount, (i) {
-        return SizedBox(
-          width: 44,
-          height: 52,
-          child: Focus(
-            canRequestFocus: false,
-            skipTraversal: true,
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.backspace) {
-                _onDigitBackspace(i);
-              }
-              return KeyEventResult.ignored;
-            },
-            child: TextField(
-              controller: _digitControllers[i],
-              focusNode: _digitFocusNodes[i],
-              enabled: !disabled,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              maxLength: 1,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: _ink,
-              ),
-              decoration: InputDecoration(
-                counterText: '',
-                filled: true,
-                fillColor: _fieldFill,
-                contentPadding: EdgeInsets.zero,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: hasError ? _danger : _border,
-                    width: 1.5,
-                  ),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: hasError ? _danger : _border,
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: hasError ? _danger : _teal,
-                    width: 2,
-                  ),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: hasError ? _danger : _border,
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              onChanged: (value) => _onDigitChanged(i, value),
-            ),
-          ),
-        );
-      }),
+  /// The typed sequence must assemble in true left-to-right numeric order
+  /// regardless of the surrounding screen's RTL direction, or digits land in
+  /// the wrong box and the wrong code gets sent to verifyOTP — so the pin
+  /// field is force-wrapped LTR here, independent of the app's Arabic
+  /// Directionality above it.
+  Widget _buildPinInput({required bool disabled, required bool hasError}) {
+    final defaultTheme = PinTheme(
+      width: 44,
+      height: 52,
+      textStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: _ink,
+      ),
+      decoration: BoxDecoration(
+        color: _fieldFill,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasError ? _danger : _border,
+          width: 1.5,
+        ),
+      ),
+    );
+    final focusedTheme = defaultTheme.copyWith(
+      decoration: BoxDecoration(
+        color: _fieldFill,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: hasError ? _danger : _teal, width: 2),
+      ),
+    );
+    final submittedTheme = defaultTheme;
+
+    return Center(
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Pinput(
+          length: _digitCount,
+          controller: _pinController,
+          focusNode: _pinFocusNode,
+          enabled: !disabled,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          separatorBuilder: (_) => const SizedBox(width: 8),
+          defaultPinTheme: defaultTheme,
+          focusedPinTheme: focusedTheme,
+          submittedPinTheme: submittedTheme,
+          errorPinTheme: defaultTheme,
+          forceErrorState: hasError,
+          showCursor: true,
+          onChanged: _onPinChanged,
+          onCompleted: (_) => _verify(),
+        ),
+      ),
     );
   }
 
