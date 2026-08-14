@@ -286,6 +286,35 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mc3Z2aWZ4a3d4cHlydHdzeHhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTg2NzIsImV4cCI6MjEwMTY5NDY3Mn0.VDZEmhUTv_uZ-xJw2y07wB92a0uBsO6-KF-_oxijgpE';
   // ─────────────────────────────────────────────────────────────────────────
 
+  // Registered before anything else can fail. The page opens on the validating
+  // spinner, so *any* uncaught error — including one thrown before the const
+  // declarations below exist — would otherwise leave that spinner turning with
+  // nothing on screen to explain it. That silence is what hid the null-screen
+  // bug, so it gets a net rather than a comment.
+  //
+  // Deliberately touches the DOM directly instead of going through showScreen:
+  // this must stay safe to call before `screens` is initialised.
+  function showFatalError(err) {
+    console.error('reset-password bootstrap failed —', err);
+    document.querySelectorAll('.state-screen, .form-screen')
+      .forEach(el => el.classList.remove('active'));
+    const invalid = document.getElementById('state-invalid');
+    if (invalid) invalid.classList.add('active');
+    const title = document.getElementById('invalid-title');
+    const text = document.getElementById('invalid-text');
+    const debug = document.getElementById('debug-error');
+    if (title) title.textContent = 'تعذر فتح الصفحة';
+    if (text) {
+      text.textContent = 'حدث خطأ غير متوقع أثناء فتح صفحة إعادة التعيين. '
+        + 'أعد المحاولة من الرابط في بريدك، أو اطلب رابطًا جديدًا من التطبيق.';
+    }
+    if (debug) debug.textContent = 'DEBUG: ' + (err && err.stack ? err.stack : String(err));
+  }
+  window.addEventListener('error', (e) => showFatalError(e.error || e.message));
+  window.addEventListener('unhandledrejection', (e) => showFatalError(e.reason));
+
+  // Not inside a try/catch: if the CDN never delivered `supabase`, the throw is
+  // picked up by the window 'error' handler above, which is what renders it.
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ── Error message mapping ───────────────────────────────────────────────
@@ -342,16 +371,36 @@
     return GENERIC_ERROR_MESSAGE;
   }
 
+  // Exactly the four <div>s this page actually renders. There was once a fifth,
+  // `state-confirm` — a "press متابعة to continue" interstitial that kept email
+  // scanners from burning the token. Verifying the token from JS on load does
+  // that job now, so the screen was deleted, but its lookup was left behind
+  // here and resolved to null, which made the very first showScreen() throw on
+  // `null.classList` and strand the page on the validating spinner forever.
+  // Keep this map and the markup in sync: every key must have a real element.
   const screens = {
-    confirm: document.getElementById('state-confirm'),
     validating: document.getElementById('state-validating'),
     invalid: document.getElementById('state-invalid'),
     form: document.getElementById('state-form'),
     success: document.getElementById('state-success'),
   };
+
   function showScreen(name) {
-    Object.values(screens).forEach(el => el.classList.remove('active'));
-    screens[name].classList.add('active');
+    // Defensive on purpose: a missing screen must degrade to a loud console
+    // warning, never to an exception that halts the whole flow mid-transition.
+    for (const [key, el] of Object.entries(screens)) {
+      if (!el) {
+        console.warn('showScreen: no element for screen "' + key + '" — check its id in the markup.');
+        continue;
+      }
+      el.classList.remove('active');
+    }
+    const target = screens[name];
+    if (!target) {
+      console.warn('showScreen: cannot show unknown or missing screen "' + name + '".');
+      return;
+    }
+    target.classList.add('active');
   }
 
   // Read the token straight from the URL, then verify it immediately —
@@ -363,30 +412,42 @@
   const otpType = params.get('type') || 'recovery';
 
   (async () => {
-    if (!tokenHash) {
-      document.getElementById('debug-error').textContent = 'DEBUG: no token_hash found in URL. Full URL: ' + window.location.href;
-      showScreen('invalid');
-      return;
-    }
+    // Outer guard: the inner catch only understands failures *from* verifyOtp.
+    // Anything else thrown while bootstrapping — a missing element, a CDN that
+    // never delivered the Supabase client — lands in showFatalError instead of
+    // escaping as an unhandled rejection and leaving the spinner running.
     try {
-      const { error } = await supabaseClient.auth.verifyOtp({
-        token_hash: tokenHash,
-        type: otpType,
-      });
-      if (error) throw error;
-      showScreen('form');
-    } catch (err) {
-      document.getElementById('debug-error').textContent = 'DEBUG: ' + (err && err.message ? err.message : String(err)) + ' | token_hash used: ' + tokenHash + ' | type: ' + otpType;
-      // A dropped connection never actually asked Supabase about the link,
-      // so it must not be reported as if the link itself were the problem.
-      if (isNetworkError(err)) {
-        document.getElementById('invalid-title').textContent = 'تعذر الاتصال بالإنترنت';
-        document.getElementById('invalid-text').textContent = NETWORK_ERROR_MESSAGE;
-      } else {
-        document.getElementById('invalid-title').textContent = 'انتهت صلاحية الرابط';
-        document.getElementById('invalid-text').textContent = 'هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.';
+      if (!tokenHash) {
+        const debug = document.getElementById('debug-error');
+        if (debug) debug.textContent = 'DEBUG: no token_hash found in URL. Full URL: ' + window.location.href;
+        showScreen('invalid');
+        return;
       }
-      showScreen('invalid');
+      try {
+        const { error } = await supabaseClient.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: otpType,
+        });
+        if (error) throw error;
+        showScreen('form');
+      } catch (err) {
+        const debug = document.getElementById('debug-error');
+        if (debug) debug.textContent = 'DEBUG: ' + (err && err.message ? err.message : String(err)) + ' | token_hash used: ' + tokenHash + ' | type: ' + otpType;
+        // A dropped connection never actually asked Supabase about the link,
+        // so it must not be reported as if the link itself were the problem.
+        const title = document.getElementById('invalid-title');
+        const text = document.getElementById('invalid-text');
+        if (isNetworkError(err)) {
+          if (title) title.textContent = 'تعذر الاتصال بالإنترنت';
+          if (text) text.textContent = NETWORK_ERROR_MESSAGE;
+        } else {
+          if (title) title.textContent = 'انتهت صلاحية الرابط';
+          if (text) text.textContent = 'هذا الرابط غير صالح أو تم استخدامه من قبل. يرجى طلب رابط جديد من التطبيق.';
+        }
+        showScreen('invalid');
+      }
+    } catch (fatal) {
+      showFatalError(fatal);
     }
   })();
 
