@@ -29,6 +29,7 @@ class UserProfile {
     required this.fullName,
     required this.role,
     this.phone,
+    this.signupVerified = false,
   });
 
   /// Matches `auth.users.id`.
@@ -36,6 +37,15 @@ class UserProfile {
   final String fullName;
   final UserRole role;
   final String? phone;
+
+  /// Whether this account finished the real signup OTP flow (or was created
+  /// by a provider that proves email ownership itself).
+  ///
+  /// Deliberately *not* the same thing as Supabase's own confirmation state,
+  /// which also flips on a completed password recovery — see
+  /// `004_signup_verified.sql`. Defaults to false when the column is missing
+  /// from the row, so a partial read can never wave an account through.
+  final bool signupVerified;
 
   bool get isDoctor => role == UserRole.doctor;
 
@@ -45,6 +55,7 @@ class UserProfile {
       fullName: (map['full_name'] as String?)?.trim() ?? '',
       role: UserRole.fromText(map['role'] as String?),
       phone: map['phone'] as String?,
+      signupVerified: map['signup_verified'] as bool? ?? false,
     );
   }
 }

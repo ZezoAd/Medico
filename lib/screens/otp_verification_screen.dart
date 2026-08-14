@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../services/profile_service.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
@@ -16,9 +17,20 @@ enum _OtpStatus { empty, filling, loading, success, failure }
 /// types via `verifyOTP(type: OtpType.signup)`; resending re-sends that same
 /// signup-confirmation email via `resend(type: OtpType.signup)`.
 class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key, required this.email});
+  const OtpVerificationScreen({
+    super.key,
+    required this.email,
+    this.passwordUnchanged = false,
+  });
 
   final String email;
+
+  /// Set when this screen was reached by re-signing-up an address that
+  /// already had an unverified account. GoTrue resent the code but kept the
+  /// original password, so the one just typed on the signup form is not the
+  /// one on the account — worth saying plainly here rather than letting it
+  /// surface later as an unexplained "wrong email or password".
+  final bool passwordUnchanged;
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -37,6 +49,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   final _pinController = TextEditingController();
   final _pinFocusNode = FocusNode();
+  final _profileService = const ProfileService();
 
   _OtpStatus _status = _OtpStatus.empty;
   String? _errorMessage;
@@ -159,6 +172,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       await Supabase.instance.client.auth
           .verifyOTP(email: widget.email, token: _code, type: OtpType.signup)
           .timeout(const Duration(seconds: 15));
+      // This screen is the *only* place the signup flag is ever set — it is
+      // what later tells a real signup apart from an account that merely
+      // looks confirmed because it went through password recovery.
+      //
+      // Best-effort on purpose: the code was accepted and the session is
+      // live, so a failure here must not strand someone on the OTP screen
+      // with nothing left to verify. If it does fail, the next sign-in sees
+      // signup_verified = false and offers the resend path, which lands
+      // right back here — recoverable, unlike a dead end.
+      try {
+        await _profileService.markSignupVerified();
+      } catch (e) {
+        debugPrint('markSignupVerified failed after signup OTP: $e');
+      }
       if (!mounted) return;
       setState(() => _status = _OtpStatus.success);
       await Future<void>.delayed(const Duration(milliseconds: 1200));
@@ -368,6 +395,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             ],
           ),
         ),
+        if (widget.passwordUnchanged) ...[
+          const SizedBox(height: 14),
+          _buildPasswordUnchangedNote(),
+        ],
         const SizedBox(height: 24),
         _buildPinInput(disabled: disabled, hasError: hasError),
         const SizedBox(height: 24),
@@ -430,6 +461,39 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           onChanged: _onPinChanged,
           onCompleted: (_) => _verify(),
         ),
+      ),
+    );
+  }
+
+  /// Amber note for the re-signup case: the account already existed, so the
+  /// password on it is still the original one.
+  Widget _buildPasswordUnchangedNote() {
+    const amber = Color(0xFFD97706);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: amber.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: amber.withValues(alpha: 0.28)),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: amber),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'هذا الحساب مسجل بالفعل وبانتظار التفعيل، وأرسلنا لك رمزًا جديدًا. '
+              'كلمة المرور لم تتغير — كلمة المرور الأصلية هي السارية.',
+              style: TextStyle(
+                fontSize: 12.5,
+                color: _ink,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

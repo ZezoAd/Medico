@@ -174,6 +174,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return identities != null && identities.isEmpty;
   }
 
+  /// True when `signUp` resent a confirmation for an account that already
+  /// existed *unverified*, rather than creating a new one.
+  ///
+  /// GoTrue deliberately does not overwrite an existing unconfirmed user's
+  /// password ("do not update the user because we can't be sure of their
+  /// claimed identity"), and it resends the code instead. Unlike the
+  /// already-*confirmed* case above, the user it returns is the real row —
+  /// real id, one real identity — so [_isAlreadyRegistered] cannot see it
+  /// and the flow continues to [OtpVerificationScreen] as if nothing were
+  /// unusual.
+  ///
+  /// That matters because the password just typed is *not* the one now on
+  /// the account. The original still is. Signing in with the new one comes
+  /// back as `invalid_credentials`, because GoTrue checks the password
+  /// before it ever checks confirmation state — indistinguishable from a
+  /// plain typo, and the reason this case looked like a mis-mapped error.
+  ///
+  /// The tell is the gap between when the row was created and when this
+  /// code was sent. Both timestamps come from the server, so unlike a
+  /// comparison against the device clock this cannot be thrown off by a
+  /// phone with a wrong time — which matters, because a false positive here
+  /// tells someone their password did not take when it did.
+  ///
+  /// A genuinely new account has the two within the same request (~2s).
+  /// A resend can only be more than a minute later regardless, because
+  /// GoTrue rejects a repeat send to the same address inside its own
+  /// per-address cooldown with a 429, so a *successful* resend is always
+  /// well past this threshold.
+  bool _isPreexistingUnverified(AuthResponse response) {
+    final user = response.user;
+    final createdAt = DateTime.tryParse(user?.createdAt ?? '');
+    final sentAt = DateTime.tryParse(user?.confirmationSentAt ?? '');
+    if (createdAt == null || sentAt == null) return false;
+    return sentAt.toUtc().difference(createdAt.toUtc()) >
+        const Duration(seconds: 30);
+  }
+
   Future<void> _handleSubmit() async {
     setState(() => _banner = null);
     if (!_validate()) return;
@@ -202,7 +239,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
       await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)),
+        MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(
+            email: email,
+            passwordUnchanged: _isPreexistingUnverified(response),
+          ),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -232,6 +274,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await Supabase.instance.client.auth
           .signInWithIdToken(provider: OAuthProvider.google, idToken: idToken)
           .timeout(_networkTimeout);
+      // Google already proved ownership of the address, so there is no OTP
+      // step to complete. The trigger in 004_signup_verified.sql stamps this
+      // at row-creation time; this repeats it client-side because a false
+      // negative there would lock a legitimate Google user out of the app
+      // entirely, and the call is idempotent and cheap.
+      await const ProfileService().markSignupVerified();
       await const ProfileService().fetchCurrentProfile();
       if (!mounted) return;
       // Clears the auth stack: there's nothing to come back to once signed in.
@@ -307,14 +355,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildForm() {
     // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
     // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
-    // so short screens scroll instead of overflowing. IntrinsicHeight then
-    // gives the Column a real, bounded height even though the box above it
-    // only sets a *minimum* - which is what makes Spacer work at all here.
+    // so the content centres on tall screens and scrolls on short ones.
+    //
+    // Centring is done with MainAxisAlignment.center rather than a pair of
+    // Spacers under an IntrinsicHeight. That earlier shape overflowed for the
+    // duration of every inline-error animation: IntrinsicHeight pinned the
+    // Column to the sum of its children's *target* intrinsic heights, while
+    // the error row's AnimatedSize was still painting an in-flight height on
+    // the way to that target. Dismissing the keyboard re-validates on blur
+    // and collapses those errors, which left the Column laid out shorter
+    // than what it was painting, with no Spacer slack left to absorb it.
+    //
+    // With no flex children the Column simply takes max(content, viewport)
+    // from the ConstrainedBox, so a mid-animation residual is free space
+    // rather than an overflow, and nothing queries intrinsics at all.
     //
     // minTopGap/minBottomGap are flat constants, never derived from
     // constraints or MediaQuery, so they can never shrink below 24px no
-    // matter the screen size or content height - only the two
-    // Spacer(flex: 1)s absorb/shrink with available space.
+    // matter the screen size or content height.
     return LayoutBuilder(
       builder: (context, constraints) {
         // The brand → card gap scales with the viewport instead of a fixed
@@ -327,32 +385,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: Padding(
-                // Extra bottom padding lets the scroll view carry a focused
-                // field above the keyboard instead of it hiding behind it.
-                padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: minTopGap),
-                    const Spacer(flex: 1),
-                    _buildBrand(),
-                    SizedBox(height: midGap),
-                    AnimatedSlide(
+            child: Padding(
+              // Extra bottom padding lets the scroll view carry a focused
+              // field above the keyboard instead of it hiding behind it.
+              padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: minTopGap),
+                  _buildBrand(),
+                  SizedBox(height: midGap),
+                  AnimatedSlide(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                    child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOut,
-                      offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 400),
-                        opacity: _mounted ? 1 : 0,
-                        child: _buildCard(),
-                      ),
+                      opacity: _mounted ? 1 : 0,
+                      child: _buildCard(),
                     ),
-                    const Spacer(flex: 1),
-                    const SizedBox(height: minBottomGap),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: minBottomGap),
+                ],
               ),
             ),
           ),

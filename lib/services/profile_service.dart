@@ -22,4 +22,15 @@ class ProfileService {
 
     return UserProfile.fromMap(row);
   }
+
+  /// Records that the caller finished the real signup OTP flow.
+  ///
+  /// Goes through the `mark_signup_verified` RPC rather than a plain update
+  /// because `profiles.signup_verified` is deliberately not writable by the
+  /// `authenticated` role — a client that could set it directly could walk
+  /// straight past the check it exists to enforce. See
+  /// `004_signup_verified.sql`.
+  Future<void> markSignupVerified() async {
+    await Supabase.instance.client.rpc('mark_signup_verified');
+  }
 }

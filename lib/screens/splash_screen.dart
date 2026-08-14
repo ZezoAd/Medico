@@ -84,6 +84,18 @@ class SplashScreen extends StatelessWidget {
       if (profile == null) {
         throw const AuthException('Profile not found');
       }
+      // Catches a session that was established without ever passing the sign-in
+      // screen's own check — most realistically the one handed out by a
+      // completed password recovery, which is exactly the route around the
+      // signup OTP that `signup_verified` exists to close. Handled here rather
+      // than left to the sign-in screen, because this path never visits it.
+      if (!profile.signupVerified) {
+        await Supabase.instance.client.auth.signOut();
+        return SignInScreen(
+          initialErrorMessage: emailNotConfirmedMessage,
+          initialUnconfirmedEmail: userResponse.user!.email,
+        );
+      }
       return const HomeScreen();
     } on SocketException {
       rethrow;

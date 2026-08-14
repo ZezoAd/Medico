@@ -20,12 +20,22 @@ import 'sign_up_screen.dart';
 /// holding the credential form. Submitting swaps the whole screen for a
 /// success state.
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key, this.initialErrorMessage});
+  const SignInPage({
+    super.key,
+    this.initialErrorMessage,
+    this.initialUnconfirmedEmail,
+  });
 
   /// Shown as a dismissible banner as soon as this screen builds — used by
   /// [SplashScreen] to explain a forced sign-out instead of silently
   /// bouncing here with no context.
   final String? initialErrorMessage;
+
+  /// Set alongside [initialErrorMessage] when the sign-out that landed here
+  /// was caused by an account that never finished signup verification — it
+  /// gives that opening banner the same tappable "resend a code" action a
+  /// failed sign-in would have, instead of a message with no way forward.
+  final String? initialUnconfirmedEmail;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -109,7 +119,13 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     super.initState();
     if (widget.initialErrorMessage != null) {
-      _banner = AuthErrorInfo(widget.initialErrorMessage!);
+      _banner = AuthErrorInfo(
+        widget.initialErrorMessage!,
+        severity: widget.initialUnconfirmedEmail != null
+            ? AuthErrorSeverity.warning
+            : AuthErrorSeverity.error,
+      );
+      _pendingUnconfirmedEmail = widget.initialUnconfirmedEmail;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
@@ -196,6 +212,22 @@ class _SignInPageState extends State<SignInPage> {
       // real role lives in `profiles.role`, so signing in under the wrong tab
       // still succeeds and still lands wherever the database says it should.
       final profile = await _profileService.fetchCurrentProfile();
+      // The password was right, but that is not the same as having finished
+      // signup. Someone who abandoned the OTP screen and used forgot-password
+      // instead looks fully confirmed to Supabase, so the app's own flag is
+      // what stops them here — signed out again before they ever reach Home.
+      if (profile != null && !profile.signupVerified) {
+        await Supabase.instance.client.auth.signOut();
+        if (!mounted) return;
+        setState(() {
+          _banner = const AuthErrorInfo(
+            emailNotConfirmedMessage,
+            severity: AuthErrorSeverity.warning,
+          );
+          _pendingUnconfirmedEmail = email;
+        });
+        return;
+      }
       if (!mounted) return;
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => _destination(profile)),
@@ -281,6 +313,12 @@ class _SignInPageState extends State<SignInPage> {
       await Supabase.instance.client.auth
           .signInWithIdToken(provider: OAuthProvider.google, idToken: idToken)
           .timeout(_networkTimeout);
+      // Google already proved ownership of the address, so there is no OTP
+      // step to complete. The trigger in 004_signup_verified.sql stamps this
+      // at row-creation time; this repeats it client-side because a false
+      // negative there would lock a legitimate Google user out of the app
+      // entirely, and the call is idempotent and cheap.
+      await _profileService.markSignupVerified();
       final profile = await _profileService.fetchCurrentProfile();
       if (!mounted) return;
       // Clears the auth stack: there's nothing to come back to once signed in.
@@ -445,14 +483,24 @@ class _SignInPageState extends State<SignInPage> {
   Widget _buildForm() {
     // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
     // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
-    // so short screens scroll instead of overflowing. IntrinsicHeight then
-    // gives the Column a real, bounded height even though the box above it
-    // only sets a *minimum* - which is what makes Spacer work at all here.
+    // so the content centres on tall screens and scrolls on short ones.
+    //
+    // Centring is done with MainAxisAlignment.center rather than a pair of
+    // Spacers under an IntrinsicHeight. That earlier shape overflowed for the
+    // duration of every inline-error animation: IntrinsicHeight pinned the
+    // Column to the sum of its children's *target* intrinsic heights, while
+    // the error row's AnimatedSize was still painting an in-flight height on
+    // the way to that target. Collapsing errors therefore left the Column
+    // laid out shorter than what it was actually painting, and the Spacers
+    // had no slack left to absorb the difference on a full screen.
+    //
+    // With no flex children the Column simply takes max(content, viewport)
+    // from the ConstrainedBox, so a mid-animation residual is free space
+    // rather than an overflow, and nothing queries intrinsics at all.
     //
     // minTopGap/minBottomGap are flat constants, never derived from
     // constraints or MediaQuery, so they can never shrink below 24px no
-    // matter the screen size or content height - only the two
-    // Spacer(flex: 1)s absorb/shrink with available space.
+    // matter the screen size or content height.
     return LayoutBuilder(
       builder: (context, constraints) {
         final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
@@ -463,32 +511,28 @@ class _SignInPageState extends State<SignInPage> {
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: minTopGap),
-                    const Spacer(flex: 1),
-                    _buildBrand(),
-                    SizedBox(height: brandToTabs),
-                    _buildRoleTabs(),
-                    SizedBox(height: tabsToCard),
-                    AnimatedSlide(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: minTopGap),
+                  _buildBrand(),
+                  SizedBox(height: brandToTabs),
+                  _buildRoleTabs(),
+                  SizedBox(height: tabsToCard),
+                  AnimatedSlide(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                    child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOut,
-                      offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 400),
-                        opacity: _mounted ? 1 : 0,
-                        child: _buildCard(),
-                      ),
+                      opacity: _mounted ? 1 : 0,
+                      child: _buildCard(),
                     ),
-                    const Spacer(flex: 1),
-                    const SizedBox(height: minBottomGap),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: minBottomGap),
+                ],
               ),
             ),
           ),
@@ -529,12 +573,10 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _buildRoleTabs() {
-    // Fixed outer height (38 tab + 4+4 padding) so the ancestor
-    // IntrinsicHeight's query short-circuits here instead of reaching the
-    // LayoutBuilder below - LayoutBuilder unconditionally can't answer
-    // intrinsic-dimension queries, but a SizedBox with a tight height
-    // returns that height directly without ever asking its child. The
-    // slider's animation, curve, and layout below are untouched.
+    // Fixed outer height (38 tab + 4+4 padding). Nothing queries intrinsics
+    // any more now that _buildForm centres without IntrinsicHeight, but the
+    // tab strip is a fixed-height control regardless, so it stays pinned
+    // here rather than being re-derived from the slider's inner layout.
     return SizedBox(height: 46, child: _roleTabsContent());
   }
 
