@@ -29,5 +29,7 @@
   "27": "MaterialPageRoute",
   "28": "user_profile.dart",
   "29": "splash_screen.dart",
-  "30": "StatelessWidget"
+  "30": "StatelessWidget",
+  "31": "State",
+  "32": "SignUpScreen"
 }
