@@ -16,7 +16,6 @@
   "14": "auth_error_banner.dart",
   "15": "MainActivity.kt",
   "16": ".claude/CLAUDE.md graphify trigger instructions",
-  "17": "State",
   "18": "app/build.gradle.kts",
   "19": "android/build.gradle.kts",
   "20": "settings.gradle.kts",
@@ -26,7 +25,6 @@
   "24": "medico project README",
   "25": "String?",
   "26": "RegisterPlugins",
-  "27": "initState",
-  "28": "user_profile.dart",
-  "29": "SignUpScreen"
+  "27": "MaterialPageRoute",
+  "28": "user_profile.dart"
 }
