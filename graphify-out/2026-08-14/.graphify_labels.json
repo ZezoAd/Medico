@@ -7,7 +7,7 @@
   "5": "auth_error_mapper.dart",
   "6": "sign_up_screen.dart",
   "7": "wWinMain",
-  "8": "sign_up_screen_test.dart",
+  "8": "package:flutter/material.dart",
   "9": "medico pubspec.yaml package manifest",
   "10": "manifest.json",
   "11": "forgot_password_sheet.dart",
@@ -16,6 +16,7 @@
   "14": "auth_error_banner.dart",
   "15": "MainActivity.kt",
   "16": ".claude/CLAUDE.md graphify trigger instructions",
+  "17": "State",
   "18": "app/build.gradle.kts",
   "19": "android/build.gradle.kts",
   "20": "settings.gradle.kts",
@@ -26,5 +27,7 @@
   "25": "String?",
   "26": "RegisterPlugins",
   "27": "MaterialPageRoute",
-  "28": "user_profile.dart"
+  "28": "user_profile.dart",
+  "29": "splash_screen.dart",
+  "30": "StatelessWidget"
 }

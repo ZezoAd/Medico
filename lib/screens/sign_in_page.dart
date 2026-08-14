@@ -87,6 +87,12 @@ class _SignInPageState extends State<SignInPage> {
   /// alongside [_banner] so its retry action knows which address to resend
   /// a code to. Cleared whenever the banner is cleared.
   String? _pendingUnconfirmedEmail;
+
+  /// Which OTP channel [_resendConfirmation] should use for
+  /// [_pendingUnconfirmedEmail]. Set together with that field at every site
+  /// that populates it, because the two cases need different GoTrue calls and
+  /// are indistinguishable once the banner is on screen — see [OtpPurpose].
+  OtpPurpose _pendingOtpPurpose = OtpPurpose.signupConfirmation;
   bool _resendingConfirmation = false;
 
   bool get _isDoctor => _role == _Role.doctor;
@@ -126,6 +132,11 @@ class _SignInPageState extends State<SignInPage> {
             : AuthErrorSeverity.error,
       );
       _pendingUnconfirmedEmail = widget.initialUnconfirmedEmail;
+      // [SplashScreen] is the only caller that sets this, and it only does so
+      // off the `signup_verified` gate — reached with a live session, which
+      // GoTrue only issues for an address it already considers confirmed. So
+      // the signup channel is guaranteed to be a no-op here.
+      _pendingOtpPurpose = OtpPurpose.reVerification;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
@@ -225,6 +236,11 @@ class _SignInPageState extends State<SignInPage> {
             severity: AuthErrorSeverity.warning,
           );
           _pendingUnconfirmedEmail = email;
+          // Reaching this line means signInWithPassword just succeeded, which
+          // GoTrue only allows for a confirmed address — so this account is
+          // confirmed on its side and unverified on ours, the one combination
+          // the signup resend channel silently refuses to serve.
+          _pendingOtpPurpose = OtpPurpose.reVerification;
         });
         return;
       }
@@ -244,6 +260,10 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           _banner = mapAuthError(e);
           _pendingUnconfirmedEmail = email;
+          // GoTrue itself says the address is unconfirmed, so there really is
+          // a pending signup confirmation to resend — the original flow, which
+          // works and is deliberately left alone.
+          _pendingOtpPurpose = OtpPurpose.signupConfirmation;
         });
       } else {
         setState(() => _banner = mapAuthError(e));
@@ -256,24 +276,40 @@ class _SignInPageState extends State<SignInPage> {
   void _clearBanner() {
     _banner = null;
     _pendingUnconfirmedEmail = null;
+    _pendingOtpPurpose = OtpPurpose.signupConfirmation;
   }
 
-  /// The sign-in banner's action for an unconfirmed account — resends the
-  /// signup confirmation code and hands the person straight to the OTP
+  /// The sign-in banner's action for an account that still needs to verify
+  /// its email — sends a fresh code and hands the person straight to the OTP
   /// screen to enter it, instead of leaving them stuck on a dead banner.
+  ///
+  /// The channel depends on [_pendingOtpPurpose]: an account GoTrue already
+  /// considers confirmed cannot be served by the signup resend, which returns
+  /// 200 having sent nothing. [OtpPurpose] has the details.
   Future<void> _resendConfirmation() async {
     final email = _pendingUnconfirmedEmail;
     if (email == null || _resendingConfirmation) return;
+    final purpose = _pendingOtpPurpose;
     setState(() => _resendingConfirmation = true);
     try {
-      await Supabase.instance.client.auth
-          .resend(type: OtpType.signup, email: email)
-          .timeout(_networkTimeout);
+      final auth = Supabase.instance.client.auth;
+      switch (purpose) {
+        case OtpPurpose.signupConfirmation:
+          await auth
+              .resend(type: OtpType.signup, email: email)
+              .timeout(_networkTimeout);
+        case OtpPurpose.reVerification:
+          await auth
+              .signInWithOtp(email: email, shouldCreateUser: false)
+              .timeout(_networkTimeout);
+      }
       if (!mounted) return;
       setState(_clearBanner);
-      await Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => OtpVerificationScreen(email: email)));
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(email: email, purpose: purpose),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _banner = mapAuthError(e));

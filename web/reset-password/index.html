@@ -110,7 +110,17 @@
     cursor: pointer;
     color: var(--text-muted);
     padding: 4px;
+    display: flex;
+    align-items: center;
   }
+  /* Each toggle carries both icons and shows exactly one. Swapping which is
+     displayed (rather than only flipping input.type) is what makes the
+     control's state visible: slashed eye = hidden, open eye = visible. */
+  .toggle-visibility .icon-eye { display: none; }
+  .toggle-visibility .icon-eye-off { display: block; }
+  .toggle-visibility.revealed .icon-eye { display: block; }
+  .toggle-visibility.revealed .icon-eye-off { display: none; }
+  .toggle-visibility.revealed { color: var(--teal); }
   .field-error {
     max-height: 0;
     overflow: hidden;
@@ -232,8 +242,9 @@
       <label>أدخل كلمة المرور الجديدة</label>
       <div class="field-wrap">
         <input type="password" id="password" placeholder="كلمة المرور الجديدة">
-        <button type="button" class="toggle-visibility" data-target="password">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <button type="button" class="toggle-visibility" data-target="password" aria-label="إظهار كلمة المرور" aria-pressed="false">
+          <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
       <div class="field-hint" id="hint-password">يجب أن تكون كلمة المرور 8 أحرف على الأقل</div>
@@ -243,8 +254,9 @@
       <label>تأكيد كلمة المرور</label>
       <div class="field-wrap">
         <input type="password" id="confirmPassword" placeholder="أعد كتابة كلمة المرور">
-        <button type="button" class="toggle-visibility" data-target="confirmPassword">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <button type="button" class="toggle-visibility" data-target="confirmPassword" aria-label="إظهار كلمة المرور" aria-pressed="false">
+          <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
       <div class="field-error" id="error-confirm">كلمتا المرور غير متطابقتين</div>
@@ -291,6 +303,15 @@
     weak_password: 'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
   };
 
+  // Same conditions keyed on GoTrue's English text, as a fallback for any
+  // response that arrives without a structured `error_code` — older servers,
+  // or a supabase-js build that doesn't surface `.code`. Checked in order, so
+  // more specific phrases go first.
+  const ERROR_MESSAGE_FRAGMENTS = [
+    ['new password should be different', ERROR_CODE_MESSAGES.same_password],
+    ['password should be', ERROR_CODE_MESSAGES.weak_password],
+  ];
+
   function isNetworkError(err) {
     const text = ((err && err.message) || String(err)).toLowerCase();
     return text.includes('failed to fetch') ||
@@ -302,9 +323,22 @@
   // Maps an error from updateUser() to the inline hint text under the
   // password field.
   function mapUpdatePasswordError(err) {
+    // Active diagnostic: the mapping below is keyed on values that only the
+    // live server can confirm, so the raw code/status/message goes to the
+    // console before anything is mapped away. If the generic fallback ever
+    // shows up unexpectedly, this is what says which key was actually sent.
+    console.error('updateUser failed —',
+      'code:', err && err.code,
+      '| status:', err && err.status,
+      '| message:', err && err.message,
+      '| raw:', err);
     if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
     const code = err && err.code;
     if (code && ERROR_CODE_MESSAGES[code]) return ERROR_CODE_MESSAGES[code];
+    const text = ((err && err.message) || '').toLowerCase();
+    for (const [fragment, message] of ERROR_MESSAGE_FRAGMENTS) {
+      if (text.includes(fragment)) return message;
+    }
     return GENERIC_ERROR_MESSAGE;
   }
 
@@ -356,11 +390,17 @@
     }
   })();
 
-  // Toggle password visibility
+  // Toggle password visibility. Each field's toggle is independent, and the
+  // button's own class is what drives the icon swap — flipping input.type
+  // alone left both toggles permanently showing the open eye.
   document.querySelectorAll('.toggle-visibility').forEach(btn => {
     btn.addEventListener('click', () => {
       const input = document.getElementById(btn.dataset.target);
-      input.type = input.type === 'password' ? 'text' : 'password';
+      const revealed = input.type === 'password';
+      input.type = revealed ? 'text' : 'password';
+      btn.classList.toggle('revealed', revealed);
+      btn.setAttribute('aria-pressed', String(revealed));
+      btn.setAttribute('aria-label', revealed ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور');
     });
   });
 

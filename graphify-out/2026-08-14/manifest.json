@@ -80,13 +80,13 @@
     "semantic_hash": ""
   },
   "lib/screens/sign_in_page.dart": {
-    "mtime": 1786648449.0684388,
-    "ast_hash": "874f810b72a57d6fe9c0ef9014998c90",
+    "mtime": 1786665339.5327053,
+    "ast_hash": "7673f3d1b6c319d3aef33b6d420b1219",
     "semantic_hash": ""
   },
   "lib/screens/sign_in_screen.dart": {
-    "mtime": 1786497142.428883,
-    "ast_hash": "b6fec557b9b11b65adf1ac6d8e5316b2",
+    "mtime": 1786665362.1965652,
+    "ast_hash": "0e0e2372a976b3d4c95c18565a07232f",
     "semantic_hash": ""
   },
   "linux/flutter/generated_plugin_registrant.cc": {
@@ -280,13 +280,13 @@
     "semantic_hash": ""
   },
   "lib/screens/otp_verification_screen.dart": {
-    "mtime": 1786647995.9893997,
-    "ast_hash": "a3fdbae6557891ed517ec76ae0f09ff0",
+    "mtime": 1786665437.9081542,
+    "ast_hash": "7ffa6e45aa28e25579ff66e05796ef46",
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1786645017.8814008,
-    "ast_hash": "0c60c08b60524689ab08a103b5644655",
+    "mtime": 1786665985.2797554,
+    "ast_hash": "13fa738f6262c4052b1e6360d749ee4d",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {
@@ -295,18 +295,18 @@
     "semantic_hash": ""
   },
   "lib/models/user_profile.dart": {
-    "mtime": 1786473424.6790266,
-    "ast_hash": "35e5db95db5fa8f28dbd97c580302abd",
+    "mtime": 1786665269.534722,
+    "ast_hash": "04427723192e3b21ce85d9ddec8b911c",
     "semantic_hash": ""
   },
   "lib/services/profile_service.dart": {
-    "mtime": 1786473430.015159,
-    "ast_hash": "37beab1afcebcddd9fd2185d9af4dd27",
+    "mtime": 1786665283.3348138,
+    "ast_hash": "0536b320560c6f9b63f183829fe9d3ce",
     "semantic_hash": ""
   },
   "lib/screens/splash_screen.dart": {
-    "mtime": 1786497142.4308836,
-    "ast_hash": "7428a85e37b16d0a03c54eab72180c83",
+    "mtime": 1786665356.4542027,
+    "ast_hash": "eaa37975eb63b70c86449c184296ae1f",
     "semantic_hash": ""
   },
   "supabase/migrations/003_grants.sql": {
@@ -347,6 +347,11 @@
   "web/reset-password/index.html": {
     "mtime": 1786648130.1017632,
     "ast_hash": "220f7a0baf9d9b17228b9097a6838535",
+    "semantic_hash": ""
+  },
+  "test/inline_error_overflow_test.dart": {
+    "mtime": 1786664819.3112917,
+    "ast_hash": "e0d472f01c23a6984e5c2b63d4170d8f",
     "semantic_hash": ""
   }
 }
