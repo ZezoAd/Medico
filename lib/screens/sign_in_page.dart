@@ -72,7 +72,6 @@ class _SignInPageState extends State<SignInPage> {
   _Role _role = _Role.patient;
   bool _showPassword = false;
   bool _loading = false;
-  bool _success = false;
   bool _mounted = false;
   String? _emailError;
   String? _passwordError;
@@ -94,6 +93,22 @@ class _SignInPageState extends State<SignInPage> {
   /// are indistinguishable once the banner is on screen — see [OtpPurpose].
   OtpPurpose _pendingOtpPurpose = OtpPurpose.signupConfirmation;
   bool _resendingConfirmation = false;
+
+  /// Set when a sign-in started from the طبيب tab succeeded against an account
+  /// whose `profiles.role` is not `doctor`.
+  ///
+  /// The session is deliberately left live: the credentials were correct and
+  /// the account is a perfectly usable patient account, so signing them back
+  /// out would be destroying something legitimate to make a point about a tab
+  /// label. What is withheld is the automatic navigation — the person is told
+  /// what kind of account they are holding and moves on by choosing to, via
+  /// [_continueAsPatient].
+  ///
+  /// Only ever set off a profile we actually read. A *null* profile means the
+  /// row could not be fetched, which is not evidence of anything about the
+  /// role, so that case falls through to the normal destination rather than
+  /// accusing the account of not being a doctor.
+  bool _roleMismatch = false;
 
   bool get _isDoctor => _role == _Role.doctor;
 
@@ -245,6 +260,13 @@ class _SignInPageState extends State<SignInPage> {
         return;
       }
       if (!mounted) return;
+      // Signed in on the طبيب tab, but the account isn't a doctor account.
+      // `signInWithPassword` only ever authenticates a pre-existing account,
+      // so nothing was created here and the copy must not suggest otherwise.
+      if (_isDoctorTabMismatch(profile)) {
+        _showRoleMismatch(doctorTabNotADoctorAccountMessage, profile!);
+        return;
+      }
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => _destination(profile)),
       );
@@ -277,6 +299,59 @@ class _SignInPageState extends State<SignInPage> {
     _banner = null;
     _pendingUnconfirmedEmail = null;
     _pendingOtpPurpose = OtpPurpose.signupConfirmation;
+    _roleMismatch = false;
+    _roleMismatchProfile = null;
+  }
+
+  /// True when a sign-in from the طبيب tab landed on an account the database
+  /// says is not a doctor. Deliberately requires a non-null [profile]: see
+  /// [_roleMismatch] for why an unreadable row must not count.
+  bool _isDoctorTabMismatch(UserProfile? profile) =>
+      _isDoctor && profile != null && profile.role != UserRole.doctor;
+
+  /// The already-fetched profile behind [_roleMismatch], held so that
+  /// [_continueAsPatient] can route without a second round-trip. That matters
+  /// more than the saved request: re-fetching would let a network drop fail
+  /// the one action standing between the person and the app.
+  UserProfile? _roleMismatchProfile;
+
+  /// Swaps the automatic navigation for an explained one: shows [message] with
+  /// a single "المتابعة كمستخدم" action and leaves the person signed in until
+  /// they take it.
+  void _showRoleMismatch(String message, UserProfile profile) {
+    setState(() {
+      _banner = AuthErrorInfo(message, severity: AuthErrorSeverity.warning);
+      _roleMismatch = true;
+      _roleMismatchProfile = profile;
+    });
+  }
+
+  /// The role-mismatch banner's action — the same navigation the normal
+  /// success path performs, just gated behind an explanation. Synchronous and
+  /// incapable of failing, since it is the only way out of this state.
+  void _continueAsPatient() {
+    // Read before _clearBanner nulls it.
+    final profile = _roleMismatchProfile;
+    setState(_clearBanner);
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => _destination(profile)),
+      (route) => false,
+    );
+  }
+
+  /// The banner's action pair. [_roleMismatch] wins over the resend action:
+  /// the two never coexist (one follows a *successful* sign-in, the other a
+  /// blocked one), and ordering them here keeps the widget tree readable.
+  VoidCallback? get _bannerAction {
+    if (_roleMismatch) return _continueAsPatient;
+    if (_pendingUnconfirmedEmail != null) return _resendConfirmation;
+    return null;
+  }
+
+  String? get _bannerActionLabel {
+    if (_roleMismatch) return 'المتابعة كمستخدم';
+    if (_pendingUnconfirmedEmail != null) return 'إرسال رمز تحقق جديد';
+    return null;
   }
 
   /// The sign-in banner's action for an account that still needs to verify
@@ -357,6 +432,16 @@ class _SignInPageState extends State<SignInPage> {
       await _profileService.markSignupVerified();
       final profile = await _profileService.fetchCurrentProfile();
       if (!mounted) return;
+      // Signed in on the طبيب tab, but the account isn't a doctor account.
+      // Unlike the password path this may have *created* the account moments
+      // ago — Google's first token exchange registers the auth user before
+      // any role exists to check — so the copy owns that instead of pretending
+      // the tap was a no-op. Nothing is signed out or rolled back; the account
+      // is real, usable, and stays signed in.
+      if (_isDoctorTabMismatch(profile)) {
+        _showRoleMismatch(doctorTabGoogleCreatedPatientMessage, profile!);
+        return;
+      }
       // Clears the auth stack: there's nothing to come back to once signed in.
       await Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => _destination(profile)),
@@ -376,17 +461,6 @@ class _SignInPageState extends State<SignInPage> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
-  }
-
-  void _reset() {
-    _emailController.clear();
-    _passwordController.clear();
-    setState(() {
-      _success = false;
-      _emailError = null;
-      _passwordError = null;
-      _credentialsError = null;
-    });
   }
 
   @override
@@ -414,7 +488,7 @@ class _SignInPageState extends State<SignInPage> {
                 right: -70,
                 child: _SoftCircle(size: 220, opacity: 0.05),
               ),
-              SafeArea(child: _success ? _buildSuccess() : _buildForm()),
+              SafeArea(child: _buildForm()),
               if (_banner != null)
                 Positioned(
                   top: 0,
@@ -427,12 +501,12 @@ class _SignInPageState extends State<SignInPage> {
                       child: AuthErrorBanner(
                         message: _banner!.message,
                         severity: _banner!.severity,
-                        onRetry: _pendingUnconfirmedEmail != null
-                            ? _resendConfirmation
-                            : null,
-                        retryLabel: _pendingUnconfirmedEmail != null
-                            ? 'إرسال رمز تحقق جديد'
-                            : null,
+                        onRetry: _bannerAction,
+                        retryLabel: _bannerActionLabel,
+                        // The role-mismatch banner carries the only way
+                        // forward, so it must not delete itself while it's
+                        // being read. Every other banner keeps the 5s timer.
+                        autoDismiss: !_roleMismatch,
                         onDismiss: () => setState(_clearBanner),
                       ),
                     ),
@@ -440,75 +514,6 @@ class _SignInPageState extends State<SignInPage> {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // ───────────────────────────── success state ─────────────────────────────
-
-  Widget _buildSuccess() {
-    final note = _isDoctor
-        ? 'جاري تحويلك إلى لوحة تحكم عيادتك.'
-        : 'جاري تحويلك إلى مواعيدك وحالة الطابور المباشرة.';
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-              ),
-              child: const Icon(
-                Icons.check_rounded,
-                size: 34,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 18),
-            const Text(
-              'تم تسجيل الدخول بنجاح',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 18),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 260),
-              child: Text(
-                note,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.5,
-                  color: Colors.white.withValues(alpha: 0.85),
-                ),
-              ),
-            ),
-            const SizedBox(height: 26),
-            TextButton(
-              onPressed: _reset,
-              child: const Text(
-                'الرجوع لتسجيل الدخول',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.white,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -872,6 +877,11 @@ class _SignInPageState extends State<SignInPage> {
         obscureText: obscure,
         keyboardType: keyboardType,
         onChanged: (_) {
+          // Typing clears a stale failure, but must not clear the
+          // role-mismatch banner — that one is the person's only route into
+          // the app, and a single keystroke silently stranding them signed-in
+          // on a sign-in form is exactly the dead end it exists to avoid.
+          if (_roleMismatch) return;
           if (_banner != null || _credentialsError != null) {
             setState(() {
               _clearBanner();

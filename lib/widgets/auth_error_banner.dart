@@ -11,7 +11,8 @@ enum AuthErrorSeverity { error, warning }
 /// always visible, never just a silent reroute or a swallowed exception.
 ///
 /// Auto-dismisses 5 seconds after it appears, fading out first. Showing a
-/// new message while already visible restarts the 5-second countdown.
+/// new message while already visible restarts the 5-second countdown. Set
+/// [autoDismiss] to false to opt out — see that field for when that applies.
 class AuthErrorBanner extends StatefulWidget {
   const AuthErrorBanner({
     super.key,
@@ -20,6 +21,7 @@ class AuthErrorBanner extends StatefulWidget {
     this.onRetry,
     this.retryLabel,
     this.onDismiss,
+    this.autoDismiss = true,
   });
 
   final String message;
@@ -27,6 +29,17 @@ class AuthErrorBanner extends StatefulWidget {
   final VoidCallback? onRetry;
   final String? retryLabel;
   final VoidCallback? onDismiss;
+
+  /// Whether the 5-second self-dismiss timer runs. Defaults to true, which is
+  /// the right behaviour for a *report* — a failure the person reads and then
+  /// retries at their leisure, with the screen behind it still usable.
+  ///
+  /// Pass false when [onRetry] is the only way forward rather than one option
+  /// among several, since a banner that carries the sole exit must not delete
+  /// itself while it is being read. The role-mismatch banner on [SignInPage]
+  /// is the case this exists for: the session is live, no navigation happens
+  /// automatically, and tapping the action is what moves the person on.
+  final bool autoDismiss;
 
   @override
   State<AuthErrorBanner> createState() => _AuthErrorBannerState();
@@ -52,7 +65,8 @@ class _AuthErrorBannerState extends State<AuthErrorBanner> {
   void didUpdateWidget(covariant AuthErrorBanner oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.message != oldWidget.message ||
-        widget.severity != oldWidget.severity) {
+        widget.severity != oldWidget.severity ||
+        widget.autoDismiss != oldWidget.autoDismiss) {
       if (!_visible) {
         setState(() => _visible = true);
       }
@@ -67,7 +81,10 @@ class _AuthErrorBannerState extends State<AuthErrorBanner> {
   }
 
   void _restartTimer() {
+    // Cancel unconditionally, so flipping autoDismiss off mid-life stops a
+    // countdown that is already running rather than leaving it armed.
     _autoDismissTimer?.cancel();
+    if (!widget.autoDismiss) return;
     _autoDismissTimer = Timer(_autoDismissDelay, _handleAutoDismiss);
   }
 

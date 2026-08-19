@@ -49,6 +49,26 @@ const emailNotConfirmedMessage =
 const accountAlreadyExistsMessage =
     'هذا البريد الإلكتروني مسجل بالفعل. سجّل الدخول بدلاً من إنشاء حساب جديد.';
 
+/// Google sign-in on the طبيب tab that landed on a non-doctor account.
+///
+/// Google is a *creating* flow: the first ID-token exchange registers the
+/// auth user before any role is knowable, so by the time this is shown the
+/// account genuinely exists and is signed in. The copy says so plainly —
+/// implying nothing happened, or that it was undone, would be a lie the very
+/// next launch contradicts, since the session is deliberately kept alive.
+const doctorTabGoogleCreatedPatientMessage =
+    'حسابات الأطباء تُنشأ داخل العيادة ولا يمكن تسجيلها من التطبيق. '
+    'تم تسجيل دخولك بحساب مستخدم عادي، وهو جاهز للاستخدام الآن.';
+
+/// Password sign-in on the طبيب tab that landed on a non-doctor account.
+///
+/// Unlike [doctorTabGoogleCreatedPatientMessage], `signInWithPassword` only
+/// ever signs into an account that already existed — nothing was created
+/// here, so this copy must not mention creation at all.
+const doctorTabNotADoctorAccountMessage =
+    'هذا الحساب ليس حساب طبيب. حسابات الأطباء تُنشأ داخل العيادة. '
+    'يمكنك المتابعة كمستخدم عادي.';
+
 const _rateLimitCodes = {
   'over_request_rate_limit',
   'over_email_send_rate_limit',
