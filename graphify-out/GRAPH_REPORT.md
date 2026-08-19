@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 509 nodes · 562 edges · 62 communities (20 shown, 42 thin omitted)
+- 516 nodes · 568 edges · 60 communities (18 shown, 42 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `381f1334`
+- Built from commit: `6d8ffc35`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,12 +28,10 @@
 - auth_error_banner.dart
 - user_profile.dart
 - StatelessWidget
-- Auth Fallback Chain
+- signup_verified Gate
 - _In_
 - manifest.json
-- splash_screen.dart
 - AppDelegate
-- SignInPage
 - MainActivity.kt
 - One Screen Per File Rule
 - FlView
@@ -79,24 +77,24 @@
 2. `signup_verified Gate` - 5 edges
 3. `Password Reset Web Page` - 5 edges
 4. `Recovery Token Verification` - 5 edges
-5. `FlutterMacOS` - 4 edges
-6. `AppDelegate` - 4 edges
-7. `OtpVerificationScreen` - 4 edges
-8. `_OtpVerificationScreenState` - 4 edges
-9. `SignInPage` - 4 edges
-10. `AuthErrorInfo` - 4 edges
+5. `SignInPage` - 4 edges
+6. `AuthErrorInfo` - 4 edges
+7. `FlutterMacOS` - 4 edges
+8. `AppDelegate` - 4 edges
+9. `OtpVerificationScreen` - 4 edges
+10. `_OtpVerificationScreenState` - 4 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `ERROR_CODE_MESSAGES` --semantically_similar_to--> `_codeMessages`  [INFERRED] [semantically similar]
   web/reset-password/index.html → lib/utils/auth_error_mapper.dart
 - `mapUpdatePasswordError` --semantically_similar_to--> `mapAuthError`  [INFERRED] [semantically similar]
   web/reset-password/index.html → lib/utils/auth_error_mapper.dart
+- `Recovery Token Verification` --conceptually_related_to--> `OtpPurpose`  [INFERRED]
+  web/reset-password/index.html → lib/screens/otp_verification_screen.dart
 - `signup_verified Gate` --references--> `markSignupVerified`  [INFERRED]
   CLAUDE.md → lib/services/profile_service.dart
-- `signup_verified Gate` --references--> `signupVerified`  [INFERRED]
-  CLAUDE.md → lib/models/user_profile.dart
-- `Recovery Token Verification` --conceptually_related_to--> `signupVerified`  [INFERRED]
-  web/reset-password/index.html → lib/models/user_profile.dart
+- `signup_verified Gate` --conceptually_related_to--> `_resendConfirmation`  [INFERRED]
+  CLAUDE.md → lib/screens/sign_in_page.dart
 
 ## Import Cycles
 - None detected.
@@ -106,11 +104,11 @@
 - **Reset Page Screen State Machine** — web_reset_password_index_page, web_reset_password_index_screens, web_reset_password_index_showscreen, web_reset_password_index_showfatalerror [EXTRACTED 1.00]
 - **Arabic Auth Error Copy (Dart + JS, no shared code)** — web_reset_password_index_mapupdatepassworderror, web_reset_password_index_error_code_messages, lib_utils_auth_error_mapper_mapautherror, lib_utils_auth_error_mapper_codemessages [INFERRED 0.85]
 
-## Communities (62 total, 42 thin omitted)
+## Communities (60 total, 42 thin omitted)
 
 ### Community 0 - "sign_in_page.dart"
 Cohesion: 0.03
-Nodes (68): _banner, _border, build, _buildBrand, _buildCard, _buildDivider, _buildFieldError, _buildForm (+60 more)
+Nodes (72): _banner, _border, build, _buildBrand, _buildCard, _buildDivider, _buildFieldError, _buildForm (+64 more)
 
 ### Community 2 - "sign_up_screen.dart"
 Cohesion: 0.03
@@ -126,11 +124,11 @@ Nodes (23): app_links, Cocoa, firebase_core, firebase_crashlytics, firebase_mess
 
 ### Community 5 - "auth_error_mapper.dart"
 Cohesion: 0.06
-Nodes (31): accountAlreadyExistsMessage, any, AuthErrorInfo, code, _codeMessages, emailNotConfirmedMessage, error, genericAuthErrorMessage (+23 more)
+Nodes (33): accountAlreadyExistsMessage, any, AuthErrorInfo, code, _codeMessages, doctorTabGoogleCreatedPatientMessage, doctorTabNotADoctorAccountMessage, emailNotConfirmedMessage (+25 more)
 
 ### Community 6 - "forgot_password_sheet.dart"
-Cohesion: 0.06
-Nodes (33): auth_error_banner.dart, SignUpScreen, _SignUpScreenState, _banner, _border, build, _cooldown, _cooldownSeconds (+25 more)
+Cohesion: 0.05
+Nodes (40): auth_error_banner.dart, dart:async, dart:io, home_screen.dart, _bootstrap, build, _destinationForSession, fetchCurrentProfile (+32 more)
 
 ### Community 7 - "package:flutter/material.dart"
 Cohesion: 0.08
@@ -142,42 +140,34 @@ Nodes (21): android, DefaultFirebaseOptions, ios, macos, web, windows, build, bu
 
 ### Community 10 - "auth_error_banner.dart"
 Cohesion: 0.08
-Nodes (25): _amber, AuthErrorBanner, _AuthErrorBannerState, AuthErrorSeverity, _autoDismissDelay, _autoDismissTimer, build, createState (+17 more)
+Nodes (24): _amber, AuthErrorSeverity, autoDismiss, _autoDismissDelay, _autoDismissTimer, build, createState, didUpdateWidget (+16 more)
 
 ### Community 11 - "user_profile.dart"
-Cohesion: 0.08
-Nodes (25): bool get, signup_verified Gate, doctor, fromMap, fromText, fullName, id, isDoctor (+17 more)
+Cohesion: 0.12
+Nodes (15): bool get, doctor, fromMap, fromText, fullName, id, isDoctor, phone (+7 more)
 
 ### Community 12 - "StatelessWidget"
 Cohesion: 0.11
 Nodes (18): Aurora Sheet Design System, Password Policy: 8 Chars, No Composition Rule, MedicoApp, _GradientBackdrop, _SoftCircle, _GradientBackdrop, _SoftCircle, _GradientBackdrop (+10 more)
 
-### Community 13 - "Auth Fallback Chain"
-Cohesion: 0.28
-Nodes (9): Google G Logo Mark, Auth Fallback Chain, OtpVerificationScreen, _OtpVerificationScreenState, flutter_svg Dependency, google_sign_in Dependency, medico Flutter Package, pinput Dependency (+1 more)
+### Community 13 - "signup_verified Gate"
+Cohesion: 0.08
+Nodes (31): Google G Logo Mark, Auth Fallback Chain, signup_verified Gate, signupVerified, OtpPurpose, OtpVerificationScreen, _OtpVerificationScreenState, initState (+23 more)
 
 ### Community 15 - "manifest.json"
 Cohesion: 0.18
 Nodes (10): background_color, description, display, icons, name, orientation, prefer_related_applications, short_name (+2 more)
 
-### Community 16 - "splash_screen.dart"
-Cohesion: 0.13
-Nodes (13): dart:async, dart:io, home_screen.dart, _bootstrap, build, _destinationForSession, fetchCurrentProfile, ProfileService (+5 more)
-
 ### Community 17 - "AppDelegate"
 Cohesion: 0.16
 Nodes (10): Any, FlutterAppDelegate, FlutterImplicitEngineBridge, FlutterImplicitEngineDelegate, AppDelegate, Bool, AppDelegate, Bool (+2 more)
-
-### Community 18 - "SignInPage"
-Cohesion: 0.40
-Nodes (4): SignInPage, _SignInPageState, SignInScreen, sign_in_page.dart
 
 ## Ambiguous Edges - Review These
 - `One Screen Per File Rule` → `Graphify Skill Trigger`  [AMBIGUOUS]
   .claude/CLAUDE.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **313 isolated node(s):** `DefaultFirebaseOptions`, `web`, `android`, `ios`, `macos` (+308 more)
+- **318 isolated node(s):** `_Role`, `initialErrorMessage`, `initialUnconfirmedEmail`, `_teal`, `_ink` (+313 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -187,14 +177,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `One Screen Per File Rule` and `Graphify Skill Trigger`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **Why does `AuthErrorInfo` connect `auth_error_mapper.dart` to `sign_in_page.dart`, `sign_up_screen.dart`, `forgot_password_sheet.dart`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **Why does `OtpPurpose` connect `user_profile.dart` to `sign_in_page.dart`, `otp_verification_screen.dart`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `Password Reset Web Page` connect `StatelessWidget` to `user_profile.dart`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **What connects `DefaultFirebaseOptions`, `web`, `android` to the rest of the system?**
-  _313 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `Password Reset Web Page` connect `StatelessWidget` to `signup_verified Gate`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `_OtpVerificationScreenState` connect `signup_verified Gate` to `otp_verification_screen.dart`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **What connects `_Role`, `initialErrorMessage`, `initialUnconfirmedEmail` to the rest of the system?**
+  _318 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `sign_in_page.dart` be split into smaller, more focused modules?**
-  _Cohesion score 0.028985507246376812 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0273972602739726 - nodes in this community are weakly interconnected._
 - **Should `sign_up_screen.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03278688524590164 - nodes in this community are weakly interconnected._
