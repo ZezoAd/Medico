@@ -5,9 +5,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/profile_service.dart';
+import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
+import 'onboarding_flow_screen.dart';
 import 'otp_verification_screen.dart';
 
 /// Sign-up screen matching the visual language of [SignInPage]: the same
@@ -22,14 +24,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  static const _teal = Color(0xFF0D9488);
-  static const _ink = Color(0xFF0F172A);
-  static const _muted = Color(0xFF64748B);
-  static const _faint = Color(0xFF94A3B8);
-  static const _border = Color(0xFFE2E8F0);
-  static const _fieldFill = Color(0xFFF1F5F9);
-  static const _danger = Color(0xFFDC2626);
-
   static final _emailPattern = RegExp(
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
@@ -120,7 +114,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String? _validatePassword(String value) {
     if (value.isEmpty) return 'الرجاء إدخال كلمة المرور';
-    return value.length >= 8 ? null : 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+    return value.length >= 8
+        ? null
+        : 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
   }
 
   void _onFullNameFocusChange() {
@@ -280,11 +276,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // negative there would lock a legitimate Google user out of the app
       // entirely, and the call is idempotent and cheap.
       await const ProfileService().markSignupVerified();
-      await const ProfileService().fetchCurrentProfile();
+      final profile = await const ProfileService().fetchCurrentProfile();
       if (!mounted) return;
+      // Google skips the OTP screen entirely, so this is the only place a
+      // Google signup can be routed into onboarding. A returning Google user
+      // who already finished it goes straight to Home. A null profile read
+      // means we can't tell — send them to onboarding rather than risk
+      // silently skipping it; it is idempotent and re-runnable.
+      final destination = profile?.hasCompletedOnboarding ?? false
+          ? const HomeScreen()
+          : const OnboardingFlowScreen();
       // Clears the auth stack: there's nothing to come back to once signed in.
       await Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => destination),
         (route) => false,
       );
     } on GoogleSignInException catch (e) {
@@ -461,7 +465,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: _ink.withValues(alpha: 0.08),
+            color: AuroraColors.ink.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -482,7 +486,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             style: TextStyle(
               fontSize: _compact ? 20 : 23,
               fontWeight: FontWeight.w700,
-              color: _ink,
+              color: AuroraColors.ink,
               height: 1.3,
             ),
           ),
@@ -491,7 +495,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
             'أنشئ حسابك للبدء في استخدام Medico.',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
+            style: TextStyle(
+              fontSize: 13.5,
+              color: AuroraColors.secondary,
+              height: 1.5,
+            ),
           ),
           SizedBox(height: _innerGap),
           _buildFieldGroup(
@@ -531,7 +539,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 size: 22,
-                color: _faint,
+                color: AuroraColors.muted,
               ),
             ),
           ),
@@ -586,14 +594,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   padding: const EdgeInsets.only(top: 6),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, size: 13, color: _danger),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 13,
+                        color: AuroraColors.danger,
+                      ),
                       const SizedBox(width: 5),
                       Expanded(
                         child: Text(
                           error,
                           style: const TextStyle(
                             fontSize: 11.5,
-                            color: _danger,
+                            color: AuroraColors.danger,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -612,7 +624,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       style: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: _muted,
+        color: AuroraColors.secondary,
         letterSpacing: 0.1,
       ),
     );
@@ -628,7 +640,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Widget? suffix,
     TextInputType? keyboardType,
   }) {
-    final baseBorder = hasError ? _danger : _border;
+    final baseBorder = hasError ? AuroraColors.danger : AuroraColors.divider;
 
     OutlineInputBorder border(Color color, double width) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
@@ -648,19 +660,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: _ink,
+          color: AuroraColors.ink,
         ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(
-            color: _faint,
+            color: AuroraColors.muted,
             fontWeight: FontWeight.w400,
           ),
           filled: true,
-          fillColor: _fieldFill,
+          fillColor: AuroraColors.tonal,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          prefixIcon: Icon(icon, size: 18, color: _faint),
+          prefixIcon: Icon(icon, size: 18, color: AuroraColors.muted),
           prefixIconConstraints: BoxConstraints(
             minWidth: 40,
             minHeight: _controlHeight,
@@ -668,7 +680,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           suffixIcon: suffix,
           enabledBorder: border(baseBorder, 1.5),
           border: border(baseBorder, 1.5),
-          focusedBorder: border(hasError ? _danger : _teal, 2),
+          focusedBorder: border(
+            hasError ? AuroraColors.danger : AuroraColors.primary,
+            2,
+          ),
         ),
       ),
     );
@@ -677,10 +692,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildPrivacyCheckbox() {
     const linkStyle = TextStyle(
       fontSize: 12.5,
-      color: _teal,
+      color: AuroraColors.primary,
       fontWeight: FontWeight.w600,
       decoration: TextDecoration.underline,
-      decorationColor: _teal,
+      decorationColor: AuroraColors.primary,
     );
 
     return Row(
@@ -693,7 +708,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             value: _agreedToPrivacy,
             onChanged: (value) =>
                 setState(() => _agreedToPrivacy = value ?? false),
-            activeColor: _teal,
+            activeColor: AuroraColors.primary,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
@@ -713,7 +728,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ],
             ),
-            style: const TextStyle(fontSize: 12.5, color: _muted, height: 1.4),
+            style: const TextStyle(
+              fontSize: 12.5,
+              color: AuroraColors.secondary,
+              height: 1.4,
+            ),
           ),
         ),
       ],
@@ -786,19 +805,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildDivider() {
     return const Row(
       children: [
-        Expanded(child: Divider(height: 1, color: _border)),
+        Expanded(child: Divider(height: 1, color: AuroraColors.divider)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             'أو',
             style: TextStyle(
               fontSize: 11.5,
-              color: _faint,
+              color: AuroraColors.muted,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        Expanded(child: Divider(height: 1, color: _border)),
+        Expanded(child: Divider(height: 1, color: AuroraColors.divider)),
       ],
     );
   }
@@ -832,7 +851,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 style: TextStyle(
                   fontSize: 14.5,
                   fontWeight: FontWeight.w500,
-                  color: _ink,
+                  color: AuroraColors.ink,
                 ),
               ),
             ),
@@ -853,7 +872,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: _teal,
+              color: AuroraColors.primary,
             ),
             recognizer: _signInTap,
           ),
@@ -862,7 +881,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       textAlign: TextAlign.center,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: const TextStyle(fontSize: 13, color: _muted),
+      style: const TextStyle(fontSize: 13, color: AuroraColors.secondary),
     );
   }
 }
@@ -875,14 +894,7 @@ class _GradientBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(-0.35, -1),
-          end: Alignment(0.35, 1),
-          colors: [Color(0xFF1D9E75), Color(0xFF227FAF), Color(0xFF2A93C9)],
-          stops: [0.0, 0.55, 1.0],
-        ),
-      ),
+      decoration: BoxDecoration(gradient: AuroraGradients.backdrop),
       child: SizedBox.expand(),
     );
   }

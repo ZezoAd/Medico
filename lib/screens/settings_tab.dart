@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/aurora_tokens.dart';
 
 /// Settings tab body. Placeholder — profile, numerals toggle, sign-out land
 /// here later.
@@ -13,7 +14,7 @@ class SettingsTab extends StatelessWidget {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF64748B),
+          color: AuroraColors.secondary,
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../theme/aurora_tokens.dart';
 import '../utils/arabic_formatting.dart';
 import '../utils/wait_estimate.dart';
 
@@ -100,9 +101,9 @@ class QueueStatusCard extends StatefulWidget {
 class _QueueStatusCardState extends State<QueueStatusCard>
     with TickerProviderStateMixin {
   static const _gradientColors = [
-    Color(0xFF1D9E75),
-    Color(0xFF227FAF),
-    Color(0xFF2A93C9),
+    AuroraColors.primary,
+    AuroraColors.primaryMid,
+    AuroraColors.primaryBlue,
   ];
   static const _gradientStops = [0.0, 0.55, 1.0];
 
@@ -162,7 +163,8 @@ class _QueueStatusCardState extends State<QueueStatusCard>
   void _syncAnimations() {
     final status = widget.connectionStatus;
 
-    final shouldDrift = !_reducedMotion && status != QueueConnectionStatus.stale;
+    final shouldDrift =
+        !_reducedMotion && status != QueueConnectionStatus.stale;
     for (final controller in _blobControllers) {
       if (shouldDrift) {
         if (!controller.isAnimating) controller.repeat(reverse: true);
@@ -219,8 +221,7 @@ class _QueueStatusCardState extends State<QueueStatusCard>
     // main.dart's MaterialApp declares only a light ThemeData — no
     // darkTheme/themeMode exists yet for Theme.of(context) to reflect — so
     // this reads the OS setting directly rather than through Theme.
-    final isDark =
-        MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
     final isStale = widget.connectionStatus == QueueConnectionStatus.stale;
 
     return GestureDetector(
@@ -241,7 +242,7 @@ class _QueueStatusCardState extends State<QueueStatusCard>
                 ]
               : [
                   BoxShadow(
-                    color: const Color(0xFF1D9E75).withValues(alpha: 0.28),
+                    color: AuroraColors.primary.withValues(alpha: 0.28),
                     blurRadius: 32,
                     offset: const Offset(0, 14),
                   ),

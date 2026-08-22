@@ -10,7 +10,13 @@ plugins {
 
 android {
     namespace = "com.medico.app"
-    compileSdk = flutter.compileSdkVersion
+    // Pinned ahead of flutter.compileSdkVersion (36) because
+    // permission_handler_android ships AAR metadata requiring 37, and the
+    // build fails at :app:checkDebugAarMetadata otherwise. compileSdk is
+    // backward compatible, so this does not change minSdk/targetSdk
+    // behaviour. Drop back to flutter.compileSdkVersion once the Flutter
+    // SDK's own default reaches 37.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

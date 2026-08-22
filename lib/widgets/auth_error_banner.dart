@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../theme/aurora_tokens.dart';
 
 /// How urgently [AuthErrorBanner] should read — a hard failure (red) versus
 /// a soft caution like rate limiting (amber).
@@ -48,9 +49,6 @@ class AuthErrorBanner extends StatefulWidget {
 class _AuthErrorBannerState extends State<AuthErrorBanner> {
   static const _autoDismissDelay = Duration(seconds: 5);
   static const _fadeDuration = Duration(milliseconds: 300);
-
-  static const _red = Color(0xFFDC2626);
-  static const _amber = Color(0xFFD97706);
 
   Timer? _autoDismissTimer;
   bool _visible = true;
@@ -103,7 +101,9 @@ class _AuthErrorBannerState extends State<AuthErrorBanner> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.severity == AuthErrorSeverity.warning ? _amber : _red;
+    final color = widget.severity == AuthErrorSeverity.warning
+        ? AuroraColors.warning
+        : AuroraColors.danger;
 
     return AnimatedOpacity(
       opacity: _visible ? 1 : 0,

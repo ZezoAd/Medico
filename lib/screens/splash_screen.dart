@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/profile_service.dart';
+import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import 'home_screen.dart';
+import 'onboarding_flow_screen.dart';
 import 'sign_in_screen.dart';
 
 /// The app's first route: decides between [SignInScreen] and [HomeScreen]
@@ -24,7 +26,7 @@ class SplashScreen extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap(context));
 
     return const Scaffold(
-      backgroundColor: Color(0xFF1D9E75),
+      backgroundColor: AuroraColors.primary,
       body: Center(
         child: SizedBox(
           width: 32,
@@ -95,6 +97,13 @@ class SplashScreen extends StatelessWidget {
           initialErrorMessage: emailNotConfirmedMessage,
           initialUnconfirmedEmail: userResponse.user!.email,
         );
+      }
+      // Additive to the session check above, not part of it: the session is
+      // already confirmed valid by this point: this only picks the landing
+      // screen. Anyone who never finished onboarding — including accounts
+      // that predate it — gets sent through it before Home.
+      if (!profile.hasCompletedOnboarding) {
+        return const OnboardingFlowScreen();
       }
       return const HomeScreen();
     } on SocketException {

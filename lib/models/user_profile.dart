@@ -30,6 +30,7 @@ class UserProfile {
     required this.role,
     this.phone,
     this.signupVerified = false,
+    this.onboardingCompletedAt,
   });
 
   /// Matches `auth.users.id`.
@@ -47,7 +48,15 @@ class UserProfile {
   /// from the row, so a partial read can never wave an account through.
   final bool signupVerified;
 
+  /// When the patient finished the onboarding flow, or null if they never
+  /// did. Null is what routes a signed-in user into onboarding instead of
+  /// Home — which also covers accounts created before onboarding shipped,
+  /// and anyone who quit part-way through it.
+  final DateTime? onboardingCompletedAt;
+
   bool get isDoctor => role == UserRole.doctor;
+
+  bool get hasCompletedOnboarding => onboardingCompletedAt != null;
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
@@ -56,6 +65,9 @@ class UserProfile {
       role: UserRole.fromText(map['role'] as String?),
       phone: map['phone'] as String?,
       signupVerified: map['signup_verified'] as bool? ?? false,
+      onboardingCompletedAt: DateTime.tryParse(
+        map['onboarding_completed_at'] as String? ?? '',
+      ),
     );
   }
 }

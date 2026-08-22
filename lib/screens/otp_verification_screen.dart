@@ -5,9 +5,11 @@ import 'package:pinput/pinput.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/profile_service.dart';
+import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
 import 'home_screen.dart';
+import 'onboarding_flow_screen.dart';
 
 enum _OtpStatus { empty, filling, loading, success, failure }
 
@@ -85,13 +87,6 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  static const _teal = Color(0xFF0D9488);
-  static const _ink = Color(0xFF0F172A);
-  static const _muted = Color(0xFF64748B);
-  static const _border = Color(0xFFE2E8F0);
-  static const _fieldFill = Color(0xFFF1F5F9);
-  static const _danger = Color(0xFFDC2626);
-  static const _successGreen = Color(0xFF16A34A);
   static const _digitCount = 6;
   static const _resendCooldown = Duration(seconds: 60);
 
@@ -256,8 +251,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       setState(() => _status = _OtpStatus.success);
       await Future<void>.delayed(const Duration(milliseconds: 1200));
       if (!mounted) return;
+      // A fresh signup goes straight into onboarding, which owns the final
+      // hop to Home itself. Re-verification is an *existing* account that
+      // may well have onboarded already, so it keeps landing on Home —
+      // SplashScreen catches it on next launch if it genuinely hasn't.
+      final destination = widget.purpose == OtpPurpose.signupConfirmation
+          ? const OnboardingFlowScreen()
+          : const HomeScreen();
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => destination),
         (route) => false,
       );
     } catch (e) {
@@ -284,7 +286,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     _pinFocusNode.requestFocus();
   }
 
-  bool get _showBanner => _errorMessage != null && (_sendFailed || _status == _OtpStatus.failure);
+  bool get _showBanner =>
+      _errorMessage != null && (_sendFailed || _status == _OtpStatus.failure);
 
   // On a verify failure, _handleFailure already clears the field and
   // refocuses it — a retry action here would do nothing visible. Only a
@@ -403,7 +406,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: _ink.withValues(alpha: 0.08),
+            color: AuroraColors.ink.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -420,7 +423,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           ),
           child: KeyedSubtree(
             key: ValueKey(_status == _OtpStatus.success),
-            child: _status == _OtpStatus.success ? _buildSuccess() : _buildForm(),
+            child: _status == _OtpStatus.success
+                ? _buildSuccess()
+                : _buildForm(),
           ),
         ),
       ),
@@ -441,21 +446,25 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: _ink,
+            color: AuroraColors.ink,
             height: 1.3,
           ),
         ),
         const SizedBox(height: 8),
         Text.rich(
           TextSpan(
-            style: const TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
+            style: const TextStyle(
+              fontSize: 13.5,
+              color: AuroraColors.secondary,
+              height: 1.5,
+            ),
             children: [
               const TextSpan(text: 'أدخلنا رمزًا مكونًا من 6 أرقام إلى '),
               TextSpan(
                 text: widget.email,
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
-                  color: _ink,
+                  color: AuroraColors.ink,
                 ),
               ),
             ],
@@ -487,22 +496,25 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       textStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: _ink,
+        color: AuroraColors.ink,
       ),
       decoration: BoxDecoration(
-        color: _fieldFill,
+        color: AuroraColors.tonal,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: hasError ? _danger : _border,
+          color: hasError ? AuroraColors.danger : AuroraColors.divider,
           width: 1.5,
         ),
       ),
     );
     final focusedTheme = defaultTheme.copyWith(
       decoration: BoxDecoration(
-        color: _fieldFill,
+        color: AuroraColors.tonal,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: hasError ? _danger : _teal, width: 2),
+        border: Border.all(
+          color: hasError ? AuroraColors.danger : AuroraColors.primary,
+          width: 2,
+        ),
       ),
     );
     final submittedTheme = defaultTheme;
@@ -534,7 +546,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   /// Amber note for the re-signup case: the account already existed, so the
   /// password on it is still the original one.
   Widget _buildPasswordUnchangedNote() {
-    const amber = Color(0xFFD97706);
+    const amber = AuroraColors.warning;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -553,7 +565,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               'كلمة المرور لم تتغير — كلمة المرور الأصلية هي السارية.',
               style: TextStyle(
                 fontSize: 12.5,
-                color: _ink,
+                color: AuroraColors.ink,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
               ),
@@ -587,7 +599,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         child: TextButton(
           onPressed: enabled ? _verify : null,
           style: TextButton.styleFrom(
-            disabledBackgroundColor: _border,
+            disabledBackgroundColor: AuroraColors.divider,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -611,7 +623,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: enabled ? Colors.white : _muted,
+                  color: enabled ? Colors.white : AuroraColors.secondary,
                 ),
               ),
             ],
@@ -627,7 +639,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       children: [
         const Text(
           'لم يصلك الرمز؟',
-          style: TextStyle(fontSize: 13, color: _muted),
+          style: TextStyle(fontSize: 13, color: AuroraColors.secondary),
         ),
         const SizedBox(width: 4),
         GestureDetector(
@@ -636,12 +648,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             _resending
                 ? 'جاري الإرسال…'
                 : _coolingDown
-                    ? 'إعادة الإرسال خلال $_resendSeconds'
-                    : 'إعادة إرسال الرمز',
+                ? 'إعادة الإرسال خلال $_resendSeconds'
+                : 'إعادة إرسال الرمز',
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: _coolingDown ? _muted : _teal,
+              color: _coolingDown
+                  ? AuroraColors.secondary
+                  : AuroraColors.primary,
             ),
           ),
         ),
@@ -663,13 +677,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           height: 64,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            color: _successGreen,
+            color: AuroraColors.success,
           ),
-          child: const Icon(
-            Icons.check_rounded,
-            size: 34,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.check_rounded, size: 34, color: Colors.white),
         ),
         const SizedBox(height: 18),
         const Text(
@@ -677,13 +687,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: _ink,
+            color: AuroraColors.ink,
           ),
         ),
         const SizedBox(height: 8),
         const Text(
           'بنجهز كل حاجة… لحظات وتوصل.',
-          style: TextStyle(fontSize: 13.5, color: _muted),
+          style: TextStyle(fontSize: 13.5, color: AuroraColors.secondary),
         ),
       ],
     );
@@ -698,14 +708,7 @@ class _GradientBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(-0.35, -1),
-          end: Alignment(0.35, 1),
-          colors: [Color(0xFF1D9E75), Color(0xFF227FAF), Color(0xFF2A93C9)],
-          stops: [0.0, 0.55, 1.0],
-        ),
-      ),
+      decoration: BoxDecoration(gradient: AuroraGradients.backdrop),
       child: SizedBox.expand(),
     );
   }

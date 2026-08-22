@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Android 13 (API 33) and up gate notifications behind a runtime
+         permission. Without this declaration the request returns
+         permanently-denied immediately and the system prompt never appears,
+         so the onboarding opt-in would silently do nothing. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="medico"
         android:name="${applicationName}"

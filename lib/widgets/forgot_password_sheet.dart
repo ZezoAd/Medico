@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import 'auth_error_banner.dart';
 
@@ -36,14 +37,6 @@ class ForgotPasswordSheet extends StatefulWidget {
 }
 
 class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
-  static const _teal = Color(0xFF0D9488);
-  static const _ink = Color(0xFF0F172A);
-  static const _muted = Color(0xFF64748B);
-  static const _faint = Color(0xFF94A3B8);
-  static const _border = Color(0xFFE2E8F0);
-  static const _fieldFill = Color(0xFFF1F5F9);
-  static const _danger = Color(0xFFDC2626);
-
   static const _networkTimeout = Duration(seconds: 15);
   static const _cooldownSeconds = 60;
 
@@ -150,7 +143,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: _border,
+                    color: AuroraColors.divider,
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -169,13 +162,17 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w700,
-                  color: _ink,
+                  color: AuroraColors.ink,
                 ),
               ),
               const SizedBox(height: 8),
               const Text(
                 'أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.',
-                style: TextStyle(fontSize: 13.5, color: _muted, height: 1.5),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  color: AuroraColors.secondary,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
@@ -183,7 +180,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: _muted,
+                  color: AuroraColors.secondary,
                   letterSpacing: 0.1,
                 ),
               ),
@@ -202,22 +199,22 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: _ink,
+                    color: AuroraColors.ink,
                   ),
                   decoration: InputDecoration(
                     hintText: 'أدخل بريدك الإلكتروني',
                     hintStyle: const TextStyle(
-                      color: _faint,
+                      color: AuroraColors.muted,
                       fontWeight: FontWeight.w400,
                     ),
                     filled: true,
-                    fillColor: _fieldFill,
+                    fillColor: AuroraColors.tonal,
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     prefixIcon: const Icon(
                       Icons.mail_outline_rounded,
                       size: 18,
-                      color: _faint,
+                      color: AuroraColors.muted,
                     ),
                     prefixIconConstraints: const BoxConstraints(
                       minWidth: 40,
@@ -226,21 +223,27 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: _emailError != null ? _danger : _border,
+                        color: _emailError != null
+                            ? AuroraColors.danger
+                            : AuroraColors.divider,
                         width: 1.5,
                       ),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: _emailError != null ? _danger : _border,
+                        color: _emailError != null
+                            ? AuroraColors.danger
+                            : AuroraColors.divider,
                         width: 1.5,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide(
-                        color: _emailError != null ? _danger : _teal,
+                        color: _emailError != null
+                            ? AuroraColors.danger
+                            : AuroraColors.primary,
                         width: 2,
                       ),
                     ),
@@ -251,14 +254,18 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.error_outline, size: 13, color: _danger),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 13,
+                      color: AuroraColors.danger,
+                    ),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(
                         _emailError!,
                         style: const TextStyle(
                           fontSize: 11.5,
-                          color: _danger,
+                          color: AuroraColors.danger,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -271,9 +278,11 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _teal.withValues(alpha: 0.08),
+                    color: AuroraColors.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _teal.withValues(alpha: 0.25)),
+                    border: Border.all(
+                      color: AuroraColors.primary.withValues(alpha: 0.25),
+                    ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +290,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                       const Icon(
                         Icons.check_circle_outline_rounded,
                         size: 18,
-                        color: _teal,
+                        color: AuroraColors.primary,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -289,7 +298,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                           _neutralSentMessage,
                           style: const TextStyle(
                             fontSize: 12.5,
-                            color: _ink,
+                            color: AuroraColors.ink,
                             fontWeight: FontWeight.w500,
                             height: 1.5,
                           ),

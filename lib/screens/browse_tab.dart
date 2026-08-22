@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/aurora_tokens.dart';
 
 /// Browse tab body. Placeholder — doctor search/listing lands here later.
 class BrowseTab extends StatelessWidget {
@@ -12,7 +13,7 @@ class BrowseTab extends StatelessWidget {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF64748B),
+          color: AuroraColors.secondary,
         ),
       ),
     );

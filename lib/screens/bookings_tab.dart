@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/aurora_tokens.dart';
 
 /// Bookings tab body. Placeholder — appointment history/upcoming lands here
 /// later.
@@ -13,7 +14,7 @@ class BookingsTab extends StatelessWidget {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF64748B),
+          color: AuroraColors.secondary,
         ),
       ),
     );

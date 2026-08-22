@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/aurora_tokens.dart';
 
 /// Home tab body. Placeholder — the real content (live queue status card,
 /// etc.) is being built separately and wires in here later.
@@ -13,7 +14,7 @@ class HomeTab extends StatelessWidget {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF64748B),
+          color: AuroraColors.secondary,
         ),
       ),
     );
