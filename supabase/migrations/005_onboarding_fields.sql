@@ -75,3 +75,10 @@ CREATE POLICY "Users manage their own device tokens"
   FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
+
+-- Table-level DML grants. The policy above is necessary but NOT sufficient:
+-- RLS filters rows *within* an operation the role is already permitted to
+-- perform, so without this GRANT every token write failed permission-denied
+-- while the policy looked correct. Same trap as the column-level grants in
+-- step 5 above.
+GRANT SELECT, INSERT, UPDATE, DELETE ON device_tokens TO authenticated;

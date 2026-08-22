@@ -1,0 +1,340 @@
+/// The single place that decides sign-in vs onboarding vs Home.
+library;
+
+import 'dart:async';
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../models/onboarding_data.dart';
+import '../services/onboarding_sync_service.dart';
+import '../services/profile_service.dart';
+import '../theme/aurora_tokens.dart';
+import '../utils/auth_error_mapper.dart';
+import '../widgets/aurora_buttons.dart';
+import 'home_screen.dart';
+import 'onboarding_flow_screen.dart';
+import 'sign_in_screen.dart';
+
+/// Resolves where a signed-in patient belongs and renders it.
+///
+/// Every entry path funnels through here — Google sign-up, Google sign-in,
+/// email OTP sign-up, email OTP sign-in, and cold relaunch. Auth handlers
+/// used to each make their own routing decision and had drifted apart: one
+/// checked `onboarding_completed_at`, one keyed off "was this a signup",
+/// and one sent everybody to Home including callers with a null profile.
+/// The rule is now stated once, here.
+///
+/// Deliberately has no "this is a fresh signup" input. Signup and sign-in are
+/// the same question once a session exists, and the column being null is the
+/// only signal needed to answer it.
+class AuthGate extends StatefulWidget {
+  const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+/// What the gate is currently able to say.
+enum _GateStatus {
+  /// The `profiles` fetch is in flight. Never routes anywhere — resolving to
+  /// Home while this is unknown is the bug this state exists to prevent.
+  loading,
+
+  /// The fetch failed in a way that says nothing about the account, i.e. a
+  /// network problem. Fails *closed* to a retry rather than open to Home.
+  retry,
+
+  /// No usable session. The reason travels with it.
+  signedOut,
+
+  ready,
+}
+
+class _AuthGateState extends State<AuthGate> {
+  static const _fetchTimeout = Duration(seconds: 15);
+
+  final _sync = const OnboardingSyncService();
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+
+  /// The routing half of the answer: this person is done with onboarding, by
+  /// either signal — the server said so, or they finished on this device.
+  ///
+  /// Monotonic for the life of a resolve. Once true it only goes false via a
+  /// fresh [_resolve], never as a side effect of syncing. It used to be one
+  /// flag with [_hasQueuedRecord] below, and the profile fetched at resolve
+  /// time was kept around as the other half of the decision. A successful push
+  /// cleared the flag, the decision fell back on that pre-write snapshot, and
+  /// someone who had just finished was sent back into onboarding about one
+  /// network round trip after reaching Home. The snapshot is gone with it —
+  /// there is no cached profile left here to go stale.
+  bool _onboardingComplete = false;
+
+  /// The queue half: a local record still owed to the server. Purely about
+  /// retries, never about where the person goes.
+  bool _hasQueuedRecord = false;
+
+  /// An onboarding run that was started and never finished, if this device
+  /// remembers one for this user. Null means start from the top.
+  OnboardingProgress? _progress;
+
+  _GateStatus _status = _GateStatus.loading;
+
+  /// Populated when [_status] is [_GateStatus.signedOut] and there is
+  /// something worth explaining.
+  String? _signedOutMessage;
+  String? _unconfirmedEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _resolve();
+
+    // Retry trigger #2. Paired with the launch-triggered attempt in
+    // [_resolve], this is the whole retry policy — no polling loop.
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      final online = results.any((r) => r != ConnectivityResult.none);
+      if (online) _drainPendingOnboarding();
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySub?.cancel();
+    super.dispose();
+  }
+
+  /// Pushes the queued onboarding record, if any. Silent by design: it can
+  /// run while the person is already using Home and must never interrupt.
+  ///
+  /// Only ever touches [_hasQueuedRecord]. Where the person is standing is
+  /// [_onboardingComplete]'s business, and a sync result — success, failure or
+  /// "nothing was queued" — is not evidence about that either way.
+  Future<void> _drainPendingOnboarding() async {
+    if (!_hasQueuedRecord) return;
+    final synced = await _sync.syncPending();
+    if (synced && mounted) setState(() => _hasQueuedRecord = false);
+  }
+
+  Future<void> _resolve() async {
+    if (_status != _GateStatus.loading) {
+      setState(() => _status = _GateStatus.loading);
+    }
+
+    final client = Supabase.instance.client;
+
+    if (client.auth.currentSession == null) {
+      setState(() {
+        _status = _GateStatus.signedOut;
+        _signedOutMessage = null;
+      });
+      return;
+    }
+
+    try {
+      // A round trip, unlike `currentUser` — catches a token revoked
+      // server-side while the local copy still looks live.
+      final userResponse = await client.auth.getUser().timeout(_fetchTimeout);
+      final user = userResponse.user;
+      if (user == null) throw const AuthException('Session user not found');
+
+      final profile = await const ProfileService()
+          .fetchCurrentProfile()
+          .timeout(_fetchTimeout);
+      if (profile == null) throw const AuthException('Profile not found');
+
+      if (!mounted) return;
+
+      // Catches a session established without ever passing the signup check —
+      // most realistically the one handed out by a completed password
+      // recovery, which is the route around the OTP that `signup_verified`
+      // exists to close.
+      if (!profile.signupVerified) {
+        await client.auth.signOut();
+        if (!mounted) return;
+        setState(() {
+          _status = _GateStatus.signedOut;
+          _signedOutMessage = emailNotConfirmedMessage;
+          _unconfirmedEmail = user.email;
+        });
+        return;
+      }
+
+      // A local record counts as completed: the person finished on this
+      // device, the server just has not heard yet. Retry trigger #1 fires
+      // here, on every launch that still has something queued.
+      final pending = profile.hasCompletedOnboarding
+          ? false
+          : await _sync.hasPending(user.id);
+
+      // Only worth reading when onboarding is actually about to show. When it
+      // isn't, any record still sitting there is a leftover from a run that
+      // finished by some other path — bin it rather than leave a stale
+      // breadcrumb that a later incomplete run could resume from.
+      final resumable = profile.hasCompletedOnboarding || pending;
+      final progress = resumable ? null : await _sync.loadProgress(user.id);
+      if (resumable) unawaited(_sync.clearProgress(user.id));
+
+      if (!mounted) return;
+
+      setState(() {
+        _progress = progress;
+        _hasQueuedRecord = pending;
+        // Both signals collapse into the routing answer here, once, against a
+        // profile that was just read from the server this instant.
+        _onboardingComplete = profile.hasCompletedOnboarding || pending;
+        _status = _GateStatus.ready;
+      });
+
+      if (pending) unawaited(_drainPendingOnboarding());
+    } on SocketException {
+      _failClosed();
+    } on TimeoutException {
+      _failClosed();
+    } on AuthRetryableFetchException {
+      _failClosed();
+    } catch (_) {
+      // A genuine rejection: the token is dead or the `profiles` row is gone.
+      // Sign out for real so the stale session cannot keep coming back.
+      await Supabase.instance.client.auth.signOut();
+      if (!mounted) return;
+      setState(() {
+        _status = _GateStatus.signedOut;
+        _signedOutMessage = sessionInvalidMessage;
+      });
+    }
+  }
+
+  /// Onboarding just finished: the record is already staged locally, so the
+  /// gate can resolve straight to Home without waiting on the server.
+  void _onOnboardingFinished() {
+    setState(() {
+      _onboardingComplete = true;
+      _hasQueuedRecord = true;
+    });
+    unawaited(_drainPendingOnboarding());
+  }
+
+  /// Network-shaped failure: the account is probably fine, we just cannot
+  /// confirm it. Leave the session alone and offer a retry.
+  void _failClosed() {
+    if (!mounted) return;
+    setState(() => _status = _GateStatus.retry);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    switch (_status) {
+      case _GateStatus.loading:
+        return const _GateLoading();
+
+      case _GateStatus.retry:
+        return _GateRetry(onRetry: _resolve);
+
+      case _GateStatus.signedOut:
+        return SignInScreen(
+          initialErrorMessage: _signedOutMessage,
+          initialUnconfirmedEmail: _unconfirmedEmail,
+        );
+
+      case _GateStatus.ready:
+        // The whole decision, already computed. Deliberately not re-derived
+        // from `_profile` here: that object is a snapshot from resolve time
+        // and goes stale the moment onboarding finishes underneath it.
+        return _onboardingComplete
+            ? const HomeScreen()
+            // Staying mounted matters: this state owns the connectivity
+            // listener, so onboarding hands control back rather than
+            // replacing the route.
+            : OnboardingFlowScreen(
+                onFinished: _onOnboardingFinished,
+                initialStep: _progress?.step ?? 0,
+                initialData: _progress?.data ?? const OnboardingData(),
+              );
+    }
+  }
+}
+
+/// The launch visual, reused as the gate's in-flight state so a cold start
+/// and a post-auth resolve look identical.
+class _GateLoading extends StatelessWidget {
+  const _GateLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AuroraColors.primary,
+      body: Center(
+        child: SizedBox(
+          width: 32,
+          height: 32,
+          child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class _GateRetry extends StatelessWidget {
+  const _GateRetry({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: AuroraColors.background,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.xxl),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: AuroraColors.tonal,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.wifi_off_rounded,
+                    size: 32,
+                    color: AuroraColors.secondary,
+                  ),
+                ),
+                const SizedBox(height: AuroraSpacing.xl),
+                Text(
+                  'تعذّر الاتصال',
+                  style: AuroraText.display(size: AuroraFontSize.h2),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AuroraSpacing.md),
+                Text(
+                  'تحقق من اتصالك بالإنترنت ثم أعد المحاولة.',
+                  style: AuroraText.body(
+                    size: AuroraFontSize.body,
+                    color: AuroraColors.secondary,
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AuroraSpacing.xxl),
+                AuroraPrimaryButton(
+                  label: 'إعادة المحاولة',
+                  icon: Icons.refresh_rounded,
+                  onTap: onRetry,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
