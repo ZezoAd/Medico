@@ -41,6 +41,7 @@ dependencies:
   flutter_svg: ^2.3.0
   pinput: ^6.0.2
   http: ^1.6.0
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:
