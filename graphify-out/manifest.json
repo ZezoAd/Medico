@@ -403,5 +403,10 @@
     "mtime": 1787437341.3921068,
     "ast_hash": "102a85bdf9f83e0867ed7daba8dba1ae",
     "semantic_hash": ""
+  },
+  "supabase/migrations/005_onboarding_fields.sql": {
+    "mtime": 1787419057.6414907,
+    "ast_hash": "0cc49be1a27e231c98111c7c61012d7d",
+    "semantic_hash": ""
   }
 }

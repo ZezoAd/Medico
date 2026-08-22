@@ -62,7 +62,7 @@
   "60": "HWND",
   "61": "wstring",
   "62": "arabic_formatting.dart",
-  "63": "splash_screen.dart",
+  "63": "auth_gate.dart",
   "64": "wait_estimate.dart",
   "65": "SignInPage",
   "66": "_resendConfirmation",
@@ -90,5 +90,6 @@
   "88": "notification_service.dart",
   "89": "signup_verified Gate",
   "90": "onboarding_preview.dart",
-  "91": "SignUpScreen"
+  "91": "firebase_options.dart",
+  "92": "../services/onboarding_service.dart"
 }
