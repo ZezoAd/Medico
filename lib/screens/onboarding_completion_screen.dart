@@ -23,6 +23,10 @@ class OnboardingCompletionScreen extends StatefulWidget {
   });
 
   final bool show;
+
+  /// Stages the answers on-device and starts the server write, then returns
+  /// immediately. There is deliberately no success or failure state on this
+  /// screen: online and offline look identical from here.
   final VoidCallback onEnter;
 
   @override

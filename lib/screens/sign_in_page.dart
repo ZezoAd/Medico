@@ -10,7 +10,7 @@ import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
 import '../widgets/forgot_password_sheet.dart';
-import 'home_screen.dart';
+import 'auth_gate.dart';
 import 'otp_verification_screen.dart';
 import 'sign_up_screen.dart';
 
@@ -259,12 +259,12 @@ class _SignInPageState extends State<SignInPage> {
       // `signInWithPassword` only ever authenticates a pre-existing account,
       // so nothing was created here and the copy must not suggest otherwise.
       if (_isDoctorTabMismatch(profile)) {
-        _showRoleMismatch(doctorTabNotADoctorAccountMessage, profile!);
+        _showRoleMismatch(doctorTabNotADoctorAccountMessage);
         return;
       }
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => _destination(profile)),
-      );
+      await Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthGate()));
     } catch (e) {
       if (!mounted) return;
       // Supabase deliberately won't say which of the two was wrong (email
@@ -295,7 +295,6 @@ class _SignInPageState extends State<SignInPage> {
     _pendingUnconfirmedEmail = null;
     _pendingOtpPurpose = OtpPurpose.signupConfirmation;
     _roleMismatch = false;
-    _roleMismatchProfile = null;
   }
 
   /// True when a sign-in from the طبيب tab landed on an account the database
@@ -304,20 +303,13 @@ class _SignInPageState extends State<SignInPage> {
   bool _isDoctorTabMismatch(UserProfile? profile) =>
       _isDoctor && profile != null && profile.role != UserRole.doctor;
 
-  /// The already-fetched profile behind [_roleMismatch], held so that
-  /// [_continueAsPatient] can route without a second round-trip. That matters
-  /// more than the saved request: re-fetching would let a network drop fail
-  /// the one action standing between the person and the app.
-  UserProfile? _roleMismatchProfile;
-
   /// Swaps the automatic navigation for an explained one: shows [message] with
   /// a single "المتابعة كمستخدم" action and leaves the person signed in until
   /// they take it.
-  void _showRoleMismatch(String message, UserProfile profile) {
+  void _showRoleMismatch(String message) {
     setState(() {
       _banner = AuthErrorInfo(message, severity: AuthErrorSeverity.warning);
       _roleMismatch = true;
-      _roleMismatchProfile = profile;
     });
   }
 
@@ -325,15 +317,18 @@ class _SignInPageState extends State<SignInPage> {
   /// success path performs, just gated behind an explanation. Synchronous and
   /// incapable of failing, since it is the only way out of this state.
   void _continueAsPatient() {
-    // Read before _clearBanner nulls it.
-    final profile = _roleMismatchProfile;
     setState(_clearBanner);
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => _destination(profile)),
+      MaterialPageRoute(builder: (_) => const AuthGate()),
       (route) => false,
     );
   }
 
+  /// Note: [_continueAsPatient] now re-resolves through [AuthGate] rather
+  /// than reusing the profile fetched here. That is one extra round-trip on a
+  /// rare path, and unlike before, a network drop no longer strands the
+  /// person — the gate shows its retry state instead of failing the action.
+  ///
   /// The banner's action pair. [_roleMismatch] wins over the resend action:
   /// the two never coexist (one follows a *successful* sign-in, the other a
   /// blocked one), and ordering them here keeps the widget tree readable.
@@ -388,17 +383,6 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  /// Both roles land on [HomeScreen] for now — the doctor-side dashboard
-  /// doesn't exist yet. The branch stays here so adding it is a one-line
-  /// change, and so the destination is visibly driven by [UserProfile.role]
-  /// rather than by the tab the user happened to be on.
-  Widget _destination(UserProfile? profile) {
-    return switch (profile?.role) {
-      UserRole.doctor => const HomeScreen(),
-      UserRole.patient || null => const HomeScreen(),
-    };
-  }
-
   Future<void> _handleGoogle() async {
     setState(() {
       _clearBanner();
@@ -434,12 +418,12 @@ class _SignInPageState extends State<SignInPage> {
       // the tap was a no-op. Nothing is signed out or rolled back; the account
       // is real, usable, and stays signed in.
       if (_isDoctorTabMismatch(profile)) {
-        _showRoleMismatch(doctorTabGoogleCreatedPatientMessage, profile!);
+        _showRoleMismatch(doctorTabGoogleCreatedPatientMessage);
         return;
       }
       // Clears the auth stack: there's nothing to come back to once signed in.
       await Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => _destination(profile)),
+        MaterialPageRoute(builder: (_) => const AuthGate()),
         (route) => false,
       );
     } on GoogleSignInException catch (e) {

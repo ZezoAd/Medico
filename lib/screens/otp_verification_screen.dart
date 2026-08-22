@@ -8,8 +8,7 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
-import 'home_screen.dart';
-import 'onboarding_flow_screen.dart';
+import 'auth_gate.dart';
 
 enum _OtpStatus { empty, filling, loading, success, failure }
 
@@ -251,15 +250,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       setState(() => _status = _OtpStatus.success);
       await Future<void>.delayed(const Duration(milliseconds: 1200));
       if (!mounted) return;
-      // A fresh signup goes straight into onboarding, which owns the final
-      // hop to Home itself. Re-verification is an *existing* account that
-      // may well have onboarded already, so it keeps landing on Home —
-      // SplashScreen catches it on next launch if it genuinely hasn't.
-      final destination = widget.purpose == OtpPurpose.signupConfirmation
-          ? const OnboardingFlowScreen()
-          : const HomeScreen();
+      // No signup-vs-reverification branch here any more: once the session
+      // exists both cases ask the same question, and AuthGate answers it from
+      // `onboarding_completed_at` alone.
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => destination),
+        MaterialPageRoute(builder: (_) => const AuthGate()),
         (route) => false,
       );
     } catch (e) {

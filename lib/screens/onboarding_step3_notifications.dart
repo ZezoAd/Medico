@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../theme/aurora_tokens.dart';
 import '../widgets/aurora_buttons.dart';
@@ -27,10 +26,10 @@ class OnboardingStep3Notifications extends StatefulWidget {
     required this.onMaybeLater,
   });
 
-  /// Raises the real OS permission prompt once and reports whether it was
-  /// granted. Advancing on a grant is the caller's job; a denial keeps the
-  /// patient here so the recovery path can be offered.
-  final Future<bool> Function() onEnable;
+  /// Raises the real OS permission prompt, then advances — whatever the
+  /// answer. Grant, deny and skip all converge on Completion; the only thing
+  /// the answer changes is whether a token gets registered.
+  final Future<void> Function() onEnable;
 
   /// Proceeds *without* asking. That is the point: the OS allows one
   /// automatic prompt, so someone who is not ready now keeps it for a moment
@@ -49,10 +48,9 @@ class _OnboardingStep3NotificationsState
   late final AnimationController _ringController;
   late final Animation<double> _ring;
 
-  /// Set once the OS prompt comes back denied. From then on the CTA offers
-  /// Settings instead of asking again — a dismissed prompt cannot be raised a
-  /// second time, so re-offering it would be a button that does nothing.
-  bool _denied = false;
+  /// Guards against a double-tap while the OS dialog is up. There is no
+  /// denied state to track any more: a denial is not a branch, it just means
+  /// no token gets registered on the way to Completion.
   bool _requesting = false;
 
   @override
@@ -83,14 +81,10 @@ class _OnboardingStep3NotificationsState
   }
 
   Future<void> _request() async {
-    if (_requesting || _denied) return;
+    if (_requesting) return;
     setState(() => _requesting = true);
-    final granted = await widget.onEnable();
-    if (!mounted) return;
-    setState(() {
-      _requesting = false;
-      _denied = !granted;
-    });
+    await widget.onEnable();
+    if (mounted) setState(() => _requesting = false);
   }
 
   @override
@@ -130,18 +124,6 @@ class _OnboardingStep3NotificationsState
         ),
         const SizedBox(height: AuroraSpacing.xl),
         const _ChipRow(),
-        if (_denied) ...[
-          const SizedBox(height: AuroraSpacing.xl),
-          Text(
-            'لم يتم تفعيل الإشعارات. يمكنك السماح بها من إعدادات التطبيق.',
-            style: AuroraText.body(
-              size: AuroraFontSize.caption,
-              color: AuroraColors.secondary,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ],
     );
 
@@ -150,15 +132,9 @@ class _OnboardingStep3NotificationsState
       mainAxisSize: MainAxisSize.min,
       children: [
         AuroraPrimaryButton(
-          label: _denied ? 'افتح الإعدادات' : 'تفعيل الإشعارات',
-          icon: _denied
-              ? Icons.settings_outlined
-              : Icons.notifications_active_outlined,
-          onTap: _requesting
-              ? null
-              : _denied
-              ? openAppSettings
-              : _request,
+          label: 'تفعيل الإشعارات',
+          icon: Icons.notifications_active_outlined,
+          onTap: _requesting ? null : _request,
         ),
         const SizedBox(height: 10),
         AuroraSecondaryButton(label: 'ليس الآن', onTap: widget.onMaybeLater),

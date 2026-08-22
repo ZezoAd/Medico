@@ -8,8 +8,7 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
-import 'home_screen.dart';
-import 'onboarding_flow_screen.dart';
+import 'auth_gate.dart';
 import 'otp_verification_screen.dart';
 
 /// Sign-up screen matching the visual language of [SignInPage]: the same
@@ -276,19 +275,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // negative there would lock a legitimate Google user out of the app
       // entirely, and the call is idempotent and cheap.
       await const ProfileService().markSignupVerified();
-      final profile = await const ProfileService().fetchCurrentProfile();
       if (!mounted) return;
-      // Google skips the OTP screen entirely, so this is the only place a
-      // Google signup can be routed into onboarding. A returning Google user
-      // who already finished it goes straight to Home. A null profile read
-      // means we can't tell — send them to onboarding rather than risk
-      // silently skipping it; it is idempotent and re-runnable.
-      final destination = profile?.hasCompletedOnboarding ?? false
-          ? const HomeScreen()
-          : const OnboardingFlowScreen();
+      // Routing is AuthGate's call, not this screen's — Google and email
+      // signups must not answer the same question two different ways.
       // Clears the auth stack: there's nothing to come back to once signed in.
       await Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => destination),
+        MaterialPageRoute(builder: (_) => const AuthGate()),
         (route) => false,
       );
     } on GoogleSignInException catch (e) {

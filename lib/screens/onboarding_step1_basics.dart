@@ -39,10 +39,16 @@ class OnboardingStep1Basics extends StatelessWidget {
       title: 'لنتعرف عليك قليلاً',
       subtitle:
           'معلومات اختيارية تساعدنا على عرض أطباء أنسب لك. يمكنك تعديلها في أي وقت من الإعدادات.',
-      // Optional step: full-width primary with skip as a text link beneath.
+      // Exactly two ways off this step: answer both and continue, or skip.
+      // A half-filled form is not a third path — "متابعة" stays disabled
+      // until gender *and* birth year are set, so continuing always means a
+      // complete answer and skipping always means a deliberate one. The
+      // fields remain optional overall; "تخطي" is never gated.
       footer: OnboardingStepFooter(
         primaryLabel: 'متابعة',
-        onPrimary: onContinue,
+        onPrimary: (data.gender != null && data.birthYear != null)
+            ? onContinue
+            : null,
         skipLabel: 'تخطي',
         onSkip: onSkip,
       ),
