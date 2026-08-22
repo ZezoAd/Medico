@@ -12,12 +12,10 @@
   "10": "auth_error_banner.dart",
   "11": "user_profile.dart",
   "12": "StatelessWidget",
-  "13": "package:supabase_flutter/supabase_flutter.dart",
+  "13": "signup_verified Gate",
   "14": "_In_",
   "15": "manifest.json",
-  "16": "queue_status_card.dart",
-  "17": "onboarding_v6.jsx",
-  "18": "queue_status_card_preview.dart",
+  "17": "AppDelegate",
   "19": "MainActivity.kt",
   "20": "One Screen Per File Rule",
   "21": "FlView",
@@ -60,10 +58,5 @@
   "58": "wchar_t",
   "59": "WPARAM",
   "60": "HWND",
-  "61": "wstring",
-  "62": "arabic_formatting.dart",
-  "63": "splash_screen.dart",
-  "64": "wait_estimate.dart",
-  "65": "SignInPage",
-  "66": "_resendConfirmation"
+  "61": "wstring"
 }
