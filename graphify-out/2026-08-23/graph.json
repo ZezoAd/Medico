@@ -880,8 +880,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_onboarding_preview",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "onboarding_preview.dart"
     },
     {
@@ -891,8 +891,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_onboarding_preview_previewapp",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "_previewapp"
     },
     {
@@ -913,8 +913,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_onboarding_preview_main",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "main"
     },
     {
@@ -924,8 +924,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_onboarding_preview_build",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "build"
     },
     {
@@ -935,8 +935,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_foundation_dart",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "package:flutter/foundation.dart"
     },
     {
@@ -957,8 +957,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "screens_onboarding_flow_screen_dart",
-      "community": 90,
-      "community_name": "onboarding_preview.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "../screens/onboarding_flow_screen.dart"
     },
     {
@@ -969,7 +969,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "queue_status_card_preview.dart"
     },
     {
@@ -980,7 +980,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_scenario",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_scenario"
     },
     {
@@ -991,7 +991,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_previewapp",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_previewapp"
     },
     {
@@ -1002,7 +1002,7 @@
       "_origin": "ast",
       "id": "statefulwidget",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "statefulwidget"
     },
     {
@@ -1013,7 +1013,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_previewappstate",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_previewappstate"
     },
     {
@@ -1024,7 +1024,7 @@
       "_origin": "ast",
       "id": "state",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "state"
     },
     {
@@ -1035,7 +1035,7 @@
       "_origin": "ast",
       "id": "previewapp",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_previewapp"
     },
     {
@@ -1046,7 +1046,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_label",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "label"
     },
     {
@@ -1057,7 +1057,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_status",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_status"
     },
     {
@@ -1068,7 +1068,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_recordedat",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_recordedat"
     },
     {
@@ -1079,7 +1079,7 @@
       "_origin": "ast",
       "id": "datetime",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "datetime"
     },
     {
@@ -1090,7 +1090,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_main",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "main"
     },
     {
@@ -1101,7 +1101,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_createstate",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "createstate"
     },
     {
@@ -1112,7 +1112,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_setscenario",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "_setscenario"
     },
     {
@@ -1123,7 +1123,7 @@
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_build",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "build"
     },
     {
@@ -1134,7 +1134,7 @@
       "_origin": "ast",
       "id": "widgets_global_offline_strip_dart",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "../widgets/global_offline_strip.dart"
     },
     {
@@ -1145,7 +1145,7 @@
       "_origin": "ast",
       "id": "widgets_queue_status_card_dart",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "../widgets/queue_status_card.dart"
     },
     {
@@ -1155,8 +1155,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "firebase_options.dart"
     },
     {
@@ -1166,8 +1166,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_defaultfirebaseoptions",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "defaultfirebaseoptions"
     },
     {
@@ -1177,8 +1177,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_web",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "web"
     },
     {
@@ -1188,8 +1188,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "static_const_firebaseoptions",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "static const firebaseoptions"
     },
     {
@@ -1199,8 +1199,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_android",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "android"
     },
     {
@@ -1210,8 +1210,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_ios",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "ios"
     },
     {
@@ -1221,8 +1221,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_macos",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "macos"
     },
     {
@@ -1232,8 +1232,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_windows",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "windows"
     },
     {
@@ -1243,8 +1243,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_firebase_core_firebase_core_dart",
-      "community": 91,
-      "community_name": "firebase_options.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "package:firebase_core/firebase_core.dart"
     },
     {
@@ -1398,7 +1398,7 @@
       "_origin": "ast",
       "id": "package_supabase_flutter_supabase_flutter_dart",
       "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community_name": "home_screen.dart",
       "norm_label": "package:supabase_flutter/supabase_flutter.dart"
     },
     {
@@ -1430,8 +1430,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_models_onboarding_data_gender",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
       "norm_label": "gender"
     },
     {
@@ -1441,8 +1441,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_models_onboarding_data_onboardingdata",
-      "community": 11,
-      "community_name": "user_profile.dart",
+      "community": 30,
+      "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onboardingdata"
     },
     {
@@ -1518,8 +1518,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "string",
-      "community": 73,
-      "community_name": "aurora_buttons.dart",
+      "community": 11,
+      "community_name": "user_profile.dart",
       "norm_label": "string?"
     },
     {
@@ -1688,14 +1688,25 @@
       "norm_label": "phone"
     },
     {
+      "label": "gender",
+      "file_type": "code",
+      "source_file": "lib/models/user_profile.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_models_user_profile_gender",
+      "community": 11,
+      "community_name": "user_profile.dart",
+      "norm_label": "gender"
+    },
+    {
       "label": "signupVerified",
       "file_type": "code",
       "source_file": "lib/models/user_profile.dart",
       "source_location": null,
       "_origin": "ast",
       "id": "lib_models_user_profile_signupverified",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "signupverified"
     },
     {
@@ -1752,6 +1763,17 @@
       "community": 11,
       "community_name": "user_profile.dart",
       "norm_label": "frommap"
+    },
+    {
+      "label": "onboarding_data.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "onboarding_data_dart",
+      "community": 11,
+      "community_name": "user_profile.dart",
+      "norm_label": "onboarding_data.dart"
     },
     {
       "label": "auth_gate.dart",
@@ -1838,7 +1860,7 @@
       "_origin": "ast",
       "id": "static_const",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "static const"
     },
     {
@@ -1958,8 +1980,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "voidcallback",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 73,
+      "community_name": "aurora_buttons.dart",
       "norm_label": "voidcallback"
     },
     {
@@ -2068,8 +2090,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "dart_io",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "dart:io"
     },
     {
@@ -2090,8 +2112,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_onboarding_data_dart",
-      "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community": 37,
+      "community_name": "../models/onboarding_data.dart",
       "norm_label": "../models/onboarding_data.dart"
     },
     {
@@ -2101,8 +2123,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_onboarding_sync_service_dart",
-      "community": 80,
-      "community_name": "auth_gate.dart",
+      "community": 67,
+      "community_name": "onboarding_flow_screen.dart",
       "norm_label": "../services/onboarding_sync_service.dart"
     },
     {
@@ -2112,8 +2134,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "services_profile_service_dart",
-      "community": 80,
-      "community_name": "auth_gate.dart",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "../services/profile_service.dart"
     },
     {
@@ -2145,8 +2167,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_aurora_buttons_dart",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "../widgets/aurora_buttons.dart"
     },
     {
@@ -2156,8 +2178,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_screen_dart",
-      "community": 67,
-      "community_name": "onboarding_flow_screen.dart",
+      "community": 80,
+      "community_name": "auth_gate.dart",
       "norm_label": "home_screen.dart"
     },
     {
@@ -2255,8 +2277,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "home_screen.dart"
     },
     {
@@ -2266,8 +2288,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen_homescreen",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "homescreen"
     },
     {
@@ -2277,8 +2299,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen_homescreenstate",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "_homescreenstate"
     },
     {
@@ -2288,20 +2310,64 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen_tabindex",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "_tabindex"
     },
     {
-      "label": "_tabs",
+      "label": "_profile",
       "file_type": "code",
       "source_file": "lib/screens/home_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "lib_screens_home_screen_tabs",
-      "community": 18,
-      "community_name": "State",
-      "norm_label": "_tabs"
+      "id": "lib_screens_home_screen_profile",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_profile"
+    },
+    {
+      "label": "_email",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_email",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_email"
+    },
+    {
+      "label": "_isSignedIn",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_issignedin",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_issignedin"
+    },
+    {
+      "label": "_navIconSize",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_naviconsize",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_naviconsize"
+    },
+    {
+      "label": "static const double",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "static_const_double",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "static const double"
     },
     {
       "label": "createState",
@@ -2310,9 +2376,31 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen_createstate",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "createstate"
+    },
+    {
+      "label": "initState",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_initstate",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "initstate"
+    },
+    {
+      "label": "_loadProfile",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_loadprofile",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_loadprofile"
     },
     {
       "label": "build",
@@ -2321,9 +2409,42 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_screen_build",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "build"
+    },
+    {
+      "label": "_signOut",
+      "file_type": "code",
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_screen_signout",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "_signout"
+    },
+    {
+      "label": "../models/user_profile.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "models_user_profile_dart",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "../models/user_profile.dart"
+    },
+    {
+      "label": "../widgets/gender_avatar.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "widgets_gender_avatar_dart",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "../widgets/gender_avatar.dart"
     },
     {
       "label": "bookings_tab.dart",
@@ -2332,8 +2453,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bookings_tab_dart",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "bookings_tab.dart"
     },
     {
@@ -2343,8 +2464,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "browse_tab_dart",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "browse_tab.dart"
     },
     {
@@ -2354,20 +2475,20 @@
       "source_location": null,
       "_origin": "ast",
       "id": "home_tab_dart",
-      "community": 18,
-      "community_name": "State",
+      "community": 85,
+      "community_name": "home_screen.dart",
       "norm_label": "home_tab.dart"
     },
     {
-      "label": "settings_tab.dart",
+      "label": "profile_tab.dart",
       "file_type": "code",
       "source_file": null,
       "source_location": null,
       "_origin": "ast",
-      "id": "settings_tab_dart",
-      "community": 18,
-      "community_name": "State",
-      "norm_label": "settings_tab.dart"
+      "id": "profile_tab_dart",
+      "community": 85,
+      "community_name": "home_screen.dart",
+      "norm_label": "profile_tab.dart"
     },
     {
       "label": "home_tab.dart",
@@ -2376,8 +2497,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_tab",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "home_tab.dart"
     },
     {
@@ -2387,9 +2508,174 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_tab_hometab",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "hometab"
+    },
+    {
+      "label": "_HomeTabState",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_hometabstate",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_hometabstate"
+    },
+    {
+      "label": "_HomeTopBar",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_hometopbar",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_hometopbar"
+    },
+    {
+      "label": "_SearchBar",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_searchbar",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_searchbar"
+    },
+    {
+      "label": "_NotificationBell",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_notificationbell",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_notificationbell"
+    },
+    {
+      "label": "_doctorName",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_doctorname",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_doctorname"
+    },
+    {
+      "label": "_doctorLocation",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_doctorlocation",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_doctorlocation"
+    },
+    {
+      "label": "_patientsAhead",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_patientsahead",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_patientsahead"
+    },
+    {
+      "label": "_avgConsultMinutes",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_avgconsultminutes",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_avgconsultminutes"
+    },
+    {
+      "label": "_doctorQueuePosition",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_doctorqueueposition",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_doctorqueueposition"
+    },
+    {
+      "label": "_patientQueuePosition",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_patientqueueposition",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_patientqueueposition"
+    },
+    {
+      "label": "_recordedAt",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_recordedat",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_recordedat"
+    },
+    {
+      "label": "_bellSize",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_bellsize",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "_bellsize"
+    },
+    {
+      "label": "height",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_height",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "height"
+    },
+    {
+      "label": "size",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_size",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "size"
+    },
+    {
+      "label": "createState",
+      "file_type": "code",
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_home_tab_createstate",
+      "community": 18,
+      "community_name": "home_tab.dart",
+      "norm_label": "createstate"
     },
     {
       "label": "build",
@@ -2398,8 +2684,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_home_tab_build",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "build"
     },
     {
@@ -3312,7 +3598,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "onboarding_gender_control.dart"
     },
     {
@@ -3323,7 +3609,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_onboardinggendercontrol",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "onboardinggendercontrol"
     },
     {
@@ -3334,7 +3620,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_onboardinggendercontrolstate",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "_onboardinggendercontrolstate"
     },
     {
@@ -3345,7 +3631,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_value",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "value"
     },
     {
@@ -3356,7 +3642,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_onchanged",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "onchanged"
     },
     {
@@ -3367,7 +3653,7 @@
       "_origin": "ast",
       "id": "valuechanged",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "valuechanged"
     },
     {
@@ -3378,7 +3664,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_canslide",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "_canslide"
     },
     {
@@ -3389,7 +3675,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_options",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "_options"
     },
     {
@@ -3400,7 +3686,7 @@
       "_origin": "ast",
       "id": "static_const_list",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "static const list"
     },
     {
@@ -3411,7 +3697,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_createstate",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "createstate"
     },
     {
@@ -3422,7 +3708,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_initstate",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "initstate"
     },
     {
@@ -3433,7 +3719,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_didupdatewidget",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "didupdatewidget"
     },
     {
@@ -3444,7 +3730,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_syncslide",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "_syncslide"
     },
     {
@@ -3455,7 +3741,7 @@
       "_origin": "ast",
       "id": "lib_screens_onboarding_gender_control_build",
       "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community_name": "onboarding_gender_control.dart",
       "norm_label": "build"
     },
     {
@@ -3534,17 +3820,6 @@
       "community": 72,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_column"
-    },
-    {
-      "label": "static const double",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "static_const_double",
-      "community": 74,
-      "community_name": "onboarding_step_header.dart",
-      "norm_label": "static const double"
     },
     {
       "label": "_half",
@@ -3663,7 +3938,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onboarding_step1_basics.dart"
     },
@@ -3674,7 +3949,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_onboardingstep1basics",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onboardingstep1basics"
     },
@@ -3685,7 +3960,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_data",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "data"
     },
@@ -3696,7 +3971,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_onchanged",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onchanged"
     },
@@ -3707,7 +3982,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_oncontinue",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "oncontinue"
     },
@@ -3718,7 +3993,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_onskip",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onskip"
     },
@@ -3729,7 +4004,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_pickyear",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "_pickyear"
     },
@@ -3740,7 +4015,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step1_basics_build",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "build"
     },
@@ -3751,8 +4026,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "widgets_aurora_select_field_dart",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "../widgets/aurora_select_field.dart"
     },
     {
@@ -3762,7 +4037,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "onboarding_gender_control_dart",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onboarding_gender_control.dart"
     },
@@ -3773,8 +4048,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "onboarding_step_scaffold_dart",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "onboarding_step_scaffold.dart"
     },
     {
@@ -3784,7 +4059,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "onboarding_year_picker_sheet_dart",
-      "community": 26,
+      "community": 30,
       "community_name": "onboarding_step1_basics.dart",
       "norm_label": "onboarding_year_picker_sheet.dart"
     },
@@ -3795,8 +4070,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "onboarding_step2_city.dart"
     },
     {
@@ -3806,8 +4081,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_onboardingstep2city",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "onboardingstep2city"
     },
     {
@@ -3817,8 +4092,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_data",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "data"
     },
     {
@@ -3828,8 +4103,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_onchanged",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "onchanged"
     },
     {
@@ -3839,8 +4114,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_oncontinue",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "oncontinue"
     },
     {
@@ -3850,8 +4125,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_pickcity",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "_pickcity"
     },
     {
@@ -3861,8 +4136,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step2_city_build",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "build"
     },
     {
@@ -3872,8 +4147,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "onboarding_city_picker_sheet_dart",
-      "community": 26,
-      "community_name": "onboarding_step1_basics.dart",
+      "community": 33,
+      "community_name": "onboarding_step2_city.dart",
       "norm_label": "onboarding_city_picker_sheet.dart"
     },
     {
@@ -4675,8 +4950,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otppurpose",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "otppurpose"
     },
     {
@@ -4686,8 +4961,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreen",
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "otpverificationscreen"
     },
     {
@@ -4697,8 +4972,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_otp_verification_screen_otpverificationscreenstate",
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "_otpverificationscreenstate"
     },
     {
@@ -5241,36 +5516,322 @@
       "norm_label": "auth_gate.dart"
     },
     {
-      "label": "settings_tab.dart",
+      "label": "profile_tab.dart",
       "file_type": "code",
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "lib_screens_settings_tab",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
-      "norm_label": "settings_tab.dart"
+      "id": "lib_screens_profile_tab",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "profile_tab.dart"
     },
     {
-      "label": "SettingsTab",
+      "label": "ProfileTab",
       "file_type": "code",
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "lib_screens_settings_tab_settingstab",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
-      "norm_label": "settingstab"
+      "id": "lib_screens_profile_tab_profiletab",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "profiletab"
+    },
+    {
+      "label": "_ProfileTabState",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_profiletabstate",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_profiletabstate"
+    },
+    {
+      "label": "_ProfileBanner",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_profilebanner",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_profilebanner"
+    },
+    {
+      "label": "_SettingsCard",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_settingscard",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_settingscard"
+    },
+    {
+      "label": "_SettingsRow",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_settingsrow",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_settingsrow"
+    },
+    {
+      "label": "_SignOutRow",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_signoutrow",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_signoutrow"
+    },
+    {
+      "label": "_RowDivider",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_rowdivider",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_rowdivider"
+    },
+    {
+      "label": "isSignedIn",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_issignedin",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "issignedin"
+    },
+    {
+      "label": "gender",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_gender",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "gender"
+    },
+    {
+      "label": "fullName",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_fullname",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "fullname"
+    },
+    {
+      "label": "phone",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_phone",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "phone"
+    },
+    {
+      "label": "email",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_email",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "email"
+    },
+    {
+      "label": "_fallbackName",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_fallbackname",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_fallbackname"
+    },
+    {
+      "label": "_fallbackContact",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_fallbackcontact",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_fallbackcontact"
+    },
+    {
+      "label": "_notSignedInName",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_notsignedinname",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_notsignedinname"
+    },
+    {
+      "label": "_signingOut",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_signingout",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_signingout"
+    },
+    {
+      "label": "name",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_name",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "name"
+    },
+    {
+      "label": "contact",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_contact",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "contact"
+    },
+    {
+      "label": "signOutEnabled",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_signoutenabled",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "signoutenabled"
+    },
+    {
+      "label": "onSignOut",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_onsignout",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "onsignout"
+    },
+    {
+      "label": "icon",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_icon",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "icon"
+    },
+    {
+      "label": "label",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_label",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "label"
+    },
+    {
+      "label": "enabled",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_enabled",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "enabled"
+    },
+    {
+      "label": "busy",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_busy",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "busy"
+    },
+    {
+      "label": "onTap",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_ontap",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "ontap"
+    },
+    {
+      "label": "createState",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_createstate",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "createstate"
+    },
+    {
+      "label": "_handleSignOut",
+      "file_type": "code",
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_screens_profile_tab_handlesignout",
+      "community": 21,
+      "community_name": "profile_tab.dart",
+      "norm_label": "_handlesignout"
     },
     {
       "label": "build",
       "file_type": "code",
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "lib_screens_settings_tab_build",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "id": "lib_screens_profile_tab_build",
+      "community": 21,
+      "community_name": "profile_tab.dart",
       "norm_label": "build"
     },
     {
@@ -5291,8 +5852,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_signinpage",
-      "community": 65,
-      "community_name": "SignInPage",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "signinpage"
     },
     {
@@ -5313,8 +5874,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_signinpagestate",
-      "community": 65,
-      "community_name": "SignInPage",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "_signinpagestate"
     },
     {
@@ -5710,7 +6271,7 @@
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_initstate",
       "community": 66,
-      "community_name": "_resendConfirmation",
+      "community_name": "signup_verified Gate",
       "norm_label": "initstate"
     },
     {
@@ -5721,7 +6282,7 @@
       "_origin": "ast",
       "id": "materialpageroute",
       "community": 66,
-      "community_name": "_resendConfirmation",
+      "community_name": "signup_verified Gate",
       "norm_label": "materialpageroute"
     },
     {
@@ -5853,7 +6414,7 @@
       "_origin": "ast",
       "id": "lib_screens_sign_in_page_resendconfirmation",
       "community": 66,
-      "community_name": "_resendConfirmation",
+      "community_name": "signup_verified Gate",
       "norm_label": "_resendconfirmation"
     },
     {
@@ -6055,17 +6616,6 @@
       "norm_label": "package:flutter_svg/flutter_svg.dart"
     },
     {
-      "label": "../models/user_profile.dart",
-      "file_type": "code",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "models_user_profile_dart",
-      "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
-      "norm_label": "../models/user_profile.dart"
-    },
-    {
       "label": "../widgets/forgot_password_sheet.dart",
       "file_type": "code",
       "source_file": null,
@@ -6105,8 +6655,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_screen",
-      "community": 65,
-      "community_name": "SignInPage",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "sign_in_screen.dart"
     },
     {
@@ -6116,8 +6666,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_sign_in_screen_signinscreen",
-      "community": 65,
-      "community_name": "SignInPage",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "signinscreen"
     },
     {
@@ -6127,8 +6677,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "sign_in_page_dart",
-      "community": 65,
-      "community_name": "SignInPage",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "sign_in_page.dart"
     },
     {
@@ -6590,7 +7140,7 @@
       "_origin": "ast",
       "id": "lib_screens_sign_up_screen_handlesubmit",
       "community": 66,
-      "community_name": "_resendConfirmation",
+      "community_name": "signup_verified Gate",
       "norm_label": "_handlesubmit"
     },
     {
@@ -6776,8 +7326,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_notification_service",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "notification_service.dart"
     },
     {
@@ -6787,8 +7337,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_notification_service_notificationservice",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "notificationservice"
     },
     {
@@ -6798,8 +7348,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_notification_service_requestpermission",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "requestpermission"
     },
     {
@@ -6809,8 +7359,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_notification_service_registerdevicetoken",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "registerdevicetoken"
     },
     {
@@ -6820,8 +7370,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_firebase_messaging_firebase_messaging_dart",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "package:firebase_messaging/firebase_messaging.dart"
     },
     {
@@ -6831,8 +7381,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_permission_handler_permission_handler_dart",
-      "community": 88,
-      "community_name": "notification_service.dart",
+      "community": 8,
+      "community_name": "main.dart",
       "norm_label": "package:permission_handler/permission_handler.dart"
     },
     {
@@ -6842,8 +7392,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_onboarding_service",
-      "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community": 37,
+      "community_name": "../models/onboarding_data.dart",
       "norm_label": "onboarding_service.dart"
     },
     {
@@ -6853,8 +7403,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_onboarding_service_onboardingservice",
-      "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community": 37,
+      "community_name": "../models/onboarding_data.dart",
       "norm_label": "onboardingservice"
     },
     {
@@ -6864,8 +7414,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_onboarding_service_saveonboarding",
-      "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community": 37,
+      "community_name": "../models/onboarding_data.dart",
       "norm_label": "saveonboarding"
     },
     {
@@ -7074,7 +7624,7 @@
       "_origin": "ast",
       "id": "package_shared_preferences_shared_preferences_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:shared_preferences/shared_preferences.dart"
     },
     {
@@ -7085,7 +7635,7 @@
       "_origin": "ast",
       "id": "lib_services_profile_service",
       "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community_name": "home_screen.dart",
       "norm_label": "profile_service.dart"
     },
     {
@@ -7096,7 +7646,7 @@
       "_origin": "ast",
       "id": "lib_services_profile_service_profileservice",
       "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community_name": "home_screen.dart",
       "norm_label": "profileservice"
     },
     {
@@ -7107,7 +7657,7 @@
       "_origin": "ast",
       "id": "lib_services_profile_service_fetchcurrentprofile",
       "community": 85,
-      "community_name": "package:supabase_flutter/supabase_flutter.dart",
+      "community_name": "home_screen.dart",
       "norm_label": "fetchcurrentprofile"
     },
     {
@@ -7117,8 +7667,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_services_profile_service_marksignupverified",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "marksignupverified"
     },
     {
@@ -7384,6 +7934,39 @@
       "community": 13,
       "community_name": "aurora_tokens.dart",
       "norm_label": "success"
+    },
+    {
+      "label": "avatarMale",
+      "file_type": "code",
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_theme_aurora_tokens_avatarmale",
+      "community": 13,
+      "community_name": "aurora_tokens.dart",
+      "norm_label": "avatarmale"
+    },
+    {
+      "label": "avatarFemale",
+      "file_type": "code",
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_theme_aurora_tokens_avatarfemale",
+      "community": 13,
+      "community_name": "aurora_tokens.dart",
+      "norm_label": "avatarfemale"
+    },
+    {
+      "label": "avatarNeutral",
+      "file_type": "code",
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_theme_aurora_tokens_avatarneutral",
+      "community": 13,
+      "community_name": "aurora_tokens.dart",
+      "norm_label": "avatarneutral"
     },
     {
       "label": "aurora",
@@ -9212,14 +9795,102 @@
       "norm_label": "auth_error_banner.dart"
     },
     {
+      "label": "gender_avatar.dart",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "gender_avatar.dart"
+    },
+    {
+      "label": "GenderAvatar",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_genderavatar",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "genderavatar"
+    },
+    {
+      "label": "gender",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_gender",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "gender"
+    },
+    {
+      "label": "size",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_size",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "size"
+    },
+    {
+      "label": "filled",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_filled",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "filled"
+    },
+    {
+      "label": "_discAlpha",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_discalpha",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "_discalpha"
+    },
+    {
+      "label": "colorFor",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_colorfor",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "colorfor"
+    },
+    {
+      "label": "build",
+      "file_type": "code",
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_gender_avatar_build",
+      "community": 34,
+      "community_name": "gender_avatar.dart",
+      "norm_label": "build"
+    },
+    {
       "label": "global_offline_strip.dart",
       "file_type": "code",
       "source_file": "lib/widgets/global_offline_strip.dart",
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_global_offline_strip",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 36,
+      "community_name": "global_offline_strip.dart",
       "norm_label": "global_offline_strip.dart"
     },
     {
@@ -9229,8 +9900,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_global_offline_strip_globalofflinestrip",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 36,
+      "community_name": "global_offline_strip.dart",
       "norm_label": "globalofflinestrip"
     },
     {
@@ -9240,8 +9911,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_global_offline_strip_offlinestripbody",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 36,
+      "community_name": "global_offline_strip.dart",
       "norm_label": "_offlinestripbody"
     },
     {
@@ -9251,8 +9922,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_global_offline_strip_visible",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 36,
+      "community_name": "global_offline_strip.dart",
       "norm_label": "visible"
     },
     {
@@ -9262,8 +9933,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_global_offline_strip_build",
-      "community": 83,
-      "community_name": "package:flutter/material.dart",
+      "community": 36,
+      "community_name": "global_offline_strip.dart",
       "norm_label": "build"
     },
     {
@@ -9285,8 +9956,19 @@
       "_origin": "ast",
       "id": "lib_widgets_queue_status_card_queueconnectionstatus",
       "community": 18,
-      "community_name": "State",
+      "community_name": "home_tab.dart",
       "norm_label": "queueconnectionstatus"
+    },
+    {
+      "label": "StalenessReason",
+      "file_type": "code",
+      "source_file": "lib/widgets/queue_status_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_widgets_queue_status_card_stalenessreason",
+      "community": 16,
+      "community_name": "queue_status_card.dart",
+      "norm_label": "stalenessreason"
     },
     {
       "label": "QueueStatusCard",
@@ -9295,8 +9977,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_queue_status_card_queuestatuscard",
-      "community": 87,
-      "community_name": "_QueueStatusCardState",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "queuestatuscard"
     },
     {
@@ -9306,8 +9988,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_widgets_queue_status_card_queuestatuscardstate",
-      "community": 87,
-      "community_name": "_QueueStatusCardState",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "_queuestatuscardstate"
     },
     {
@@ -9317,8 +9999,8 @@
       "source_location": null,
       "_origin": "ast",
       "id": "tickerproviderstatemixin",
-      "community": 87,
-      "community_name": "_QueueStatusCardState",
+      "community": 18,
+      "community_name": "home_tab.dart",
       "norm_label": "tickerproviderstatemixin"
     },
     {
@@ -10242,7 +10924,7 @@
       "_origin": "ast",
       "id": "test_inline_error_overflow_test",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "inline_error_overflow_test.dart"
     },
     {
@@ -10253,7 +10935,7 @@
       "_origin": "ast",
       "id": "test_inline_error_overflow_test_budgetandroid",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "budgetandroid"
     },
     {
@@ -10264,7 +10946,7 @@
       "_origin": "ast",
       "id": "test_inline_error_overflow_test_sizeto",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "sizeto"
     },
     {
@@ -10275,7 +10957,7 @@
       "_origin": "ast",
       "id": "test_inline_error_overflow_test_main",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "main"
     },
     {
@@ -10286,7 +10968,7 @@
       "_origin": "ast",
       "id": "package_flutter_test_flutter_test_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:flutter_test/flutter_test.dart"
     },
     {
@@ -10297,7 +10979,7 @@
       "_origin": "ast",
       "id": "package_medico_screens_sign_in_page_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:medico/screens/sign_in_page.dart"
     },
     {
@@ -10308,7 +10990,7 @@
       "_origin": "ast",
       "id": "package_medico_screens_sign_up_screen_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:medico/screens/sign_up_screen.dart"
     },
     {
@@ -10319,7 +11001,7 @@
       "_origin": "ast",
       "id": "test_onboarding_progress_test",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "onboarding_progress_test.dart"
     },
     {
@@ -10330,7 +11012,7 @@
       "_origin": "ast",
       "id": "test_onboarding_progress_test_service",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "service"
     },
     {
@@ -10341,7 +11023,7 @@
       "_origin": "ast",
       "id": "test_onboarding_progress_test_usera",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "usera"
     },
     {
@@ -10352,7 +11034,7 @@
       "_origin": "ast",
       "id": "test_onboarding_progress_test_userb",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "userb"
     },
     {
@@ -10363,7 +11045,7 @@
       "_origin": "ast",
       "id": "test_onboarding_progress_test_main",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "main"
     },
     {
@@ -10374,7 +11056,7 @@
       "_origin": "ast",
       "id": "package_medico_models_onboarding_data_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:medico/models/onboarding_data.dart"
     },
     {
@@ -10385,8 +11067,118 @@
       "_origin": "ast",
       "id": "package_medico_services_onboarding_sync_service_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:medico/services/onboarding_sync_service.dart"
+    },
+    {
+      "label": "profile_tab_test.dart",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "profile_tab_test.dart"
+    },
+    {
+      "label": "_narrow",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_narrow",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "_narrow"
+    },
+    {
+      "label": "isSignedIn",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_issignedin",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "issignedin"
+    },
+    {
+      "label": "_sizeTo",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_sizeto",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "_sizeto"
+    },
+    {
+      "label": "_host",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_host",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "_host"
+    },
+    {
+      "label": "_profile",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_profile",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "_profile"
+    },
+    {
+      "label": "main",
+      "file_type": "code",
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "test_profile_tab_test_main",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "main"
+    },
+    {
+      "label": "package:medico/screens/home_tab.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_medico_screens_home_tab_dart",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "package:medico/screens/home_tab.dart"
+    },
+    {
+      "label": "package:medico/screens/profile_tab.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_medico_screens_profile_tab_dart",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "package:medico/screens/profile_tab.dart"
+    },
+    {
+      "label": "package:medico/theme/aurora_tokens.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "package_medico_theme_aurora_tokens_dart",
+      "community": 7,
+      "community_name": "profile_tab_test.dart",
+      "norm_label": "package:medico/theme/aurora_tokens.dart"
     },
     {
       "label": "sign_in_page_test.dart",
@@ -10396,7 +11188,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "sign_in_page_test.dart"
     },
     {
@@ -10407,7 +11199,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_iphonese",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "iphonese"
     },
     {
@@ -10418,7 +11210,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_pixel8pro",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pixel8pro"
     },
     {
@@ -10429,7 +11221,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_pumpat",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpat"
     },
     {
@@ -10440,7 +11232,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_pumpwidget",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpwidget"
     },
     {
@@ -10451,7 +11243,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_pumpandsettle",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpandsettle"
     },
     {
@@ -10462,7 +11254,7 @@
       "_origin": "ast",
       "id": "test_sign_in_page_test_main",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "main"
     },
     {
@@ -10473,7 +11265,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "sign_up_screen_test.dart"
     },
     {
@@ -10484,7 +11276,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_budgetandroid",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "budgetandroid"
     },
     {
@@ -10495,7 +11287,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_modernphone",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "modernphone"
     },
     {
@@ -10506,7 +11298,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_largephone",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "largephone"
     },
     {
@@ -10517,7 +11309,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_pumpat",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpat"
     },
     {
@@ -10528,7 +11320,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_pumpwidget",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpwidget"
     },
     {
@@ -10539,7 +11331,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_pumpandsettle",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "pumpandsettle"
     },
     {
@@ -10550,7 +11342,7 @@
       "_origin": "ast",
       "id": "test_sign_up_screen_test_main",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "main"
     },
     {
@@ -10561,7 +11353,7 @@
       "_origin": "ast",
       "id": "checkbox",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "checkbox"
     },
     {
@@ -10572,7 +11364,7 @@
       "_origin": "ast",
       "id": "test_widget_test",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "widget_test.dart"
     },
     {
@@ -10583,7 +11375,7 @@
       "_origin": "ast",
       "id": "test_widget_test_main",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "main"
     },
     {
@@ -10594,7 +11386,7 @@
       "_origin": "ast",
       "id": "package_medico_main_dart",
       "community": 7,
-      "community_name": "sign_up_screen_test.dart",
+      "community_name": "profile_tab_test.dart",
       "norm_label": "package:medico/main.dart"
     },
     {
@@ -10819,8 +11611,8 @@
       "author": null,
       "contributor": null,
       "rationale": "Google Sign-In primary, Email OTP fallback, Twilio SMS secondary, WhatsApp deferred pending Meta Business approval.",
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "auth fallback chain",
       "_origin": "semantic",
       "id": "claude_auth_chain"
@@ -10835,8 +11627,8 @@
       "author": null,
       "contributor": null,
       "rationale": "App-level flag that closes the route around signup OTP: an account that abandoned OTP and completed password recovery looks confirmed to GoTrue, so Supabase's own state cannot be trusted as proof of signup.",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "signup_verified gate",
       "_origin": "semantic",
       "id": "claude_signup_verified_gate"
@@ -10898,8 +11690,8 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "medico flutter package",
       "_origin": "semantic",
       "id": "pubspec_medico_package"
@@ -10913,8 +11705,8 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "supabase_flutter dependency",
       "_origin": "semantic",
       "id": "pubspec_supabase_flutter_dep"
@@ -10928,8 +11720,8 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "google_sign_in dependency",
       "_origin": "semantic",
       "id": "pubspec_google_sign_in_dep"
@@ -10943,8 +11735,8 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "pinput dependency",
       "_origin": "semantic",
       "id": "pubspec_pinput_dep"
@@ -10958,8 +11750,8 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "flutter_svg dependency",
       "_origin": "semantic",
       "id": "pubspec_flutter_svg_dep"
@@ -11086,8 +11878,8 @@
       "author": null,
       "contributor": null,
       "rationale": "verifyOtp with type recovery, run from JS on load so email scanners that only prefetch HTML cannot burn the token. Confirms the account's email as a server-side side effect.",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "recovery token verification",
       "_origin": "semantic",
       "id": "web_reset_password_index_recovery_verify"
@@ -11102,8 +11894,8 @@
       "author": null,
       "contributor": null,
       "rationale": "Requiring real script execution rather than an HTTP GET is what stops email security scanners from consuming single-use recovery links.",
-      "community": 6,
-      "community_name": "forgot_password_sheet.dart",
+      "community": 66,
+      "community_name": "signup_verified Gate",
       "norm_label": "js-execution scanner defense",
       "_origin": "semantic",
       "id": "web_reset_password_index_scanner_defense"
@@ -11118,8 +11910,8 @@
       "author": null,
       "contributor": null,
       "rationale": "Four-path Google G in official brand colors, used on the Google Sign-In button.",
-      "community": 18,
-      "community_name": "State",
+      "community": 35,
+      "community_name": "Auth Fallback Chain",
       "norm_label": "google g logo mark",
       "_origin": "semantic",
       "id": "assets_icons_google_logo_mark"
@@ -12140,7 +12932,29 @@
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_home_tab_hometab",
+      "source": "lib_screens_home_tab_hometopbar",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab_notificationbell",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab_searchbar",
       "target": "statelesswidget"
     },
     {
@@ -12356,11 +13170,55 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_settings_tab_settingstab",
+      "source": "lib_screens_profile_tab_profilebanner",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_rowdivider",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_settingscard",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_settingsrow",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_signoutrow",
       "target": "statelesswidget"
     },
     {
@@ -12471,6 +13329,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_widgets_aurora_select_field_auroraselectfield",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar_genderavatar",
       "target": "statelesswidget"
     },
     {
@@ -12873,11 +13742,11 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_settings_tab",
+      "source": "lib_screens_profile_tab",
       "target": "package_flutter_material_dart"
     },
     {
@@ -12961,6 +13830,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/widgets/global_offline_strip.dart",
       "source_location": null,
       "weight": 1.0,
@@ -12988,6 +13868,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "test_inline_error_overflow_test",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
       "target": "package_flutter_material_dart"
     },
     {
@@ -13217,6 +14108,17 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab_hometab",
+      "target": "statefulwidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_city_picker_sheet.dart",
       "source_location": null,
       "weight": 1.0,
@@ -13288,6 +14190,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_otp_verification_screen_otpverificationscreen",
+      "target": "statefulwidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_profiletab",
       "target": "statefulwidget"
     },
     {
@@ -13404,6 +14317,17 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab_hometabstate",
+      "target": "state"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_city_picker_sheet.dart",
       "source_location": null,
       "weight": 1.0,
@@ -13475,6 +14399,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_otp_verification_screen_otpverificationscreenstate",
+      "target": "state"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_profiletabstate",
       "target": "state"
     },
     {
@@ -13559,6 +14494,18 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "datetime"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/otp_verification_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -13578,6 +14525,17 @@
       "_origin": "ast",
       "source": "lib_widgets_queue_status_card",
       "target": "datetime"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "widgets_queue_status_card_dart"
     },
     {
       "relation": "defines",
@@ -13881,6 +14839,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "package_supabase_flutter_supabase_flutter_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_flow_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -14150,12 +15119,48 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/models/user_profile.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_models_user_profile",
+      "target": "lib_models_onboarding_data_gender"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_gender_control.dart",
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_screens_onboarding_gender_control",
+      "target": "lib_models_onboarding_data_gender"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_models_onboarding_data_gender"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
       "target": "lib_models_onboarding_data_gender"
     },
     {
@@ -14270,6 +15275,18 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "string"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_city_picker_sheet.dart",
       "source_location": null,
       "weight": 1.0,
@@ -14300,6 +15317,18 @@
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_screens_otp_verification_screen",
+      "target": "string"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
       "target": "string"
     },
     {
@@ -14499,6 +15528,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_models_user_profile",
+      "target": "lib_models_user_profile_gender"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/models/user_profile.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_models_user_profile",
       "target": "lib_models_user_profile_hascompletedonboarding"
     },
     {
@@ -14602,6 +15642,17 @@
       "target": "lib_models_user_profile_userrole"
     },
     {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/models/user_profile.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_models_user_profile",
+      "target": "onboarding_data_dart"
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -14612,6 +15663,18 @@
       "_origin": "ast",
       "source": "lib_models_user_profile",
       "target": "patient"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_models_user_profile_userprofile"
     },
     {
       "relation": "references",
@@ -15084,12 +16147,12 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/home_screen.dart",
+      "source_file": "lib/screens/home_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
       "_origin": "ast",
-      "source": "lib_screens_home_screen",
+      "source": "lib_screens_home_tab",
       "target": "static_const"
     },
     {
@@ -15102,6 +16165,18 @@
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_screens_otp_verification_screen",
+      "target": "static_const"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
       "target": "static_const"
     },
     {
@@ -15288,6 +16363,18 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "voidcallback"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/widgets/aurora_buttons.dart",
       "source_location": null,
       "weight": 1.0,
@@ -15457,6 +16544,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "models_onboarding_data_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/services/onboarding_service.dart",
       "source_location": null,
       "weight": 1.0,
@@ -15479,12 +16577,34 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "models_onboarding_data_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/screens/onboarding_flow_screen.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_onboarding_flow_screen",
       "target": "services_onboarding_sync_service_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "services_profile_service_dart"
     },
     {
       "relation": "imports",
@@ -15688,11 +16808,11 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_settings_tab",
+      "source": "lib_screens_profile_tab",
       "target": "theme_aurora_tokens_dart"
     },
     {
@@ -15759,6 +16879,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_widgets_forgot_password_sheet",
+      "target": "theme_aurora_tokens_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
       "target": "theme_aurora_tokens_dart"
     },
     {
@@ -16012,6 +17143,17 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_email"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
       "target": "lib_screens_home_screen_homescreen"
     },
     {
@@ -16034,7 +17176,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_home_screen",
-      "target": "lib_screens_home_screen_tabindex"
+      "target": "lib_screens_home_screen_initstate"
     },
     {
       "relation": "defines",
@@ -16045,7 +17187,62 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_home_screen",
-      "target": "lib_screens_home_screen_tabs"
+      "target": "lib_screens_home_screen_issignedin"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_loadprofile"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_naviconsize"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_profile"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_signout"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "lib_screens_home_screen_tabindex"
     },
     {
       "relation": "imports",
@@ -16056,7 +17253,41 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_home_screen",
-      "target": "settings_tab_dart"
+      "target": "models_user_profile_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "profile_tab_dart"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_screen",
+      "target": "widgets_gender_avatar_dart"
     },
     {
       "relation": "references",
@@ -16068,6 +17299,121 @@
       "_origin": "ast",
       "source": "lib_screens_home_screen_homescreenstate",
       "target": "lib_screens_home_screen_homescreen"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/onboarding_milestone_stepper.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_onboarding_milestone_stepper",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/onboarding_step_header.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_onboarding_step_header",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_theme_aurora_tokens",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "static_const_double"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/sign_in_page.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_sign_in_page",
+      "target": "models_user_profile_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/services/profile_service.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_services_profile_service",
+      "target": "models_user_profile_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "widgets_gender_avatar_dart"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_avgconsultminutes"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_bellsize"
     },
     {
       "relation": "defines",
@@ -16089,6 +17435,160 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_createstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_doctorlocation"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_doctorname"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_doctorqueueposition"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_height"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_hometab"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_hometabstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_hometopbar"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_notificationbell"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_patientqueueposition"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_patientsahead"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_recordedat"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_searchbar"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab",
+      "target": "lib_screens_home_tab_size"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/home_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_home_tab_hometabstate",
       "target": "lib_screens_home_tab_hometab"
     },
     {
@@ -17475,42 +18975,6 @@
       "target": "lib_screens_onboarding_milestone_stepper_tracktop"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/onboarding_milestone_stepper.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_screens_onboarding_milestone_stepper",
-      "target": "static_const_double"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/onboarding_step_header.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_screens_onboarding_step_header",
-      "target": "static_const_double"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/theme/aurora_tokens.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "_origin": "ast",
-      "source": "lib_theme_aurora_tokens",
-      "target": "static_const_double"
-    },
-    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -17973,6 +19437,18 @@
       "context": "variable_type",
       "_origin": "ast",
       "source": "lib_screens_onboarding_step_scaffold",
+      "target": "icondata"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
       "target": "icondata"
     },
     {
@@ -19301,23 +20777,320 @@
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_settings_tab",
-      "target": "lib_screens_settings_tab_build"
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_build"
     },
     {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/screens/settings_tab.dart",
+      "source_file": "lib/screens/profile_tab.dart",
       "source_location": null,
       "weight": 1.0,
       "_origin": "ast",
-      "source": "lib_screens_settings_tab",
-      "target": "lib_screens_settings_tab_settingstab"
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_busy"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_contact"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_createstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_email"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_enabled"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_fallbackcontact"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_fallbackname"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_fullname"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_gender"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_handlesignout"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_icon"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_issignedin"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_label"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_name"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_notsignedinname"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_onsignout"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_ontap"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_phone"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_profilebanner"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_profiletab"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_profiletabstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_rowdivider"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_settingscard"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_settingsrow"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_signingout"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_signoutenabled"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab",
+      "target": "lib_screens_profile_tab_signoutrow"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/screens/profile_tab.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_screens_profile_tab_profiletabstate",
+      "target": "lib_screens_profile_tab_profiletab"
     },
     {
       "relation": "references",
@@ -20068,17 +21841,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_screens_sign_in_page",
-      "target": "models_user_profile_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/screens/sign_in_page.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_screens_sign_in_page",
       "target": "otp_verification_screen_dart"
     },
     {
@@ -20275,17 +22037,6 @@
       "_origin": "ast",
       "source": "lib_screens_sign_up_screen",
       "target": "package_flutter_svg_flutter_svg_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/services/profile_service.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_services_profile_service",
-      "target": "models_user_profile_dart"
     },
     {
       "relation": "imports",
@@ -21387,6 +23138,39 @@
       "_origin": "ast",
       "source": "lib_theme_aurora_tokens",
       "target": "lib_theme_aurora_tokens_auroratext"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_theme_aurora_tokens",
+      "target": "lib_theme_aurora_tokens_avatarfemale"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_theme_aurora_tokens",
+      "target": "lib_theme_aurora_tokens_avatarmale"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/theme/aurora_tokens.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_theme_aurora_tokens",
+      "target": "lib_theme_aurora_tokens_avatarneutral"
     },
     {
       "relation": "defines",
@@ -23398,6 +25182,83 @@
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_colorfor"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_discalpha"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_filled"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_gender"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_genderavatar"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/gender_avatar.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_widgets_gender_avatar",
+      "target": "lib_widgets_gender_avatar_size"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/widgets/global_offline_strip.dart",
       "source_location": null,
       "weight": 1.0,
@@ -23991,6 +25852,18 @@
       "target": "lib_widgets_queue_status_card_size"
     },
     {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/widgets/queue_status_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "context": "variable_type",
+      "source": "lib_widgets_queue_status_card",
+      "target": "lib_widgets_queue_status_card_stalenessreason"
+    },
+    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -24539,6 +26412,17 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "package_flutter_test_flutter_test_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "test/sign_in_page_test.dart",
       "source_location": null,
       "weight": 1.0,
@@ -24655,6 +26539,116 @@
       "_origin": "ast",
       "source": "test_onboarding_progress_test",
       "target": "test_onboarding_progress_test_userb"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "package_medico_models_onboarding_data_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "package_medico_screens_home_tab_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "package_medico_screens_profile_tab_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "package_medico_theme_aurora_tokens_dart"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_host"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_issignedin"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_main"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_narrow"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_profile"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "test/profile_tab_test.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "test_profile_tab_test",
+      "target": "test_profile_tab_test_sizeto"
     },
     {
       "relation": "defines",
