@@ -1,3 +1,5 @@
+import 'onboarding_data.dart' show Gender;
+
 /// The account kind stored in the `profiles.role` text column.
 ///
 /// This is the *only* authority on whether an account is a doctor — the
@@ -29,6 +31,7 @@ class UserProfile {
     required this.fullName,
     required this.role,
     this.phone,
+    this.gender,
     this.signupVerified = false,
     this.onboardingCompletedAt,
   });
@@ -38,6 +41,11 @@ class UserProfile {
   final String fullName;
   final UserRole role;
   final String? phone;
+
+  /// The `profiles.gender` column added by `005_onboarding_fields.sql`. Null
+  /// is a real state, not a missing read — onboarding step 1 is skippable —
+  /// so nothing may default it to a gender.
+  final Gender? gender;
 
   /// Whether this account finished the real signup OTP flow (or was created
   /// by a provider that proves email ownership itself).
@@ -64,6 +72,7 @@ class UserProfile {
       fullName: (map['full_name'] as String?)?.trim() ?? '',
       role: UserRole.fromText(map['role'] as String?),
       phone: map['phone'] as String?,
+      gender: Gender.fromText(map['gender'] as String?),
       signupVerified: map['signup_verified'] as bool? ?? false,
       onboardingCompletedAt: DateTime.tryParse(
         map['onboarding_completed_at'] as String? ?? '',

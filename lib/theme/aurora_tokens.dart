@@ -51,6 +51,26 @@ abstract final class AuroraColors {
   /// Confirmation, e.g. the OTP verify checkmark. Deliberately *not*
   /// [primary]: it reads as a system success state, not as branding.
   static const success = Color(0xFF16A34A);
+
+  // Avatar colours. The Profile tab identifies the signed-in patient with a
+  // silhouette rather than a photo — `profiles` has no avatar column and one
+  // is not planned yet — so `profiles.gender` is the only thing that tints it.
+  //
+  // All three sit at roughly the same lightness (~54-58% L) and a deliberately
+  // low saturation (~8-26% S) so the avatar reads as a quiet identity mark
+  // next to the Aurora hues rather than competing with them. A literal blue or
+  // pink at full chroma would be the loudest thing on the screen.
+
+  /// Muted slate-blue — `profiles.gender == 'male'`.
+  static const avatarMale = Color(0xFF6B8CA8);
+
+  /// Muted dusty-rose — `profiles.gender == 'female'`.
+  static const avatarFemale = Color(0xFFA87682);
+
+  /// Muted grey-green for an unset gender — onboarding lets the step be
+  /// skipped, so null is a real state and must not fall back to either
+  /// gendered colour. Sits in the same family as [muted]/[secondary].
+  static const avatarNeutral = Color(0xFF8B9C98);
 }
 
 /// The two gradients in the app. They are genuinely different treatments and
@@ -110,6 +130,12 @@ abstract final class AuroraFontSize {
   static const double h2 = 20;
   static const double h1 = 26;
   static const double display = 34;
+
+  /// One step above [display], for a single number that is the whole point of
+  /// a view — the Home queue card's patients-ahead count. Off the 1.25 ratio
+  /// on purpose: at this size the glyph is read as a figure, not as text, so
+  /// it is tuned to the card rather than to the scale.
+  static const double hero = 60;
 }
 
 /// Motion. Durations and curves are paired deliberately — in particular

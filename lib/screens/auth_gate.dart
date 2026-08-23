@@ -244,7 +244,10 @@ class _AuthGateState extends State<AuthGate> {
         // from `_profile` here: that object is a snapshot from resolve time
         // and goes stale the moment onboarding finishes underneath it.
         return _onboardingComplete
-            ? const HomeScreen()
+            // The Profile tab's sign-out row hands control back here rather
+            // than navigating itself — this widget is the root, so there is
+            // no route for it to pop.
+            ? HomeScreen(onSignedOut: _resolve)
             // Staying mounted matters: this state owns the connectivity
             // listener, so onboarding hands control back rather than
             // replacing the route.

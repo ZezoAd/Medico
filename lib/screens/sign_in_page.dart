@@ -393,9 +393,14 @@ class _SignInPageState extends State<SignInPage> {
     try {
       // Native Google sign-in hands back an ID token, which Supabase exchanges
       // for a session directly — no browser round-trip, no redirect URL.
-      final googleUser = await GoogleSignIn.instance.authenticate().timeout(
-        _networkTimeout,
-      );
+      //
+      // Deliberately not wrapped in [_networkTimeout], unlike every other call
+      // in this file. This one blocks on a human reading a native account
+      // picker, not on the network, and someone may sit on that screen for as
+      // long as they like. Timing it out reported "no internet" to a person
+      // who was merely still choosing. The timeout below covers the part that
+      // is actually a network round-trip.
+      final googleUser = await GoogleSignIn.instance.authenticate();
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
         throw Exception('لم يتم استلام رمز الدخول من Google.');

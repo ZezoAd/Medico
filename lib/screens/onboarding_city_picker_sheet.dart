@@ -27,8 +27,9 @@ const List<String> kGovernorates = [
   'المثنى',
 ];
 
-/// Opens the city picker. Resolves to the chosen governorate, or to whatever
-/// the patient typed if it matches none of them, or null if dismissed.
+/// Opens the governorate picker. Resolves to one of [kGovernorates], or null
+/// if dismissed. There is deliberately no way to return anything else: the
+/// search box filters the list, it does not accept a value of its own.
 Future<String?> showOnboardingCityPicker(
   BuildContext context, {
   String? current,
@@ -77,13 +78,6 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final matches = _matches;
-    final query = _query.trim();
-
-    // The governorate list is a convenience, not a whitelist. City is the one
-    // required field in the flow, so a patient whose town is not one of the
-    // 18 must still be able to answer — otherwise "required" becomes a trap
-    // with no way forward.
-    final showFreeform = query.isNotEmpty && !kGovernorates.contains(query);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -117,14 +111,13 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               child: TextField(
                 controller: _searchController,
                 onChanged: (v) => setState(() => _query = v),
+                // No onSubmitted: "done" dismisses the keyboard and nothing
+                // else. It used to return the raw typed text, which was the
+                // second way to submit an unlisted governorate.
                 textInputAction: TextInputAction.done,
-                onSubmitted: (v) {
-                  final typed = v.trim();
-                  if (typed.isNotEmpty) Navigator.of(context).pop(typed);
-                },
                 style: AuroraText.body(size: AuroraFontSize.bodyLg),
                 decoration: InputDecoration(
-                  hintText: 'ابحث أو اكتب اسم مدينتك',
+                  hintText: 'اكتب اسم محافظتك',
                   hintStyle: AuroraText.body(
                     size: AuroraFontSize.bodyLg,
                     color: AuroraColors.muted,
@@ -148,40 +141,79 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
             ),
             const SizedBox(height: AuroraSpacing.md),
             Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                // Bottom inset as padding rather than a SafeArea wrapper, so
-                // the list still scrolls *through* the gesture bar instead of
-                // ending above it with dead space.
-                padding: EdgeInsets.fromLTRB(
-                  AuroraSpacing.xl,
-                  0,
-                  AuroraSpacing.xl,
-                  AuroraSpacing.xl + MediaQuery.of(context).padding.bottom,
-                ),
-                children: [
-                  if (showFreeform)
-                    _CityRow(
-                      label: 'استخدام "$query"',
-                      selected: false,
-                      leading: const Icon(
-                        Icons.add_location_alt_outlined,
-                        size: 20,
-                        color: AuroraColors.primary,
+              child: matches.isEmpty
+                  ? const _NoMatches()
+                  : ListView(
+                      shrinkWrap: true,
+                      // Bottom inset as padding rather than a SafeArea wrapper,
+                      // so the list still scrolls *through* the gesture bar
+                      // instead of ending above it with dead space.
+                      padding: EdgeInsets.fromLTRB(
+                        AuroraSpacing.xl,
+                        0,
+                        AuroraSpacing.xl,
+                        AuroraSpacing.xl + MediaQuery.of(context).padding.bottom,
                       ),
-                      onTap: () => Navigator.of(context).pop(query),
+                      children: [
+                        for (final name in matches)
+                          _CityRow(
+                            label: name,
+                            selected: name == widget.current,
+                            onTap: () => Navigator.of(context).pop(name),
+                          ),
+                      ],
                     ),
-                  for (final name in matches)
-                    _CityRow(
-                      label: name,
-                      selected: name == widget.current,
-                      onTap: () => Navigator.of(context).pop(name),
-                    ),
-                ],
-              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown instead of the list when the search matches none of the 18. The end
+/// of the road on purpose — the only way forward is a name that is actually
+/// on the list.
+class _NoMatches extends StatelessWidget {
+  const _NoMatches();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AuroraSpacing.xxl,
+        AuroraSpacing.xxl,
+        AuroraSpacing.xxl,
+        AuroraSpacing.xxxl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              color: AuroraColors.tonal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.search_off_rounded,
+              size: 26,
+              color: AuroraColors.secondary,
+            ),
+          ),
+          const SizedBox(height: AuroraSpacing.lg),
+          Text(
+            'لم نجد هذه المحافظة، تأكد من الاسم وحاول مرة أخرى',
+            style: AuroraText.body(
+              size: AuroraFontSize.body,
+              color: AuroraColors.secondary,
+              height: 1.6,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -192,13 +224,11 @@ class _CityRow extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    this.leading,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -215,10 +245,6 @@ class _CityRow extends StatelessWidget {
             padding: const EdgeInsets.all(AuroraSpacing.lg),
             child: Row(
               children: [
-                if (leading != null) ...[
-                  leading!,
-                  const SizedBox(width: AuroraSpacing.md),
-                ],
                 Expanded(
                   child: Text(
                     label,

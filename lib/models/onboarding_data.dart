@@ -38,10 +38,9 @@ class OnboardingData {
   final Gender? gender;
   final int? birthYear;
 
-  /// A governorate from the picker, or free text the patient typed. The list
-  /// of 18 governorates is a convenience, not a constraint — a required field
-  /// that can't accept your town is a dead end, so anything non-empty is
-  /// accepted here.
+  /// One of the 18 governorates, exactly as the picker lists it. The picker
+  /// is the only writer and offers no freeform entry, so this is effectively
+  /// a closed set even though the type cannot say so.
   final String? city;
 
   /// The only field the flow refuses to advance without.

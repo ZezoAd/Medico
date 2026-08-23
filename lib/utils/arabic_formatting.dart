@@ -20,23 +20,33 @@ String toArabicDigits(String input) {
   return buffer.toString();
 }
 
+/// A counted phrase split into the numeral and the noun that follows it.
+///
+/// [numeral] is null for the counts that take no numeral at all — Arabic
+/// puts the count inside the word itself for 1 and 2, so a numeral there
+/// would be redundant.
+typedef CountedParts = ({String? numeral, String noun});
+
 /// The counting-grammar shape shared by [patientsAheadPhrase] and
 /// [minutesPhrase]: Arabic counted nouns take a different form depending on
 /// the count — a bare word for 1, a dual for 2, جمع تكسير with the numeral
 /// for 3-10, and مفرد منصوب with the numeral for 11 and up.
-String _countedPhrase({
+CountedParts _countedParts({
   required int count,
   required String wordOnlyForOne,
   required String dualForm,
   required String pluralFewSuffix,
   required String singularAccusativeSuffix,
 }) {
-  if (count == 1) return wordOnlyForOne;
-  if (count == 2) return dualForm;
+  if (count == 1) return (numeral: null, noun: wordOnlyForOne);
+  if (count == 2) return (numeral: null, noun: dualForm);
   final digits = toArabicDigits('$count');
-  if (count <= 10) return '$digits $pluralFewSuffix';
-  return '$digits $singularAccusativeSuffix';
+  if (count <= 10) return (numeral: digits, noun: pluralFewSuffix);
+  return (numeral: digits, noun: singularAccusativeSuffix);
 }
+
+String _joinParts(CountedParts parts) =>
+    parts.numeral == null ? parts.noun : '${parts.numeral} ${parts.noun}';
 
 /// "Patients ahead of you" phrase, e.g. "مريض واحد قبلك", "مريضان قبلك",
 /// "٥ مرضى قبلك", "١١ مريضاً قبلك".
@@ -44,10 +54,22 @@ String _countedPhrase({
 /// 0 is a real state (the person ahead of you just finished) and isn't part
 /// of standard counting grammar, so it's handled separately here rather than
 /// forcing it through the 1/2/3-10/11+ rules.
-String patientsAheadPhrase(int patientsAhead) {
+String patientsAheadPhrase(int patientsAhead) =>
+    _joinParts(patientsAheadParts(patientsAhead));
+
+/// [patientsAheadPhrase] split into its numeral and noun, for callers that
+/// typeset the two at different sizes — the Home card renders the numeral as
+/// a hero glyph with the noun beside it.
+///
+/// Composing the phrase from these same parts is what stops the card from
+/// printing the count twice (a hero "٥" above a "٥ مرضى قبلك" line), and
+/// keeps the numeral-less 1 and 2 cases correct for free: they come back
+/// with a null [CountedParts.numeral], so the card knows to render the word
+/// alone rather than reaching for a digit that shouldn't be there.
+CountedParts patientsAheadParts(int patientsAhead) {
   assert(patientsAhead >= 0, 'patientsAhead cannot be negative');
-  if (patientsAhead == 0) return 'لا يوجد مرضى قبلك';
-  return _countedPhrase(
+  if (patientsAhead == 0) return (numeral: null, noun: 'لا يوجد مرضى قبلك');
+  return _countedParts(
     count: patientsAhead,
     wordOnlyForOne: 'مريض واحد قبلك',
     dualForm: 'مريضان قبلك',
@@ -67,13 +89,13 @@ String patientsAheadPhrase(int patientsAhead) {
 String minutesPhrase(int minutes, {bool afterPreposition = false}) {
   assert(minutes >= 0, 'minutes cannot be negative');
   if (minutes == 0) return 'أقل من دقيقة';
-  return _countedPhrase(
+  return _joinParts(_countedParts(
     count: minutes,
     wordOnlyForOne: 'دقيقة واحدة',
     dualForm: afterPreposition ? 'دقيقتين' : 'دقيقتان',
     pluralFewSuffix: 'دقائق',
     singularAccusativeSuffix: 'دقيقة',
-  );
+  ));
 }
 
 /// Formats [time] as a 12-hour Arabic-Indic clock string, e.g. "٤:١٥ م".

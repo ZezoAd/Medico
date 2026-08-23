@@ -259,9 +259,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
 
     try {
-      final googleUser = await GoogleSignIn.instance.authenticate().timeout(
-        _networkTimeout,
-      );
+      // Not wrapped in [_networkTimeout]: this waits on a person reading the
+      // native account picker, which has no bounded duration and is not a
+      // network call. Timing it out surfaced a false "no internet" banner
+      // while they were still choosing. See the same note in [SignInPage].
+      final googleUser = await GoogleSignIn.instance.authenticate();
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
         throw Exception('لم يتم استلام رمز الدخول من Google.');
