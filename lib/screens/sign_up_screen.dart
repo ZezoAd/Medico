@@ -350,15 +350,20 @@ class _SignUpFormState extends State<SignUpForm>
     return _buildForm();
   }
 
-  /// Screens at least this tall show the form without a scroll view at all.
+  /// Height the form needs before it can be shown without a scroll view.
   ///
-  /// Measured against the **screen** height, not `constraints.maxHeight`. The
-  /// form is a page inside the shell's `PageView`, so its own constraint is
-  /// the screen minus the brand and tab strip — roughly 135px less. Testing
-  /// the slot against 750 would put a 873pt device (the Tecno) at ~737 and
-  /// hand it a scroll view anyway, which is the exact case this threshold
-  /// exists to eliminate.
-  static const _minHeightForNonScrollable = 750.0;
+  /// Compared against the **available** height — `constraints.maxHeight` —
+  /// and never against the screen. `MediaQuery.sizeOf().height` reports the
+  /// whole window, which does not shrink when the soft keyboard opens, so a
+  /// check against it happily reported "tall screen, no scroll" while the
+  /// real slot had collapsed to 591px behind the keyboard. That mismatch is
+  /// what overflowed by 44px.
+  ///
+  /// 640 against a measured natural height of ~583 at default text size. The
+  /// headroom is deliberate: the content is a column of fields whose height
+  /// moves with locale, font fallback and inline validation errors, so the
+  /// bar sits above the tallest state rather than the resting one.
+  static const _minHeightForNonScrollable = 640.0;
 
   Widget _buildForm() {
     // Scrolling is opt-in by screen size: tall screens get a plain Column, so
@@ -383,22 +388,21 @@ class _SignUpFormState extends State<SignUpForm>
         const minTopGap = 24.0;
         const minBottomGap = 24.0;
 
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        // The threshold rises with the system font setting. A fixed 750 is
-        // right at default text size, but the content grows with the user's
-        // font scale while the screen does not — an 800pt device at 1.3x
-        // clears 750, takes the non-scrolling branch, and overflows by ~79px.
+        // The bar rises with the system font setting, because the content
+        // grows with it while the slot does not: measured natural height runs
+        // ~583 at 1.0x but reaches ~680 at 1.3x on a narrow screen, which a
+        // flat 640 would wave through into an overflow.
         //
-        // Clamped at 1.15 rather than tracking the scale outright: an
-        // unclamped 1.3x would raise the bar to 975 and push genuinely tall
-        // screens (an 873pt device, where the content still fits at 1.3x)
-        // back onto a scroll view they do not need. 862 is high enough to
-        // catch the 800pt case and low enough to leave 873 alone.
+        // Clamped at 1.3 so the bar tops out at 832. Unclamped it would keep
+        // climbing past any phone slot and make the branch dead code; stopping
+        // lower (1.15, i.e. 736) left a 915pt device overflowing by 53px at
+        // the largest font settings, because its ~775 slot cleared the bar
+        // while the content did not fit it. Costs nothing at default text
+        // size, where the multiplier is 1.0 and the bar is a flat 640.
         final textScale = MediaQuery.textScalerOf(context).scale(1);
-        final threshold =
-            _minHeightForNonScrollable * textScale.clamp(1.0, 1.15);
-        final shouldEnableScroll = screenHeight < threshold;
+        final requiredHeight =
+            _minHeightForNonScrollable * textScale.clamp(1.0, 1.3);
+        final shouldEnableScroll = constraints.maxHeight < requiredHeight;
 
         final card = AnimatedSlide(
           duration: const Duration(milliseconds: 400),

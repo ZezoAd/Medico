@@ -93,6 +93,7 @@ void main() {
       WidgetTester tester,
       Size size, {
       double textScale = 1.0,
+      double keyboardInset = 0,
     }) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1.0;
@@ -100,9 +101,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: TextScaler.linear(textScale)),
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(textScale),
+              viewInsets: EdgeInsets.only(bottom: keyboardInset),
+            ),
             child: child!,
           ),
           home: const SignUpScreen(),
@@ -154,15 +156,28 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('an open keyboard scrolls even on the tallest screen', (
+      tester,
+    ) async {
+      // The regression this guards: the decision used to read the *window*
+      // height, which does not shrink when the keyboard opens. A 873pt device
+      // therefore kept the non-scrolling branch while its real slot had
+      // collapsed to ~590, and the form overflowed by 44px behind the
+      // keyboard.
+      expect(await scrollViewsAt(tester, const Size(393, 873)), 0);
+      expect(
+        await scrollViewsAt(tester, const Size(393, 873), keyboardInset: 320),
+        1,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('a genuinely tall screen still does not scroll at 1.3x', (
       tester,
     ) async {
       // The clamp keeps the bar low enough that an 873pt screen, where the
       // content does still fit at 1.3x, is not pushed onto a scroll view.
-      expect(
-        await scrollViewsAt(tester, const Size(393, 873), textScale: 1.3),
-        0,
-      );
+      expect(await scrollViewsAt(tester, const Size(412, 915)), 0);
       expect(tester.takeException(), isNull);
     });
   });

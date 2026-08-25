@@ -924,7 +924,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_home_empty_state_card_preview_previewappstate",
-      "community": 30,
+      "community": 52,
       "community_name": "State",
       "norm_label": "_previewappstate"
     },
@@ -935,7 +935,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "state",
-      "community": 30,
+      "community": 52,
       "community_name": "State",
       "norm_label": "state"
     },
@@ -946,7 +946,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "previewapp",
-      "community": 30,
+      "community": 52,
       "community_name": "State",
       "norm_label": "_previewapp"
     },
@@ -1199,7 +1199,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_dev_queue_status_card_preview_previewappstate",
-      "community": 30,
+      "community": 52,
       "community_name": "State",
       "norm_label": "_previewappstate"
     },
@@ -1320,7 +1320,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "firebase_options.dart"
     },
@@ -1331,7 +1331,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_defaultfirebaseoptions",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "defaultfirebaseoptions"
     },
@@ -1342,7 +1342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_web",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "web"
     },
@@ -1353,7 +1353,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "static_const_firebaseoptions",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "static const firebaseoptions"
     },
@@ -1364,7 +1364,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_android",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "android"
     },
@@ -1375,7 +1375,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_ios",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "ios"
     },
@@ -1386,7 +1386,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_macos",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "macos"
     },
@@ -1397,7 +1397,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_firebase_options_windows",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "windows"
     },
@@ -1408,7 +1408,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_firebase_core_firebase_core_dart",
-      "community": 52,
+      "community": 30,
       "community_name": "firebase_options.dart",
       "norm_label": "package:firebase_core/firebase_core.dart"
     },
@@ -4191,7 +4191,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "onboarding_milestone_stepper.dart"
     },
@@ -4202,7 +4202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_onboardingmilestonestepper",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "onboardingmilestonestepper"
     },
@@ -4213,7 +4213,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_milestonenode",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_milestonenode"
     },
@@ -4224,7 +4224,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_steplabels",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_steplabels"
     },
@@ -4235,7 +4235,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_stepicons",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_stepicons"
     },
@@ -4246,7 +4246,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_step",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "step"
     },
@@ -4257,7 +4257,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_column",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_column"
     },
@@ -4268,7 +4268,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_half",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_half"
     },
@@ -4279,7 +4279,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_tracktop",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_tracktop"
     },
@@ -4290,7 +4290,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_nodesize",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_nodesize"
     },
@@ -4301,7 +4301,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_labelgap",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_labelgap"
     },
@@ -4312,7 +4312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_labelheight",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "_labelheight"
     },
@@ -4323,7 +4323,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_height",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "height"
     },
@@ -4334,7 +4334,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_index",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "index"
     },
@@ -4345,7 +4345,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_isdone",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "isdone"
     },
@@ -4356,7 +4356,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_isactive",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "isactive"
     },
@@ -4367,7 +4367,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_milestone_stepper_build",
-      "community": 72,
+      "community": 9,
       "community_name": "onboarding_milestone_stepper.dart",
       "norm_label": "build"
     },
@@ -4950,7 +4950,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "onboarding_step_scaffold.dart"
     },
@@ -4961,7 +4961,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_onboardingstepscaffold",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "onboardingstepscaffold"
     },
@@ -4972,7 +4972,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_onboardingstepfooter",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "onboardingstepfooter"
     },
@@ -4983,7 +4983,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_steppertocontent",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "_steppertocontent"
     },
@@ -4994,7 +4994,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_title",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "title"
     },
@@ -5005,7 +5005,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_subtitle",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "subtitle"
     },
@@ -5016,7 +5016,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_children",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "children"
     },
@@ -5027,7 +5027,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_footer",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "footer"
     },
@@ -5038,7 +5038,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_primarylabel",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "primarylabel"
     },
@@ -5049,7 +5049,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_onprimary",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "onprimary"
     },
@@ -5060,7 +5060,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_primaryicon",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "primaryicon"
     },
@@ -5071,7 +5071,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_skiplabel",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "skiplabel"
     },
@@ -5082,7 +5082,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_onskip",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "onskip"
     },
@@ -5093,7 +5093,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_helpertext",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "helpertext"
     },
@@ -5104,7 +5104,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_screens_onboarding_step_scaffold_build",
-      "community": 9,
+      "community": 20,
       "community_name": "onboarding_step_scaffold.dart",
       "norm_label": "build"
     },
@@ -12523,7 +12523,7 @@
       "author": null,
       "contributor": null,
       "rationale": "main.dart stays entry point plus routing only, so screens never accumulate there.",
-      "community": 20,
+      "community": 59,
       "community_name": "One Screen Per File Rule",
       "norm_label": "one screen per file rule",
       "_origin": "semantic",
@@ -12555,7 +12555,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Project-local instruction routing /graphify to the installed skill before any other handling.",
-      "community": 20,
+      "community": 59,
       "community_name": "One Screen Per File Rule",
       "norm_label": "graphify skill trigger",
       "_origin": "semantic",
@@ -29427,5 +29427,5 @@
       "source_file": "web/reset-password/index.html"
     }
   ],
-  "built_at_commit": "f18a16135ad6ff45b2256cca420829c5a8188cf8"
+  "built_at_commit": "9ab60a200de8e763d7e0e7260bb7dfbfeacc40dc"
 }

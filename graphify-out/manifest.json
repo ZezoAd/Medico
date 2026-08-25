@@ -180,13 +180,13 @@
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1787680124.251309,
-    "ast_hash": "9c5b249312bed3b1c384f3f1469f680d",
+    "mtime": 1787681005.7504492,
+    "ast_hash": "82ac63be4b27d6d4198ac2d4effeb047",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {
-    "mtime": 1787680280.9290564,
-    "ast_hash": "311fb460bd4c2b54733c6f3113185fa1",
+    "mtime": 1787681034.4003618,
+    "ast_hash": "a6299b5c300305e23fb0bb0ddf3f8471",
     "semantic_hash": ""
   },
   "lib/models/user_profile.dart": {

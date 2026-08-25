@@ -1,7 +1,7 @@
 # Graph Report - medico  (2026-08-25)
 
 ## Corpus Check
-- 84 files · ~51,692 words
+- 84 files · ~51,832 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f18a1613`
+- Built from commit: `9ab60a20`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - forgot_password_sheet.dart
 - profile_tab_test.dart
 - main.dart
-- onboarding_step_scaffold.dart
+- onboarding_milestone_stepper.dart
 - auth_error_banner.dart
 - user_profile.dart
 - StatelessWidget
@@ -35,13 +35,13 @@
 - onboarding_v6.jsx
 - onboarding_city_picker_sheet.dart
 - MainActivity.kt
-- One Screen Per File Rule
+- onboarding_step_scaffold.dart
 - profile_tab.dart
 - Dart analyzer configuration
 - onboarding_step1_basics.dart
 - Flutter DevTools configuration
 - iOS LaunchImage asset instructions
-- State
+- firebase_options.dart
 - medico project README
 - Flutter web index.html entrypoint
 - home_empty_state_card_preview.dart
@@ -63,13 +63,14 @@
 - home_tab.dart
 - auth_tab_switcher.dart
 - onboarding_step_header.dart
-- firebase_options.dart
+- State
 - _SignInFormState
 - StatefulWidget
 - _OnboardingCompletionScreenState
 - _codeMessages
 - AuthBannerSlot
 - AuthShell
+- One Screen Per File Rule
 - arabic_formatting.dart
 - auth_gate.dart
 - wait_estimate.dart
@@ -77,7 +78,6 @@
 - onboarding_completion_screen.dart
 - onboarding_year_picker_sheet.dart
 - home_empty_state_card.dart
-- onboarding_milestone_stepper.dart
 - aurora_buttons.dart
 - auth_gate.dart
 - home_screen.dart
@@ -152,9 +152,9 @@ Nodes (11): package:flutter/rendering.dart, package:medico/screens/home_tab.dart
 Cohesion: 0.14
 Nodes (13): build, buildOverscrollIndicator, initializeApp, load, main, MedicoApp, _NoStretchScrollBehavior, supabaseAnonKey (+5 more)
 
-### Community 9 - "onboarding_step_scaffold.dart"
-Cohesion: 0.13
-Nodes (14): build, children, footer, helperText, OnboardingStepFooter, OnboardingStepScaffold, onPrimary, onSkip (+6 more)
+### Community 9 - "onboarding_milestone_stepper.dart"
+Cohesion: 0.12
+Nodes (16): build, _column, _half, height, index, isActive, isDone, _labelGap (+8 more)
 
 ### Community 10 - "auth_error_banner.dart"
 Cohesion: 0.09
@@ -192,6 +192,10 @@ Nodes (21): bodyFont, C, CURRENT_YEAR, displayFont, E, F, GOVERNORATES, InlineSk
 Cohesion: 0.12
 Nodes (16): build, _CityPickerSheet, _CityPickerSheetState, _CityRow, createState, current, dispose, kGovernorates (+8 more)
 
+### Community 20 - "onboarding_step_scaffold.dart"
+Cohesion: 0.13
+Nodes (14): build, children, footer, helperText, OnboardingStepFooter, OnboardingStepScaffold, onPrimary, onSkip (+6 more)
+
 ### Community 21 - "profile_tab.dart"
 Cohesion: 0.07
 Nodes (29): build, busy, contact, createState, email, enabled, _fallbackContact, _fallbackName (+21 more)
@@ -200,9 +204,9 @@ Nodes (29): build, busy, contact, createState, email, enabled, _fallbackContact,
 Cohesion: 0.06
 Nodes (36): OnboardingData, build, _canSlide, createState, didUpdateWidget, initState, OnboardingGenderControl, _OnboardingGenderControlState (+28 more)
 
-### Community 30 - "State"
-Cohesion: 0.67
-Nodes (4): _PreviewAppState, _PreviewAppState, _PreviewApp, State
+### Community 30 - "firebase_options.dart"
+Cohesion: 0.22
+Nodes (8): android, DefaultFirebaseOptions, ios, macos, web, windows, package:firebase_core/firebase_core.dart, static const FirebaseOptions
 
 ### Community 33 - "home_empty_state_card_preview.dart"
 Cohesion: 0.18
@@ -280,9 +284,9 @@ Nodes (11): active, _activeInk, authTabMotionDuration, build, label, labels, onS
 Cohesion: 0.18
 Nodes (10): build, _height, _markGap, _markHeight, _MedicoMark, OnboardingStepHeader, step, _topPadding (+2 more)
 
-### Community 52 - "firebase_options.dart"
-Cohesion: 0.22
-Nodes (8): android, DefaultFirebaseOptions, ios, macos, web, windows, package:firebase_core/firebase_core.dart, static const FirebaseOptions
+### Community 52 - "State"
+Cohesion: 0.67
+Nodes (4): _PreviewAppState, _PreviewAppState, _PreviewApp, State
 
 ### Community 53 - "_SignInFormState"
 Cohesion: 0.40
@@ -327,10 +331,6 @@ Nodes (19): FixedExtentScrollController, build, _controller, createState, dispos
 ### Community 71 - "home_empty_state_card.dart"
 Cohesion: 0.08
 Nodes (24): Color, _blobControllers, _blobDurations, build, controller, createState, _ctaInk, didChangeDependencies (+16 more)
-
-### Community 72 - "onboarding_milestone_stepper.dart"
-Cohesion: 0.12
-Nodes (16): build, _column, _half, height, index, isActive, isDone, _labelGap (+8 more)
 
 ### Community 73 - "aurora_buttons.dart"
 Cohesion: 0.11
