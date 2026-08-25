@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:medico/screens/sign_up_screen.dart';
+
+/// "إنشاء حساب" now labels both the switcher tab and the submit button, so
+/// finders for either have to say which one they mean.
+final submitButton = find.descendant(
+  of: find.byType(TextButton),
+  matching: find.text('إنشاء حساب'),
+);
 
 /// Renders [SignUpScreen] at a given logical size and fails on any overflow.
 ///
@@ -24,17 +32,17 @@ void main() {
   group('fits without scrolling or overflow', () {
     testWidgets('360x640 budget Android', (tester) async {
       await pumpAt(tester, budgetAndroid, 2.0);
-      expect(find.text('إنشاء حساب'), findsOneWidget);
+      expect(submitButton, findsOneWidget);
     });
 
     testWidgets('390x844 standard modern phone', (tester) async {
       await pumpAt(tester, modernPhone, 2.0);
-      expect(find.text('إنشاء حساب'), findsOneWidget);
+      expect(submitButton, findsOneWidget);
     });
 
     testWidgets('428x926 large phone', (tester) async {
       await pumpAt(tester, largePhone, 3.0);
-      expect(find.text('إنشاء حساب'), findsOneWidget);
+      expect(submitButton, findsOneWidget);
     });
   });
 
@@ -66,16 +74,10 @@ void main() {
     // Submit is disabled while unchecked: tapping does nothing observable
     // (no navigation, no loading state) — filling the form and tapping
     // must not produce a validation error either, since onPressed is null.
-    await tester.enterText(
-      find.byType(TextField).at(0),
-      'Jane Doe',
-    );
-    await tester.enterText(
-      find.byType(TextField).at(1),
-      'jane@example.com',
-    );
+    await tester.enterText(find.byType(TextField).at(0), 'Jane Doe');
+    await tester.enterText(find.byType(TextField).at(1), 'jane@example.com');
     await tester.enterText(find.byType(TextField).at(2), 'password123');
-    await tester.tap(find.text('إنشاء حساب'));
+    await tester.tap(submitButton);
     await tester.pumpAndSettle();
     expect(find.text('الرجاء إدخال الاسم الكامل.'), findsNothing);
 

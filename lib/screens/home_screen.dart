@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
-import '../widgets/gender_avatar.dart';
 import 'bookings_tab.dart';
 import 'browse_tab.dart';
 import 'home_tab.dart';
@@ -125,17 +124,17 @@ class _HomeScreenState extends State<HomeScreen> {
               selectedIcon: Icon(Icons.calendar_month_rounded),
               label: 'الحجوزات',
             ),
-            NavigationDestination(
-              // 24 matches the Material default the other three icons render
-              // at, so the avatar sits on the same optical baseline inside
-              // the selected-indicator pill. The outlined/filled swap is the
-              // same state treatment they use — no new pattern here.
-              icon: GenderAvatar(gender: gender, size: _navIconSize),
-              selectedIcon: GenderAvatar(
-                gender: gender,
-                size: _navIconSize,
-                filled: true,
-              ),
+            const NavigationDestination(
+              // Plain outlined/filled glyph pair, exactly like the other
+              // three. It deliberately carries no avatar disc and no
+              // gender tint: a permanent tonal circle here read as a
+              // selected tab even when it wasn't, since NavigationBar
+              // already supplies the only container this row should have —
+              // the indicator pill behind whichever tab is active.
+              // Gender-tinted avatars are deferred to v2 alongside real
+              // photo uploads.
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
               label: 'الملف الشخصي',
             ),
           ],
@@ -143,9 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  /// Material's default `NavigationBar` icon size.
-  static const double _navIconSize = 24;
 
   Future<void> _signOut() async {
     await Supabase.instance.client.auth.signOut();

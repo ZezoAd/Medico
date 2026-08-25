@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:medico/screens/sign_in_page.dart';
 import 'package:medico/screens/sign_up_screen.dart';
+
+/// Both auth screens now carry their action word twice — once on the
+/// switcher tab, once on the submit button. These pin the button.
+final signInSubmit = find.descendant(
+  of: find.byType(TextButton),
+  matching: find.text('تسجيل الدخول'),
+);
+final signUpSubmit = find.descendant(
+  of: find.byType(TextButton),
+  matching: find.text('إنشاء حساب'),
+);
 
 /// Regression guard for the transient overflow that appeared while an inline
 /// field error was animating away.
@@ -36,7 +48,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Grow: submit empty so every field error appears.
-    await tester.tap(find.text('إنشاء حساب'));
+    await tester.tap(signUpSubmit);
     await tester.pumpAndSettle();
 
     // Shrink: fill everything validly and resubmit so all three errors
@@ -45,7 +57,7 @@ void main() {
     await tester.enterText(find.byType(TextField).at(0), 'Jane Doe');
     await tester.enterText(find.byType(TextField).at(1), 'jane@example.com');
     await tester.enterText(find.byType(TextField).at(2), 'password123');
-    await tester.tap(find.text('إنشاء حساب'));
+    await tester.tap(signUpSubmit);
 
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -56,12 +68,12 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: SignInPage()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('تسجيل الدخول'));
+    await tester.tap(signInSubmit);
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField).at(0), 'jane@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'password123');
-    await tester.tap(find.text('تسجيل الدخول'));
+    await tester.tap(signInSubmit);
 
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

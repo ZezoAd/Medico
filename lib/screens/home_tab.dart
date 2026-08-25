@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../theme/aurora_tokens.dart';
-import '../widgets/queue_status_card.dart';
+import '../widgets/home_empty_state_card.dart';
 
 /// Home tab body.
 ///
-/// The fixed top bar plus the live queue status card, and nothing else — the
-/// rest of the Home spec (location pill, specialty filters, previously-visited
+/// The fixed top bar plus the empty-state card, and nothing else — the rest
+/// of the Home spec (location pill, specialty filters, previously-visited
 /// doctors, upcoming booking) is still to come.
-///
-/// The card is fed **static demo data**. There is no realtime queue provider
-/// yet, so nothing here talks to Supabase; when that provider lands, these
-/// constants are what it replaces.
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
@@ -20,26 +16,6 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  // A mid-queue scenario: the doctor is on #7, this patient holds #11, so
-  // there are 4 people still ahead — far enough in to be interesting, but
-  // neither next-up nor at the back of the line.
-  static const _doctorName = 'د. أحمد الربيعي';
-  static const _doctorLocation = 'الطابق الثاني، غرفة ٣';
-  static const _patientsAhead = 4;
-  static const _avgConsultMinutes = 10;
-  static const _doctorQueuePosition = 7;
-  static const _patientQueuePosition = 11;
-
-  /// Captured once, not read per build.
-  ///
-  /// The card documents that this must be pinned at the moment the
-  /// connection leaves `live` and held steady afterwards — recomputing it
-  /// against `now` on every rebuild is the drift bug that contract exists to
-  /// prevent. It goes unused while the card is `live`, but honouring the
-  /// contract here means the widget stays correct the moment demo data is
-  /// swapped for a real feed.
-  late final DateTime _recordedAt = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     // The top bar sits outside the scroll view so it stays put while the
@@ -66,21 +42,18 @@ class _HomeTabState extends State<HomeTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                QueueStatusCard(
-                  doctorName: _doctorName,
-                  doctorLocation: _doctorLocation,
-                  patientsAhead: _patientsAhead,
-                  avgConsultMinutes: _avgConsultMinutes,
-                  doctorQueuePosition: _doctorQueuePosition,
-                  patientQueuePosition: _patientQueuePosition,
-                  // Default resting state — not stale, not retrying, so no
-                  // stalenessReason and no retry action apply.
-                  connectionStatus: QueueConnectionStatus.live,
-                  recordedAt: _recordedAt,
-                  // The queue detail sheet isn't built yet, so tapping is
-                  // deliberately inert rather than wired to a stand-in route.
-                  onTap: () {},
-                ),
+                // TEMPORARY: hardcoded, not a decision. Nobody can hold a
+                // queue position yet — there is no bookings table and no
+                // booking flow — so "no active booking" is the only state
+                // that can honestly be true, and showing it unconditionally
+                // is more truthful than branching on data that does not
+                // exist. This becomes a real conditional (empty state vs.
+                // QueueStatusCard) once the Booking tab and its backing data
+                // land; `queue_status_card.dart` stays built and ready for
+                // that, just unreferenced from here in the meantime.
+                //
+                // The CTA is inert for the same reason — no search flow yet.
+                const HomeEmptyStateCard(),
               ],
             ),
           ),
@@ -132,14 +105,29 @@ class _SearchBar extends StatelessWidget {
         color: AuroraColors.tonal,
         borderRadius: BorderRadius.circular(AuroraRadius.pill),
       ),
-      // The placeholder takes the flexible slot so it is pinned to the pill's
-      // own right-hand edge (its RTL start), with the magnifier parked at the
-      // opposite end rather than crowding the text.
+      // Magnifier and placeholder read as one cluster on the pill's right
+      // edge, with the slack falling on the left beside the bell.
+      //
+      // The alignment that matters here is [Text.textAlign], not the Row's.
+      // A `Text` carrying `overflow: ellipsis` reports its width as the whole
+      // constraint it was offered rather than the width of its glyphs, so the
+      // text box always spans the full remaining width no matter which flex
+      // widget wraps it — leaving `mainAxisAlignment` no free space to push
+      // around, and letting the glyphs sit wherever inside that box. Pinning
+      // them with an explicit RTL-aware `TextAlign.start` is what actually
+      // parks the placeholder against the magnifier.
       child: Row(
         children: [
+          const Icon(
+            Icons.search_rounded,
+            size: 20,
+            color: AuroraColors.secondary,
+          ),
+          const SizedBox(width: AuroraSpacing.sm),
           Expanded(
             child: Text(
               'ابحث عن طبيب أو تخصص',
+              textAlign: TextAlign.start,
               style: AuroraText.body(
                 size: 14,
                 weight: FontWeight.w500,
@@ -148,12 +136,6 @@ class _SearchBar extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(width: AuroraSpacing.sm),
-          const Icon(
-            Icons.search_rounded,
-            size: 20,
-            color: AuroraColors.secondary,
           ),
         ],
       ),

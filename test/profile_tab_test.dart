@@ -6,6 +6,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medico/models/onboarding_data.dart';
 import 'package:medico/screens/home_tab.dart';
@@ -187,16 +188,36 @@ void main() {
       final placeholder = find.text('ابحث عن طبيب أو تخصص');
       expect(placeholder, findsOneWidget);
 
-      final searchIconX = tester
-          .getCenter(find.byIcon(Icons.search_rounded))
-          .dx;
-      final placeholderRight = tester.getBottomRight(placeholder).dx;
+      // Scoped to the pill's own Row: the empty-state card's CTA below puts a
+      // second search_rounded on this tab, so a bare byIcon finder is
+      // ambiguous.
+      final searchIcon = find.descendant(
+        of: find.ancestor(of: placeholder, matching: find.byType(Row)).first,
+        matching: find.byIcon(Icons.search_rounded),
+      );
+      expect(searchIcon, findsOneWidget);
+      final searchIconX = tester.getCenter(searchIcon).dx;
 
       // Bell on the visual left, search filling the rest to the right.
       expect(bellX, lessThan(searchIconX));
-      // Placeholder pinned to the pill's own right-hand edge, past the
-      // magnifier rather than beside it.
-      expect(placeholderRight, greaterThan(searchIconX));
+
+      // Magnifier leads at the pill's right edge, text box immediately
+      // beside it.
+      final iconLeft = tester.getTopLeft(searchIcon).dx;
+      final textRight = tester.getBottomRight(placeholder).dx;
+
+      expect(textRight, lessThanOrEqualTo(iconLeft));
+      expect(iconLeft - textRight, lessThan(AuroraSpacing.md));
+
+      // Where the *glyphs* land inside that box is the part geometry alone
+      // cannot prove here: an ellipsis-carrying Text always reports the full
+      // offered width, and the test font is wide enough to fill it, so the
+      // box is flush at any width the harness can pump. The placeholder
+      // hugging the magnifier therefore rests on textAlign resolving through
+      // RTL, which is what this asserts.
+      final paragraph = tester.renderObject<RenderParagraph>(placeholder);
+      expect(paragraph.textAlign, TextAlign.start);
+      expect(paragraph.textDirection, TextDirection.rtl);
       expect(tester.takeException(), isNull);
     });
   });

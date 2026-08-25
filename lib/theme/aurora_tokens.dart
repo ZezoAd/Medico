@@ -71,6 +71,44 @@ abstract final class AuroraColors {
   /// skipped, so null is a real state and must not fall back to either
   /// gendered colour. Sits in the same family as [muted]/[secondary].
   static const avatarNeutral = Color(0xFF8B9C98);
+
+  // Dark-mode counterparts. Additive: every light value above is unchanged,
+  // and nothing reads these unless it has established that the platform is in
+  // dark mode.
+  //
+  // Note that `main.dart` declares only a light `ThemeData` — no `darkTheme`,
+  // no `themeMode` — so `Theme.of(context).brightness` reports `light` even on
+  // a dark device and cannot be used to pick between the two sets. Widgets
+  // read `MediaQuery.platformBrightnessOf(context)` instead, which is the
+  // workaround `queue_status_card.dart` established. When real theme wiring
+  // lands, these are the values it should carry.
+
+  /// Blue stop of the card gradient in dark mode — [primaryBlue] scrimmed 22%
+  /// toward black.
+  ///
+  /// Precomputed rather than blended at runtime: a soft light-mode glow reads
+  /// as broken on a dark surface, so dark mode needs its own flat darkened
+  /// value, not a shader blend.
+  static const gradientStartDark = Color(0xFF20729D);
+
+  /// Green stop of the card gradient in dark mode — [primary] scrimmed 22%
+  /// toward black. See [gradientStartDark].
+  static const gradientEndDark = Color(0xFF17794F);
+
+  /// App background — the counterpart to [background].
+  static const bgDark = Color(0xFF121A18);
+
+  /// Tonal fill — the counterpart to [tonal].
+  static const tonalDark = Color(0xFF1C2624);
+
+  /// Primary text — the counterpart to [ink].
+  static const inkDark = Color(0xFFEAF3F0);
+
+  /// Secondary text — the counterpart to [secondary].
+  static const secondaryDark = Color(0xFF9FB6B0);
+
+  /// Tertiary text — the counterpart to [muted].
+  static const mutedDark = Color(0xFF7C948E);
 }
 
 /// The two gradients in the app. They are genuinely different treatments and

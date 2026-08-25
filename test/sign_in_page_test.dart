@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medico/screens/sign_in_page.dart';
+import 'package:medico/screens/sign_up_screen.dart';
+import 'package:medico/widgets/auth_tab_switcher.dart';
+
+/// "تسجيل الدخول" now labels two different things — the switcher tab and the
+/// submit button — so every finder for either has to say which it means.
+final signInTab = find.descendant(
+  of: find.byType(AuthTabSwitcher),
+  matching: find.text('تسجيل الدخول'),
+);
+final signUpTab = find.descendant(
+  of: find.byType(AuthTabSwitcher),
+  matching: find.text('إنشاء حساب'),
+);
+final submitButton = find.descendant(
+  of: find.byType(TextButton),
+  matching: find.text('تسجيل الدخول'),
+);
 
 /// Renders [SignInPage] at a given logical size and fails on any overflow.
 ///
@@ -25,7 +42,8 @@ void main() {
     testWidgets('iPhone SE', (tester) async {
       await pumpAt(tester, iphoneSe, 2.0);
 
-      expect(find.text('تسجيل الدخول'), findsOneWidget);
+      expect(submitButton, findsOneWidget);
+      expect(signInTab, findsOneWidget);
       expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
       expect(find.byType(ListView), findsNothing);
     });
@@ -33,7 +51,8 @@ void main() {
     testWidgets('Pixel 8 Pro', (tester) async {
       await pumpAt(tester, pixel8Pro, 2.625);
 
-      expect(find.text('تسجيل الدخول'), findsOneWidget);
+      expect(submitButton, findsOneWidget);
+      expect(signInTab, findsOneWidget);
       expect(find.text('الاستمرار باستخدام Google'), findsOneWidget);
       expect(find.byType(ListView), findsNothing);
     });
@@ -50,18 +69,79 @@ void main() {
     });
   });
 
-  testWidgets('doctor tab swaps the copy without overflowing', (tester) async {
+  testWidgets('shows the returning-user copy, not a role toggle', (
+    tester,
+  ) async {
     await pumpAt(tester, iphoneSe, 2.0);
 
-    expect(find.text('أهلًا بعودتك'), findsOneWidget);
-    await tester.tap(find.text('طبيب'));
+    expect(find.text('أهلاً بعودتك'), findsOneWidget);
+    expect(
+      find.text('سجّل دخولك وتابع دورك وحجوزاتك من مكان واحد.'),
+      findsOneWidget,
+    );
+
+    // The مستخدم/طبيب toggle is gone: doctors use a separate app, so this
+    // screen never asks anyone to declare a role.
+    expect(find.text('طبيب'), findsNothing);
+    expect(find.text('مستخدم'), findsNothing);
+    expect(find.text('أهلاً دكتور'), findsNothing);
+
+    // The pitch line moved to Sign Up, where a first-time visitor sees it.
+    expect(
+      find.text('انتظار العيادة صار من الماضي — تابع دورك من أي مكان.'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('sign-in tab is the active one', (tester) async {
+    await pumpAt(tester, iphoneSe, 2.0);
+
+    expect(find.byType(AuthTabSwitcher), findsOneWidget);
+    expect(signInTab, findsOneWidget);
+    expect(signUpTab, findsOneWidget);
+
+    final switcher = tester.widget<AuthTabSwitcher>(
+      find.byType(AuthTabSwitcher),
+    );
+    expect(switcher.selectedIndex, 0);
+
+    // RTL: the first label sits on the visual right.
+    expect(
+      tester.getCenter(signInTab).dx,
+      greaterThan(tester.getCenter(signUpTab).dx),
+    );
+  });
+
+  testWidgets('إنشاء حساب tab navigates to SignUpScreen', (tester) async {
+    await pumpAt(tester, iphoneSe, 2.0);
+    expect(find.byType(SignUpScreen), findsNothing);
+
+    await tester.tap(signUpTab);
     await tester.pumpAndSettle();
 
-    expect(find.text('مرحبًا دكتور'), findsOneWidget);
-    // The signup prompt is one rich-text run: "دكتور جديد؟ إنشاء حساب".
+    expect(find.byType(SignUpScreen), findsOneWidget);
+  });
+
+  testWidgets('tapping the active tab does not push a duplicate', (
+    tester,
+  ) async {
+    await pumpAt(tester, iphoneSe, 2.0);
+
+    await tester.tap(signInTab);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SignInPage), findsOneWidget);
+    expect(find.byType(SignUpScreen), findsNothing);
+  });
+
+  testWidgets('the inline signup prompt is gone', (tester) async {
+    await pumpAt(tester, iphoneSe, 2.0);
+
+    // Superseded by the إنشاء حساب tab — two routes to one screen on one
+    // card was redundant.
     expect(
-      find.textContaining('دكتور جديد؟', findRichText: true),
-      findsOneWidget,
+      find.textContaining('مستخدم جديد؟', findRichText: true),
+      findsNothing,
     );
   });
 
@@ -69,21 +149,17 @@ void main() {
     await pumpAt(tester, iphoneSe, 2.0);
 
     // The error rows are extra children in an already-full column.
-    await tester.tap(find.text('تسجيل الدخول'));
+    await tester.tap(submitButton);
     await tester.pumpAndSettle();
 
     expect(find.text('الرجاء إدخال البريد الإلكتروني'), findsOneWidget);
     expect(find.text('الرجاء إدخال كلمة المرور'), findsOneWidget);
   });
 
-  testWidgets('success state renders after a valid submit', (tester) async {
-    await pumpAt(tester, iphoneSe, 2.0);
-
-    await tester.enterText(find.byType(TextField).first, 'user@example.com');
-    await tester.enterText(find.byType(TextField).last, 'secret123');
-    await tester.tap(find.text('تسجيل الدخول'));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-
-    expect(find.text('تم تسجيل الدخول بنجاح'), findsOneWidget);
-  });
+  // There is deliberately no success-state test here. The inline "تم تسجيل
+  // الدخول بنجاح" screen this file used to assert on was removed when sign-in
+  // switched to routing straight to its destination via `pushAndRemoveUntil`,
+  // so there is no longer an intermediate state to render. Covering the
+  // navigation instead needs a Supabase test double, which this file does not
+  // have.
 }

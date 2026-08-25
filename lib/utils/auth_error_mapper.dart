@@ -10,10 +10,7 @@ import '../widgets/auth_error_banner.dart';
 /// The message + tone [mapAuthError] resolves a caught exception to, ready
 /// to hand straight to [AuthErrorBanner].
 class AuthErrorInfo {
-  const AuthErrorInfo(
-    this.message, {
-    this.severity = AuthErrorSeverity.error,
-  });
+  const AuthErrorInfo(this.message, {this.severity = AuthErrorSeverity.error});
 
   final String message;
   final AuthErrorSeverity severity;
@@ -23,7 +20,8 @@ class AuthErrorInfo {
 /// signed-in account (token revoked, or the `profiles` row is gone) — always
 /// paired with a forced `signOut()` so the stale session can't keep coming
 /// back silently.
-const sessionInvalidMessage = 'جلستك لم تعد صالحة. الرجاء تسجيل الدخول مرة أخرى.';
+const sessionInvalidMessage =
+    'جلستك لم تعد صالحة. الرجاء تسجيل الدخول مرة أخرى.';
 
 /// Shown for any connectivity failure — no route to Supabase at all, as
 /// opposed to Supabase answering with a rejection.
@@ -48,26 +46,6 @@ const emailNotConfirmedMessage =
 /// with an empty `identities` list instead of raising at all.
 const accountAlreadyExistsMessage =
     'هذا البريد الإلكتروني مسجل بالفعل. سجّل الدخول بدلاً من إنشاء حساب جديد.';
-
-/// Google sign-in on the طبيب tab that landed on a non-doctor account.
-///
-/// Google is a *creating* flow: the first ID-token exchange registers the
-/// auth user before any role is knowable, so by the time this is shown the
-/// account genuinely exists and is signed in. The copy says so plainly —
-/// implying nothing happened, or that it was undone, would be a lie the very
-/// next launch contradicts, since the session is deliberately kept alive.
-const doctorTabGoogleCreatedPatientMessage =
-    'حسابات الأطباء تُنشأ داخل العيادة ولا يمكن تسجيلها من التطبيق. '
-    'تم تسجيل دخولك بحساب مستخدم عادي، وهو جاهز للاستخدام الآن.';
-
-/// Password sign-in on the طبيب tab that landed on a non-doctor account.
-///
-/// Unlike [doctorTabGoogleCreatedPatientMessage], `signInWithPassword` only
-/// ever signs into an account that already existed — nothing was created
-/// here, so this copy must not mention creation at all.
-const doctorTabNotADoctorAccountMessage =
-    'هذا الحساب ليس حساب طبيب. حسابات الأطباء تُنشأ داخل العيادة. '
-    'يمكنك المتابعة كمستخدم عادي.';
 
 const _rateLimitCodes = {
   'over_request_rate_limit',
@@ -123,7 +101,8 @@ const _messageFragments = <String, String>{
   'invalid login credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
   'user already registered': accountAlreadyExistsMessage,
   'already registered': accountAlreadyExistsMessage,
-  'password should be': 'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
+  'password should be':
+      'كلمة المرور ضعيفة. اختر كلمة مرور أطول أو أصعب في التخمين.',
   'signups not allowed': 'إنشاء الحسابات متوقف مؤقتًا. حاول لاحقًا.',
   'unable to validate email address': 'الرجاء إدخال بريد إلكتروني صحيح.',
 };
@@ -148,7 +127,8 @@ const otpExpiredMessage = 'انتهت صلاحية الرمز، يرجى طلب 
 
 /// Shown when the entered code was rejected while still inside the window,
 /// i.e. it was almost certainly mistyped.
-const otpIncorrectMessage = 'الرمز الذي أدخلته غير صحيح، يرجى المحاولة مرة أخرى';
+const otpIncorrectMessage =
+    'الرمز الذي أدخلته غير صحيح، يرجى المحاولة مرة أخرى';
 
 /// True when [error] is GoTrue rejecting the submitted code itself, as opposed
 /// to a network drop, a rate limit, or any other auth failure.
@@ -217,7 +197,9 @@ AuthErrorInfo mapOtpVerifyError(
 }) {
   if (_isOtpCodeRejected(error)) {
     return AuthErrorInfo(
-      sinceCodeSent >= otpValidityWindow ? otpExpiredMessage : otpIncorrectMessage,
+      sinceCodeSent >= otpValidityWindow
+          ? otpExpiredMessage
+          : otpIncorrectMessage,
     );
   }
   return mapAuthError(error);
@@ -261,7 +243,9 @@ AuthErrorInfo mapAuthError(Object error) {
     // the OTP screen) keep the combined wording; see [mapOtpVerifyError] for
     // why the two cases can't be told apart from the response alone.
     if (_isOtpCodeRejected(error)) {
-      return const AuthErrorInfo('الرمز غير صحيح أو منتهي الصلاحية. حاول مرة أخرى.');
+      return const AuthErrorInfo(
+        'الرمز غير صحيح أو منتهي الصلاحية. حاول مرة أخرى.',
+      );
     }
 
     if (code != null) {

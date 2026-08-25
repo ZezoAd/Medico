@@ -8,6 +8,7 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
+import '../widgets/auth_tab_switcher.dart';
 import 'auth_gate.dart';
 import 'otp_verification_screen.dart';
 
@@ -37,7 +38,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Recognizers for the inline links in the footer rich-text runs.
   final _privacyPolicyTap = TapGestureRecognizer();
-  final _signInTap = TapGestureRecognizer();
 
   bool _showPassword = false;
   bool _loading = false;
@@ -78,7 +78,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
-    _signInTap.onTap = () => Navigator.of(context).maybePop();
     _fullNameFocusNode.addListener(_onFullNameFocusChange);
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
@@ -93,7 +92,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _privacyPolicyTap.dispose();
-    _signInTap.dispose();
     super.dispose();
   }
 
@@ -393,6 +391,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: minTopGap),
                   _buildBrand(),
                   SizedBox(height: midGap),
+                  _buildAuthTabs(),
+                  SizedBox(height: midGap),
                   AnimatedSlide(
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.easeOut,
@@ -409,6 +409,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         );
+      },
+    );
+  }
+
+  /// The mirror of Sign In's switcher, with إنشاء حساب active.
+  ///
+  /// تسجيل الدخول pops rather than pushing: Sign Up is always reached *from*
+  /// Sign In, so the previous route is the screen being asked for. Pushing a
+  /// fresh one would stack the two screens on top of each other and leave a
+  /// back gesture bouncing between duplicates.
+  Widget _buildAuthTabs() {
+    return AuthTabSwitcher(
+      labels: const ['تسجيل الدخول', 'إنشاء حساب'],
+      selectedIndex: 1,
+      onSelected: (index) {
+        if (index == 1) return;
+        Navigator.of(context).maybePop();
       },
     );
   }
@@ -485,8 +502,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           SizedBox(height: _tightGap),
+          // Moved verbatim from Sign In's card, where it sat under a heading
+          // greeting someone who already has an account. The pitch belongs in
+          // front of the person who has not signed up yet.
           const Text(
-            'أنشئ حسابك للبدء في استخدام Medico.',
+            'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -545,8 +565,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _buildDivider(),
           SizedBox(height: _innerGap),
           _buildGoogleButton(),
-          SizedBox(height: _innerGap),
-          _buildSignInPrompt(),
+          // The "لديك حساب بالفعل؟ تسجيل الدخول" line lived here. The
+          // تسجيل الدخول tab above now carries it, matching Sign In.
         ],
       ),
     );
@@ -852,30 +872,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSignInPrompt() {
-    return Text.rich(
-      TextSpan(
-        children: [
-          const TextSpan(text: 'لديك حساب بالفعل؟'),
-          const TextSpan(text: ' '),
-          TextSpan(
-            text: 'تسجيل الدخول',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AuroraColors.primary,
-            ),
-            recognizer: _signInTap,
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(fontSize: 13, color: AuroraColors.secondary),
     );
   }
 }

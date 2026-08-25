@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/user_profile.dart';
 import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
+import '../widgets/auth_tab_switcher.dart';
 import '../widgets/forgot_password_sheet.dart';
 import 'auth_gate.dart';
 import 'otp_verification_screen.dart';
@@ -17,9 +17,15 @@ import 'sign_up_screen.dart';
 /// Sign-in screen ported from the "Medico Login - Glass" design.
 ///
 /// The design is RTL Arabic: a teal→blue gradient canvas with two soft
-/// decorative circles, a role switcher (مستخدم / طبيب), and a white card
-/// holding the credential form. Submitting swaps the whole screen for a
-/// success state.
+/// decorative circles, a تسجيل الدخول / إنشاء حساب switcher, and a white card
+/// holding the credential form.
+///
+/// That switcher used to be a مستخدم / طبيب role toggle. Doctors sign in
+/// through a separate Flutter app entirely, so the toggle was picking heading
+/// copy and nothing else — the account's real role has always lived in
+/// `profiles.role`. The control was kept and repointed at Sign In vs Sign Up,
+/// which gives sign-up equal footing instead of one small link at the bottom
+/// of the card.
 class SignInPage extends StatefulWidget {
   const SignInPage({
     super.key,
@@ -42,8 +48,6 @@ class SignInPage extends StatefulWidget {
   State<SignInPage> createState() => _SignInPageState();
 }
 
-enum _Role { patient, doctor }
-
 class _SignInPageState extends State<SignInPage> {
   static const _networkTimeout = Duration(seconds: 15);
 
@@ -58,11 +62,9 @@ class _SignInPageState extends State<SignInPage> {
   final _profileService = const ProfileService();
 
   // Recognizers for the inline links in the footer rich-text runs.
-  final _signupTap = TapGestureRecognizer();
   final _termsTap = TapGestureRecognizer();
   final _privacyTap = TapGestureRecognizer();
 
-  _Role _role = _Role.patient;
   bool _showPassword = false;
   bool _loading = false;
   bool _mounted = false;
@@ -86,24 +88,6 @@ class _SignInPageState extends State<SignInPage> {
   /// are indistinguishable once the banner is on screen — see [OtpPurpose].
   OtpPurpose _pendingOtpPurpose = OtpPurpose.signupConfirmation;
   bool _resendingConfirmation = false;
-
-  /// Set when a sign-in started from the طبيب tab succeeded against an account
-  /// whose `profiles.role` is not `doctor`.
-  ///
-  /// The session is deliberately left live: the credentials were correct and
-  /// the account is a perfectly usable patient account, so signing them back
-  /// out would be destroying something legitimate to make a point about a tab
-  /// label. What is withheld is the automatic navigation — the person is told
-  /// what kind of account they are holding and moves on by choosing to, via
-  /// [_continueAsPatient].
-  ///
-  /// Only ever set off a profile we actually read. A *null* profile means the
-  /// row could not be fetched, which is not evidence of anything about the
-  /// role, so that case falls through to the normal destination rather than
-  /// accusing the account of not being a doctor.
-  bool _roleMismatch = false;
-
-  bool get _isDoctor => _role == _Role.doctor;
 
   double get _screenHeight => MediaQuery.sizeOf(context).height;
 
@@ -149,11 +133,6 @@ class _SignInPageState extends State<SignInPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
     });
-    _signupTap.onTap = () {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
-    };
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
   }
@@ -164,14 +143,9 @@ class _SignInPageState extends State<SignInPage> {
     _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
-    _signupTap.dispose();
     _termsTap.dispose();
     _privacyTap.dispose();
     super.dispose();
-  }
-
-  void _setRole(_Role role) {
-    setState(() => _role = role);
   }
 
   /// Empty → required copy, non-empty-but-malformed → format copy. Runs on
@@ -229,9 +203,9 @@ class _SignInPageState extends State<SignInPage> {
       await Supabase.instance.client.auth
           .signInWithPassword(email: email, password: password)
           .timeout(_networkTimeout);
-      // The طبيب/مستخدم tab above only picks the heading copy — the account's
-      // real role lives in `profiles.role`, so signing in under the wrong tab
-      // still succeeds and still lands wherever the database says it should.
+      // Fetched for the signup-verified check below. The account's role is
+      // not consulted here at all — `profiles.role` is the only authority on
+      // that, and this screen no longer asks the person to declare one.
       final profile = await _profileService.fetchCurrentProfile();
       // The password was right, but that is not the same as having finished
       // signup. Someone who abandoned the OTP screen and used forgot-password
@@ -255,13 +229,6 @@ class _SignInPageState extends State<SignInPage> {
         return;
       }
       if (!mounted) return;
-      // Signed in on the طبيب tab, but the account isn't a doctor account.
-      // `signInWithPassword` only ever authenticates a pre-existing account,
-      // so nothing was created here and the copy must not suggest otherwise.
-      if (_isDoctorTabMismatch(profile)) {
-        _showRoleMismatch(doctorTabNotADoctorAccountMessage);
-        return;
-      }
       await Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthGate()));
@@ -294,52 +261,17 @@ class _SignInPageState extends State<SignInPage> {
     _banner = null;
     _pendingUnconfirmedEmail = null;
     _pendingOtpPurpose = OtpPurpose.signupConfirmation;
-    _roleMismatch = false;
   }
 
-  /// True when a sign-in from the طبيب tab landed on an account the database
-  /// says is not a doctor. Deliberately requires a non-null [profile]: see
-  /// [_roleMismatch] for why an unreadable row must not count.
-  bool _isDoctorTabMismatch(UserProfile? profile) =>
-      _isDoctor && profile != null && profile.role != UserRole.doctor;
-
-  /// Swaps the automatic navigation for an explained one: shows [message] with
-  /// a single "المتابعة كمستخدم" action and leaves the person signed in until
-  /// they take it.
-  void _showRoleMismatch(String message) {
-    setState(() {
-      _banner = AuthErrorInfo(message, severity: AuthErrorSeverity.warning);
-      _roleMismatch = true;
-    });
-  }
-
-  /// The role-mismatch banner's action — the same navigation the normal
-  /// success path performs, just gated behind an explanation. Synchronous and
-  /// incapable of failing, since it is the only way out of this state.
-  void _continueAsPatient() {
-    setState(_clearBanner);
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const AuthGate()),
-      (route) => false,
-    );
-  }
-
-  /// Note: [_continueAsPatient] now re-resolves through [AuthGate] rather
-  /// than reusing the profile fetched here. That is one extra round-trip on a
-  /// rare path, and unlike before, a network drop no longer strands the
-  /// person — the gate shows its retry state instead of failing the action.
-  ///
-  /// The banner's action pair. [_roleMismatch] wins over the resend action:
-  /// the two never coexist (one follows a *successful* sign-in, the other a
-  /// blocked one), and ordering them here keeps the widget tree readable.
+  /// The banner's action. Only one case still carries one: an account that
+  /// signed in correctly but never finished signup verification, which gets a
+  /// "resend a code" way forward instead of a dead-end message.
   VoidCallback? get _bannerAction {
-    if (_roleMismatch) return _continueAsPatient;
     if (_pendingUnconfirmedEmail != null) return _resendConfirmation;
     return null;
   }
 
   String? get _bannerActionLabel {
-    if (_roleMismatch) return 'المتابعة كمستخدم';
     if (_pendingUnconfirmedEmail != null) return 'إرسال رمز تحقق جديد';
     return null;
   }
@@ -414,18 +346,10 @@ class _SignInPageState extends State<SignInPage> {
       // negative there would lock a legitimate Google user out of the app
       // entirely, and the call is idempotent and cheap.
       await _profileService.markSignupVerified();
-      final profile = await _profileService.fetchCurrentProfile();
+      // No profile read here any more: it existed only to answer the
+      // doctor-tab question. AuthGate fetches the row itself on the very next
+      // frame, so doing it here too was a duplicate round trip.
       if (!mounted) return;
-      // Signed in on the طبيب tab, but the account isn't a doctor account.
-      // Unlike the password path this may have *created* the account moments
-      // ago — Google's first token exchange registers the auth user before
-      // any role exists to check — so the copy owns that instead of pretending
-      // the tap was a no-op. Nothing is signed out or rolled back; the account
-      // is real, usable, and stays signed in.
-      if (_isDoctorTabMismatch(profile)) {
-        _showRoleMismatch(doctorTabGoogleCreatedPatientMessage);
-        return;
-      }
       // Clears the auth stack: there's nothing to come back to once signed in.
       await Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const AuthGate()),
@@ -487,10 +411,6 @@ class _SignInPageState extends State<SignInPage> {
                         severity: _banner!.severity,
                         onRetry: _bannerAction,
                         retryLabel: _bannerActionLabel,
-                        // The role-mismatch banner carries the only way
-                        // forward, so it must not delete itself while it's
-                        // being read. Every other banner keeps the 5s timer.
-                        autoDismiss: !_roleMismatch,
                         onDismiss: () => setState(_clearBanner),
                       ),
                     ),
@@ -544,7 +464,7 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(height: minTopGap),
                   _buildBrand(),
                   SizedBox(height: brandToTabs),
-                  _buildRoleTabs(),
+                  _buildAuthTabs(),
                   SizedBox(height: tabsToCard),
                   AnimatedSlide(
                     duration: const Duration(milliseconds: 400),
@@ -597,86 +517,29 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildRoleTabs() {
-    // Fixed outer height (38 tab + 4+4 padding). Nothing queries intrinsics
-    // any more now that _buildForm centres without IntrinsicHeight, but the
-    // tab strip is a fixed-height control regardless, so it stays pinned
-    // here rather than being re-derived from the slider's inner layout.
-    return SizedBox(height: 46, child: _roleTabsContent());
-  }
-
-  Widget _roleTabsContent() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final tabWidth = constraints.maxWidth / 2;
-          return SizedBox(
-            height: 38,
-            child: Stack(
-              children: [
-                // Sliding white pill behind the active tab.
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOut,
-                  right: _isDoctor ? tabWidth : 0,
-                  top: 0,
-                  bottom: 0,
-                  width: tabWidth,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    _roleTab('مستخدم', _Role.patient),
-                    _roleTab('طبيب', _Role.doctor),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _roleTab(String label, _Role role) {
-    final active = _role == role;
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => _setRole(role),
-        child: Center(
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: active
-                  ? const Color(0xFF12664C)
-                  : Colors.white.withValues(alpha: 0.8),
-            ),
-            child: Text(label),
-          ),
-        ),
-      ),
+  /// Tapping إنشاء حساب pushes Sign Up — the same destination the inline
+  /// "مستخدم جديد؟ إنشاء حساب" link used to carry, which is why that link is
+  /// gone. Tapping the already-active تسجيل الدخول is a no-op rather than a
+  /// self-push.
+  Widget _buildAuthTabs() {
+    return AuthTabSwitcher(
+      labels: const ['تسجيل الدخول', 'إنشاء حساب'],
+      selectedIndex: 0,
+      onSelected: (index) {
+        if (index == 0) return;
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
+      },
     );
   }
 
   Widget _buildCard() {
-    final heading = _isDoctor ? 'أهلاً دكتور' : 'أهلاً بيك';
-    final subheading = _isDoctor
-        ? 'تابع مواعيد عيادتك وطابور مرضاك من مكان واحد.'
-        : 'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.';
+    const heading = 'أهلاً بعودتك';
+    // The old pitch line ("انتظار العيادة صار من الماضي…") moved to Sign Up,
+    // where a first-time visitor is the one who needs convincing. Someone
+    // already returning to sign in does not.
+    const subheading = 'سجّل دخولك وتابع دورك وحجوزاتك من مكان واحد.';
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -783,12 +646,9 @@ class _SignInPageState extends State<SignInPage> {
           _buildDivider(),
           SizedBox(height: _innerGap),
           _buildGoogleButton(),
-          // Doctors are onboarded manually via the separate mini-app — no
-          // self-serve signup, so this only appears on the patient tab.
-          if (!_isDoctor) ...[
-            SizedBox(height: _innerGap),
-            _buildSignupPrompt(),
-          ],
+          // No "مستخدم جديد؟ إنشاء حساب" line here any more — the إنشاء حساب
+          // tab above goes to the same place, and two routes to one screen on
+          // one card is just clutter.
           SizedBox(height: _tightGap),
           _buildLegalNote(),
         ],
@@ -869,11 +729,7 @@ class _SignInPageState extends State<SignInPage> {
         obscureText: obscure,
         keyboardType: keyboardType,
         onChanged: (_) {
-          // Typing clears a stale failure, but must not clear the
-          // role-mismatch banner — that one is the person's only route into
-          // the app, and a single keystroke silently stranding them signed-in
-          // on a sign-in form is exactly the dead end it exists to avoid.
-          if (_roleMismatch) return;
+          // Typing clears a stale failure.
           if (_banner != null || _credentialsError != null) {
             setState(() {
               _clearBanner();
@@ -1028,32 +884,6 @@ class _SignInPageState extends State<SignInPage> {
           ],
         ),
       ),
-    );
-  }
-
-  // Only reached from the patient tab — doctors are onboarded manually via
-  // the separate mini-app and never see a signup prompt here.
-  Widget _buildSignupPrompt() {
-    return Text.rich(
-      TextSpan(
-        children: [
-          const TextSpan(text: 'مستخدم جديد؟'),
-          const TextSpan(text: ' '),
-          TextSpan(
-            text: 'إنشاء حساب',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AuroraColors.primary,
-            ),
-            recognizer: _signupTap,
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(fontSize: 13, color: AuroraColors.secondary),
     );
   }
 
