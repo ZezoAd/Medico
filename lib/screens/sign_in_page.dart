@@ -105,6 +105,10 @@ class _SignInFormState extends State<SignInForm>
   final _termsTap = TapGestureRecognizer();
   final _privacyTap = TapGestureRecognizer();
 
+  /// True while any field on this form holds focus. See the twin on
+  /// [SignUpForm] — the subheading folds away while the keyboard is up.
+  bool _fieldFocused = false;
+
   bool _showPassword = false;
   bool _loading = false;
   bool _mounted = false;
@@ -206,6 +210,15 @@ class _SignInFormState extends State<SignInForm>
     });
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
+    for (final node in [_emailFocusNode, _passwordFocusNode]) {
+      node.addListener(_onAnyFieldFocusChange);
+    }
+  }
+
+  /// Collapses the subheading the moment the keyboard claims the screen.
+  void _onAnyFieldFocusChange() {
+    final focused = _emailFocusNode.hasFocus || _passwordFocusNode.hasFocus;
+    if (focused != _fieldFocused) setState(() => _fieldFocused = focused);
   }
 
   @override
@@ -543,15 +556,28 @@ class _SignInFormState extends State<SignInForm>
               height: 1.3,
             ),
           ),
-          SizedBox(height: _tightGap),
-          Text(
-            subheading,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: AuroraColors.secondary,
-              height: 1.5,
+          // Folds away while a field is focused — the same treatment as Sign
+          // Up's pitch line, applied for the same reason. Sign In has room to
+          // spare today, but the two screens are one tap apart and must not
+          // behave differently under the keyboard.
+          AuthCollapsibleOnFocus(
+            collapsed: _fieldFocused,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: _tightGap),
+                Text(
+                  subheading,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    color: AuroraColors.secondary,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: _innerGap),

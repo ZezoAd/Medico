@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:medico/screens/auth_shell.dart';
 import 'package:medico/screens/sign_in_page.dart';
 import 'package:medico/screens/sign_up_screen.dart';
 import 'package:medico/theme/aurora_tokens.dart';
@@ -343,6 +344,76 @@ void main() {
   // so there is no longer an intermediate state to render. Covering the
   // navigation instead needs a Supabase test double, which this file does not
   // have.
+
+  group('fixed header + scrollable body', () {
+    for (final size in const [Size(360, 740), Size(412, 915)]) {
+      final tag = '${size.width.toInt()}x${size.height.toInt()}';
+
+      testWidgets('$tag: the tab switcher never scrolls away', (tester) async {
+        await pumpAt(tester, size, 1.0);
+
+        // Not inside a Scrollable at all — it lives in the shell's fixed
+        // column, above the PageView the forms scroll inside.
+        expect(
+          find.ancestor(
+            of: find.byType(AuthTabSwitcher),
+            matching: find.byType(Scrollable),
+          ),
+          findsNothing,
+        );
+
+        final before = tester.getRect(find.byType(AuthTabSwitcher));
+
+        final scrollView = find.byType(SingleChildScrollView);
+        if (scrollView.evaluate().isNotEmpty) {
+          final position = tester
+              .state<ScrollableState>(
+                find
+                    .descendant(
+                      of: scrollView.first,
+                      matching: find.byType(Scrollable),
+                    )
+                    .first,
+              )
+              .position;
+          if (position.maxScrollExtent > 0) {
+            position.jumpTo(position.maxScrollExtent);
+            await tester.pumpAndSettle();
+          }
+        }
+
+        // Still exactly where it was, and still clear of the body below it.
+        expect(tester.getRect(find.byType(AuthTabSwitcher)), before);
+        expect(
+          before.bottom,
+          lessThanOrEqualTo(tester.getRect(find.byType(PageView)).top + 0.5),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('the subheading folds away while a field is focused', (
+      tester,
+    ) async {
+      await pumpAt(tester, iphoneSe, 2.0);
+
+      // Measured on the collapsible itself: AnimatedCrossFade keeps both
+      // children laid out, so the text's own rect never reports the collapse.
+      final collapsible = find.byType(AuthCollapsibleOnFocus);
+      final resting = tester.getRect(collapsible).height;
+      expect(resting, greaterThan(0));
+
+      final field = tester.widget<TextField>(find.byType(TextField).first);
+      field.focusNode!.requestFocus();
+      await tester.pumpAndSettle();
+      expect(tester.getRect(collapsible).height, 0);
+
+      field.focusNode!.unfocus();
+      await tester.pumpAndSettle();
+      expect(tester.getRect(collapsible).height, resting);
+      expect(tester.takeException(), isNull);
+    });
+  });
 }
 
 /// Tracks live route depth so a "does the stack grow?" claim is measured

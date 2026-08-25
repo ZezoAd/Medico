@@ -65,6 +65,10 @@ class _SignUpFormState extends State<SignUpForm>
   // Recognizers for the inline links in the footer rich-text runs.
   final _privacyPolicyTap = TapGestureRecognizer();
 
+  /// True while any field on this form holds focus, i.e. while the keyboard
+  /// is up and competing for the vertical space the pitch line occupies.
+  bool _fieldFocused = false;
+
   bool _showPassword = false;
   bool _loading = false;
   bool _mounted = false;
@@ -125,6 +129,26 @@ class _SignUpFormState extends State<SignUpForm>
     _fullNameFocusNode.addListener(_onFullNameFocusChange);
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
+    for (final node in [
+      _fullNameFocusNode,
+      _emailFocusNode,
+      _passwordFocusNode,
+    ]) {
+      node.addListener(_onAnyFieldFocusChange);
+    }
+  }
+
+  /// Collapses the pitch line the moment the keyboard claims the screen.
+  ///
+  /// Separate from the per-field blur listeners above: those fire validation
+  /// and only rebuild when an error actually changes, so they cannot be used
+  /// to observe focus itself.
+  void _onAnyFieldFocusChange() {
+    final focused =
+        _fullNameFocusNode.hasFocus ||
+        _emailFocusNode.hasFocus ||
+        _passwordFocusNode.hasFocus;
+    if (focused != _fieldFocused) setState(() => _fieldFocused = focused);
   }
 
   @override
@@ -487,18 +511,33 @@ class _SignUpFormState extends State<SignUpForm>
               height: 1.3,
             ),
           ),
-          SizedBox(height: _tightGap),
-          // Moved verbatim from Sign In's card, where it sat under a heading
-          // greeting someone who already has an account. The pitch belongs in
-          // front of the person who has not signed up yet.
-          const Text(
-            'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 13.5,
-              color: AuroraColors.secondary,
-              height: 1.5,
+          // The pitch line, and the gaps around it, fold away while a field
+          // is focused. It is the one piece of copy here that nobody is
+          // reading mid-typing, and reclaiming it gives the form ~55px back
+          // exactly when the keyboard has taken the room. Animated rather
+          // than switched so the fields glide up instead of jumping.
+          AuthCollapsibleOnFocus(
+            collapsed: _fieldFocused,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: _tightGap),
+                // Moved verbatim from Sign In's card, where it sat under a
+                // heading greeting someone who already has an account. The
+                // pitch belongs in front of the person who has not signed up
+                // yet.
+                const Text(
+                  'انتظار العيادة صار من الماضي — تابع دورك من أي مكان.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    color: AuroraColors.secondary,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: _innerGap),

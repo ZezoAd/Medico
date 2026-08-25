@@ -235,6 +235,45 @@ class _AuthShellState extends State<AuthShell> {
   }
 }
 
+/// Folds [child] away — height and all — while a field is focused.
+///
+/// Used for each card's pitch/subheading line, the one piece of copy nobody
+/// reads mid-typing. Collapsing it hands the form back roughly 55px at exactly
+/// the moment the keyboard has taken that room, instead of leaving it parked
+/// and making the keyboard-open state worse.
+///
+/// [AnimatedCrossFade] rather than a bare `if`: it tweens the height and the
+/// opacity together, so the fields glide up rather than snapping, and it keeps
+/// both children built so there is no rebuild cost at the moment of the
+/// switch. Aligned to the top so the collapse pulls upward into the heading
+/// instead of closing around its own centre.
+class AuthCollapsibleOnFocus extends StatelessWidget {
+  const AuthCollapsibleOnFocus({
+    super.key,
+    required this.collapsed,
+    required this.child,
+  });
+
+  final bool collapsed;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedCrossFade(
+      firstChild: child,
+      secondChild: const SizedBox(width: double.infinity, height: 0),
+      crossFadeState: collapsed
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      duration: AuroraMotion.standard,
+      firstCurve: AuroraMotion.easeOut,
+      secondCurve: AuroraMotion.easeOut,
+      sizeCurve: AuroraMotion.easeOut,
+      alignment: Alignment.topCenter,
+    );
+  }
+}
+
 /// The Medico wordmark row above the switcher.
 class _Brand extends StatelessWidget {
   const _Brand();
