@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
+import '../widgets/home_specialty_chips.dart';
 
 /// Home tab body.
 ///
@@ -54,6 +55,12 @@ class _HomeTabState extends State<HomeTab> {
                 //
                 // The CTA is inert for the same reason — no search flow yet.
                 const HomeEmptyStateCard(),
+                const SizedBox(height: AuroraSpacing.xxl),
+                // Inert for the same reason as the card's CTA above: there is
+                // no doctor list or Browse tab for a specialty to filter yet,
+                // so the chip row only moves its own highlight. The callback
+                // is left unwired rather than pointed at a stub.
+                const HomeSpecialtyChips(),
               ],
             ),
           ),
