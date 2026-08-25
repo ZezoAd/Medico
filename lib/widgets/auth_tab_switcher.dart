@@ -3,6 +3,19 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../theme/aurora_tokens.dart';
+
+/// The single timing the auth tab switch runs on — the pill and the forms
+/// both read it, so they can never drift out of step.
+///
+/// [AuroraMotion.standard] (300ms), not [AuroraMotion.page] (520ms). 520ms is
+/// tuned for onboarding, where each step is a full page of new work and the
+/// long slide reads as deliberate. A tab switch is a much smaller commitment,
+/// and at 520ms it reads as sluggish rather than considered — the "laggy"
+/// complaint this replaced. The curve stays the design system's shared
+/// [AuroraMotion.easeOut] so the motion still belongs to the same family.
+const authTabMotionDuration = AuroraMotion.standard;
+
 /// A two-tab segmented control that rides on the auth screens' gradient
 /// backdrop, above the white card.
 ///
@@ -65,9 +78,15 @@ class AuthTabSwitcher extends StatelessWidget {
                 children: [
                   // Sliding white pill behind the active tab. Positioned from
                   // `right` because index 0 is the RTL-leading tab.
+                  //
+                  // Shares [authTabMotionDuration] with the form slide rather
+                  // than keeping the 250ms `Curves.easeOut` inherited from the
+                  // old role toggle. The pill and the content are one gesture;
+                  // on separate timings the pill arrived first and the two
+                  // read as animations racing each other.
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOut,
+                    duration: authTabMotionDuration,
+                    curve: AuroraMotion.easeOut,
                     right: selectedIndex == 1 ? tabWidth : 0,
                     top: 0,
                     bottom: 0,

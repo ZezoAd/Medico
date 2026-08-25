@@ -8,11 +8,10 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
-import '../widgets/auth_tab_switcher.dart';
 import '../widgets/forgot_password_sheet.dart';
 import 'auth_gate.dart';
+import 'auth_shell.dart';
 import 'otp_verification_screen.dart';
-import 'sign_up_screen.dart';
 
 /// Sign-in screen ported from the "Medico Login - Glass" design.
 ///
@@ -26,7 +25,7 @@ import 'sign_up_screen.dart';
 /// `profiles.role`. The control was kept and repointed at Sign In vs Sign Up,
 /// which gives sign-up equal footing instead of one small link at the bottom
 /// of the card.
-class SignInPage extends StatefulWidget {
+class SignInPage extends StatelessWidget {
   const SignInPage({
     super.key,
     this.initialErrorMessage,
@@ -45,10 +44,51 @@ class SignInPage extends StatefulWidget {
   final String? initialUnconfirmedEmail;
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  Widget build(BuildContext context) {
+    return AuthShell(
+      initialTab: 0,
+      initialErrorMessage: initialErrorMessage,
+      initialUnconfirmedEmail: initialUnconfirmedEmail,
+    );
+  }
 }
 
-class _SignInPageState extends State<SignInPage> {
+/// The sign-in credential form, without any surrounding chrome.
+///
+/// Everything outside the white card — gradient, brand, tab switcher, banner
+/// slot — belongs to [AuthShell], which hosts this and [SignUpForm] as the two
+/// pages of one sliding [PageView]. This widget renders only what actually
+/// moves during a tab switch.
+class SignInForm extends StatefulWidget {
+  const SignInForm({
+    super.key,
+    required this.banner,
+    this.initialErrorMessage,
+    this.initialUnconfirmedEmail,
+  });
+
+  /// Where this form publishes its error banner for the shell to draw.
+  final AuthBannerSlot banner;
+
+  final String? initialErrorMessage;
+  final String? initialUnconfirmedEmail;
+
+  @override
+  State<SignInForm> createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm>
+    with AutomaticKeepAliveClientMixin {
+  /// Keeps this form mounted while the *other* tab is showing.
+  ///
+  /// A `PageView` builds pages lazily and drops them once they leave the
+  /// viewport, which for a form means its `TextEditingController`s go with it:
+  /// type an email, glance at the other tab, come back, and the field is
+  /// empty. Keeping both alive is also what lets the slide show two real forms
+  /// moving as one track instead of one form and a blank page.
+  @override
+  bool get wantKeepAlive => true;
+
   static const _networkTimeout = Duration(seconds: 15);
 
   static final _emailPattern = RegExp(
@@ -112,6 +152,31 @@ class _SignInPageState extends State<SignInPage> {
   /// that's cramped on small phones and stingy on large ones.
   double get _innerGap => (_screenHeight * 0.015).clamp(12.0, 24.0);
 
+  /// Republishes the banner on every state change.
+  ///
+  /// Overriding [setState] rather than calling a publish helper at each of the
+  /// ~10 sites that touch [_banner]: every one of them already goes through
+  /// setState, so this cannot be forgotten at a new one, and it always reads
+  /// [_bannerAction]/[_bannerActionLabel] *after* the mutation rather than
+  /// capturing a value that a later line in the same block invalidates.
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    _publishBanner();
+  }
+
+  void _publishBanner() {
+    final banner = _banner;
+    widget.banner.value = banner == null
+        ? null
+        : AuthBannerData(
+            info: banner,
+            action: _bannerAction,
+            actionLabel: _bannerActionLabel,
+            onDismiss: () => setState(_clearBanner),
+          );
+  }
+
   // The card fades and slides in shortly after the first frame.
   @override
   void initState() {
@@ -132,6 +197,12 @@ class _SignInPageState extends State<SignInPage> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) setState(() => _mounted = true);
+    });
+    // initState sets _banner directly, ahead of any setState, so the opening
+    // banner needs one explicit publish. Deferred because the shell's slot is
+    // read during its build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _publishBanner();
     });
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
@@ -373,54 +444,9 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        // Let the keyboard resize the body so the scroll view below can
-        // bring a focused field above it instead of the keyboard covering it.
-        resizeToAvoidBottomInset: true,
-        body: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          behavior: HitTestBehavior.opaque,
-          child: Stack(
-            children: [
-              const Positioned.fill(child: _GradientBackdrop()),
-              // Top-left circle (RTL: visually the trailing side of the header).
-              Positioned(
-                top: -120,
-                left: -100,
-                child: _SoftCircle(size: 280, opacity: 0.06),
-              ),
-              Positioned(
-                bottom: -80,
-                right: -70,
-                child: _SoftCircle(size: 220, opacity: 0.05),
-              ),
-              SafeArea(child: _buildForm()),
-              if (_banner != null)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: SafeArea(
-                    bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: AuthErrorBanner(
-                        message: _banner!.message,
-                        severity: _banner!.severity,
-                        onRetry: _bannerAction,
-                        retryLabel: _bannerActionLabel,
-                        onDismiss: () => setState(_clearBanner),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // Required by AutomaticKeepAliveClientMixin.
+    super.build(context);
+    return _buildForm();
   }
 
   // ────────────────────────────── form state ───────────────────────────────
@@ -448,88 +474,31 @@ class _SignInPageState extends State<SignInPage> {
     // matter the screen size or content height.
     return LayoutBuilder(
       builder: (context, constraints) {
-        final brandToTabs = (constraints.maxHeight * 0.015).clamp(10.0, 16.0);
-        final tabsToCard = (constraints.maxHeight * 0.025).clamp(16.0, 24.0);
         const minTopGap = 24.0;
         const minBottomGap = 24.0;
 
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: minTopGap),
-                  _buildBrand(),
-                  SizedBox(height: brandToTabs),
-                  _buildAuthTabs(),
-                  SizedBox(height: tabsToCard),
-                  AnimatedSlide(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: minTopGap),
+                AnimatedSlide(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOut,
+                  offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+                  child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeOut,
-                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: _mounted ? 1 : 0,
-                      child: _buildCard(),
-                    ),
+                    opacity: _mounted ? 1 : 0,
+                    child: _buildCard(),
                   ),
-                  const SizedBox(height: minBottomGap),
-                ],
-              ),
+                ),
+                const SizedBox(height: minBottomGap),
+              ],
             ),
           ),
         );
-      },
-    );
-  }
-
-  Widget _buildBrand() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withValues(alpha: 0.15),
-          ),
-          child: const Icon(
-            Icons.monitor_heart_outlined,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(width: 9),
-        const Text(
-          'Medico',
-          style: TextStyle(
-            fontSize: 16.5,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Tapping إنشاء حساب pushes Sign Up — the same destination the inline
-  /// "مستخدم جديد؟ إنشاء حساب" link used to carry, which is why that link is
-  /// gone. Tapping the already-active تسجيل الدخول is a no-op rather than a
-  /// self-push.
-  Widget _buildAuthTabs() {
-    return AuthTabSwitcher(
-      labels: const ['تسجيل الدخول', 'إنشاء حساب'],
-      selectedIndex: 0,
-      onSelected: (index) {
-        if (index == 0) return;
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
       },
     );
   }
@@ -919,39 +888,6 @@ class _SignInPageState extends State<SignInPage> {
         maxLines: 1,
         softWrap: false,
         style: const TextStyle(fontSize: 11.5, color: AuroraColors.muted),
-      ),
-    );
-  }
-}
-
-/// The 165° teal→blue canvas the whole screen sits on.
-class _GradientBackdrop extends StatelessWidget {
-  const _GradientBackdrop();
-
-  @override
-  Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(gradient: AuroraGradients.backdrop),
-      child: SizedBox.expand(),
-    );
-  }
-}
-
-/// Translucent decorative circle bleeding off the screen edges.
-class _SoftCircle extends StatelessWidget {
-  const _SoftCircle({required this.size, required this.opacity});
-
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }

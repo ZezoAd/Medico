@@ -8,22 +8,48 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
-import '../widgets/auth_tab_switcher.dart';
 import 'auth_gate.dart';
+import 'auth_shell.dart';
 import 'otp_verification_screen.dart';
 
 /// Sign-up screen matching the visual language of [SignInPage]: the same
 /// aurora teal→blue gradient canvas, decorative soft circles, brand row, and
 /// white card holding the form. Submitting creates the Supabase account and
 /// hands off to [OtpVerificationScreen] to verify the email address.
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  Widget build(BuildContext context) => const AuthShell(initialTab: 1);
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+/// The sign-up form, without any surrounding chrome.
+///
+/// Mirror of [SignInForm]: [AuthShell] owns the gradient, brand, tab switcher
+/// and banner slot, and hosts the two forms as the pages of one sliding
+/// [PageView]. This renders only what moves during a tab switch.
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key, required this.banner});
+
+  /// Where this form publishes its error banner for the shell to draw.
+  final AuthBannerSlot banner;
+
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm>
+    with AutomaticKeepAliveClientMixin {
+  /// Keeps this form mounted while the *other* tab is showing.
+  ///
+  /// A `PageView` builds pages lazily and drops them once they leave the
+  /// viewport, which for a form means its `TextEditingController`s go with it:
+  /// type an email, glance at the other tab, come back, and the field is
+  /// empty. Keeping both alive is also what lets the slide show two real forms
+  /// moving as one track instead of one form and a blank page.
+  @override
+  bool get wantKeepAlive => true;
+
   static final _emailPattern = RegExp(
     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
   );
@@ -71,6 +97,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   /// so it "breathes" proportionally instead of using one fixed pixel value
   /// that's cramped on small phones and stingy on large ones.
   double get _innerGap => (_screenHeight * 0.015).clamp(12.0, 24.0);
+
+  /// Republishes the banner on every state change — see the twin override in
+  /// [SignInForm] for why this hooks setState rather than each mutation site.
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    _publishBanner();
+  }
+
+  void _publishBanner() {
+    final banner = _banner;
+    widget.banner.value = banner == null
+        ? null
+        : AuthBannerData(
+            info: banner,
+            onDismiss: () => setState(() => _banner = null),
+          );
+  }
 
   @override
   void initState() {
@@ -301,163 +345,101 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        // Let the keyboard resize the body so the scroll view below can
-        // bring a focused field above it instead of the keyboard covering it.
-        resizeToAvoidBottomInset: true,
-        body: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          behavior: HitTestBehavior.opaque,
-          child: Stack(
-            children: [
-              const Positioned.fill(child: _GradientBackdrop()),
-              Positioned(
-                top: -120,
-                left: -100,
-                child: _SoftCircle(size: 280, opacity: 0.06),
-              ),
-              Positioned(
-                bottom: -80,
-                right: -70,
-                child: _SoftCircle(size: 220, opacity: 0.05),
-              ),
-              SafeArea(child: _buildForm()),
-              if (_banner != null)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: SafeArea(
-                    bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: AuthErrorBanner(
-                        message: _banner!.message,
-                        severity: _banner!.severity,
-                        onDismiss: () => setState(() => _banner = null),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // Required by AutomaticKeepAliveClientMixin.
+    super.build(context);
+    return _buildForm();
   }
 
+  /// Screens at least this tall show the form without a scroll view at all.
+  ///
+  /// Measured against the **screen** height, not `constraints.maxHeight`. The
+  /// form is a page inside the shell's `PageView`, so its own constraint is
+  /// the screen minus the brand and tab strip — roughly 135px less. Testing
+  /// the slot against 750 would put a 873pt device (the Tecno) at ~737 and
+  /// hand it a scroll view anyway, which is the exact case this threshold
+  /// exists to eliminate.
+  static const _minHeightForNonScrollable = 750.0;
+
   Widget _buildForm() {
-    // "Holy Grail" responsive pattern: LayoutBuilder feeds the viewport
-    // height to a ConstrainedBox(minHeight:) inside a SingleChildScrollView,
-    // so the content centres on tall screens and scrolls on short ones.
+    // Scrolling is opt-in by screen size: tall screens get a plain Column, so
+    // there is no scrollable to drag at all, and short ones keep the "Holy
+    // Grail" scroll view.
     //
-    // Centring is done with MainAxisAlignment.center rather than a pair of
-    // Spacers under an IntrinsicHeight. That earlier shape overflowed for the
-    // duration of every inline-error animation: IntrinsicHeight pinned the
-    // Column to the sum of its children's *target* intrinsic heights, while
-    // the error row's AnimatedSize was still painting an in-flight height on
-    // the way to that target. Dismissing the keyboard re-validates on blur
-    // and collapses those errors, which left the Column laid out shorter
-    // than what it was painting, with no Spacer slack left to absorb it.
-    //
-    // With no flex children the Column simply takes max(content, viewport)
-    // from the ConstrainedBox, so a mid-animation residual is free space
-    // rather than an overflow, and nothing queries intrinsics at all.
+    // The scrolling branch centres with MainAxisAlignment.center rather than a
+    // pair of Spacers under an IntrinsicHeight. That earlier shape overflowed
+    // for the duration of every inline-error animation: IntrinsicHeight pinned
+    // the Column to the sum of its children's *target* intrinsic heights,
+    // while the error row's AnimatedSize was still painting an in-flight
+    // height on the way to that target. Dismissing the keyboard re-validates
+    // on blur and collapses those errors, which left the Column laid out
+    // shorter than what it was painting, with no Spacer slack left to absorb
+    // it.
     //
     // minTopGap/minBottomGap are flat constants, never derived from
     // constraints or MediaQuery, so they can never shrink below 24px no
     // matter the screen size or content height.
     return LayoutBuilder(
       builder: (context, constraints) {
-        // The brand → card gap scales with the viewport instead of a fixed
-        // pixel value, and stays a plain SizedBox so it never flexes.
-        final midGap = (constraints.maxHeight * 0.02).clamp(14.0, 20.0);
-        final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
         const minTopGap = 24.0;
         const minBottomGap = 24.0;
+
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        // The threshold rises with the system font setting. A fixed 750 is
+        // right at default text size, but the content grows with the user's
+        // font scale while the screen does not — an 800pt device at 1.3x
+        // clears 750, takes the non-scrolling branch, and overflows by ~79px.
+        //
+        // Clamped at 1.15 rather than tracking the scale outright: an
+        // unclamped 1.3x would raise the bar to 975 and push genuinely tall
+        // screens (an 873pt device, where the content still fits at 1.3x)
+        // back onto a scroll view they do not need. 862 is high enough to
+        // catch the 800pt case and low enough to leave 873 alone.
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final threshold =
+            _minHeightForNonScrollable * textScale.clamp(1.0, 1.15);
+        final shouldEnableScroll = screenHeight < threshold;
+
+        final card = AnimatedSlide(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOut,
+          offset: _mounted ? Offset.zero : const Offset(0, 0.05),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 400),
+            opacity: _mounted ? 1 : 0,
+            child: _buildCard(),
+          ),
+        );
+
+        if (!shouldEnableScroll) {
+          // No scroll view in the tree at all — nothing to drag, and nothing
+          // that can report a scroll extent.
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: minTopGap),
+                card,
+                const SizedBox(height: minBottomGap),
+              ],
+            ),
+          );
+        }
 
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              // Extra bottom padding lets the scroll view carry a focused
-              // field above the keyboard instead of it hiding behind it.
-              padding: EdgeInsets.fromLTRB(20, 0, 20, keyboardInset),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: minTopGap),
-                  _buildBrand(),
-                  SizedBox(height: midGap),
-                  _buildAuthTabs(),
-                  SizedBox(height: midGap),
-                  AnimatedSlide(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeOut,
-                    offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 400),
-                      opacity: _mounted ? 1 : 0,
-                      child: _buildCard(),
-                    ),
-                  ),
-                  const SizedBox(height: minBottomGap),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: minTopGap),
+                card,
+                const SizedBox(height: minBottomGap),
+              ],
             ),
           ),
         );
       },
-    );
-  }
-
-  /// The mirror of Sign In's switcher, with إنشاء حساب active.
-  ///
-  /// تسجيل الدخول pops rather than pushing: Sign Up is always reached *from*
-  /// Sign In, so the previous route is the screen being asked for. Pushing a
-  /// fresh one would stack the two screens on top of each other and leave a
-  /// back gesture bouncing between duplicates.
-  Widget _buildAuthTabs() {
-    return AuthTabSwitcher(
-      labels: const ['تسجيل الدخول', 'إنشاء حساب'],
-      selectedIndex: 1,
-      onSelected: (index) {
-        if (index == 1) return;
-        Navigator.of(context).maybePop();
-      },
-    );
-  }
-
-  Widget _buildBrand() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withValues(alpha: 0.15),
-          ),
-          child: const Icon(
-            Icons.monitor_heart_outlined,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(width: 9),
-        const Text(
-          'Medico',
-          style: TextStyle(
-            fontSize: 16.5,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ],
     );
   }
 
@@ -871,40 +853,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// The 165° teal→blue canvas the whole screen sits on — mirrors
-/// [SignInPage]'s backdrop so both screens read as one continuous surface.
-class _GradientBackdrop extends StatelessWidget {
-  const _GradientBackdrop();
-
-  @override
-  Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(gradient: AuroraGradients.backdrop),
-      child: SizedBox.expand(),
-    );
-  }
-}
-
-/// Translucent decorative circle bleeding off the screen edges.
-class _SoftCircle extends StatelessWidget {
-  const _SoftCircle({required this.size, required this.opacity});
-
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }

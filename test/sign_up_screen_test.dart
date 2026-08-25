@@ -87,4 +87,83 @@ void main() {
     final checkedBox = tester.widget<Checkbox>(find.byType(Checkbox));
     expect(checkedBox.value, isTrue);
   });
+
+  group('scrolls only when the screen is short', () {
+    Future<int> scrollViewsAt(
+      WidgetTester tester,
+      Size size, {
+      double textScale = 1.0,
+    }) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(textScale)),
+            child: child!,
+          ),
+          home: const SignUpScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return tester.widgetList(find.byType(SingleChildScrollView)).length;
+    }
+
+    testWidgets('tall screens get no scroll view at all', (tester) async {
+      // 873 and 800 are the two logical heights a 1080x2400 Tecno reports,
+      // depending on the DPR Android picks for a 6.67" panel.
+      for (final size in const [
+        Size(393, 873),
+        Size(360, 800),
+        Size(412, 915),
+      ]) {
+        expect(
+          await scrollViewsAt(tester, size),
+          0,
+          reason: 'no scroll view expected at ${size.height}',
+        );
+        expect(tester.takeException(), isNull);
+      }
+    });
+
+    testWidgets('short screens still scroll rather than overflow', (
+      tester,
+    ) async {
+      for (final size in const [Size(375, 667), Size(320, 568)]) {
+        expect(
+          await scrollViewsAt(tester, size),
+          1,
+          reason: 'scroll view expected at ${size.height}',
+        );
+        expect(tester.takeException(), isNull);
+      }
+    });
+
+    testWidgets('a larger font setting scrolls a short screen', (tester) async {
+      // 800pt clears the flat 750 bar, but at 1.15x the content no longer
+      // fits — the threshold scales so this lands on a scroll view instead
+      // of overflowing by ~79px.
+      expect(await scrollViewsAt(tester, const Size(360, 800)), 0);
+      expect(
+        await scrollViewsAt(tester, const Size(360, 800), textScale: 1.3),
+        1,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a genuinely tall screen still does not scroll at 1.3x', (
+      tester,
+    ) async {
+      // The clamp keeps the bar low enough that an 873pt screen, where the
+      // content does still fit at 1.3x, is not pushed onto a scroll view.
+      expect(
+        await scrollViewsAt(tester, const Size(393, 873), textScale: 1.3),
+        0,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  });
 }
