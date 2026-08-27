@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#eceae5;font-family:"IBM Plex Sans Arabic",system-ui,sans-serif}
+a{color:#12776b}a:hover{color:#1E7FC6}
+@keyframes scIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scFade{from{opacity:0}to{opacity:1}}
+@keyframes scSlide{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</helmet>
+
+<section style="padding:44px 48px 40px;display:flex;gap:48px;align-items:flex-start">
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#0B2438;color:#fff;border-radius:4px">2a</span>
+      <span dir="rtl" style="font:600 13px/1.2 'IBM Plex Sans Arabic',system-ui,sans-serif;color:#0B2438">تعريف بثلاث شرائح + دخول وتسجيل وتحقق واستعادة · <span dir="ltr">1080×2400</span></span>
+    </div>
+
+    <div style="width:378px;height:818px;box-sizing:border-box;border-radius:48px;padding:9px;background:#15202b;box-shadow:0 34px 70px -22px rgba(11,36,56,.55),0 0 0 1px rgba(255,255,255,.06) inset">
+      <div dir="rtl" style="position:relative;width:360px;height:800px;border-radius:40px;overflow:hidden;background:linear-gradient(163deg,#0FA57C 0%,#0D9E97 36%,#1492C1 70%,#1E7FC6 100%);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif">
+
+        <div style="position:absolute;top:-80px;left:-70px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.13)"></div>
+        <div style="position:absolute;top:180px;right:-110px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+
+        <div style="position:relative;display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 22px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em">
+          <span>٩:٤١</span>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="display:block;width:16px;height:10px;border-radius:2px;border:1.5px solid rgba(255,255,255,.9)"></span>
+            <span style="display:block;width:4px;height:4px;border-radius:50%;background:#fff"></span>
+            <span style="display:block;width:4px;height:7px;border-radius:1px;background:#fff"></span>
+            <span style="display:block;width:4px;height:10px;border-radius:1px;background:#fff"></span>
+          </div>
+        </div>
+
+        <div key="{{ screen }}" style="position:relative;height:756px;animation:scFade .28s ease both">
+
+          <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;height:100%;padding:6px 24px 26px;box-sizing:border-box">
+
+              <div style="flex:1;display:flex;align-items:center;animation:scIn .5s ease both">
+                <div style="width:100%;height:330px;border-radius:30px;border:1px solid rgba(255,255,255,.26);background:rgba(255,255,255,.10);box-shadow:0 20px 40px -22px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:18px;box-sizing:border-box;overflow:hidden">
+                  <div style="width:104px;height:104px;border-radius:32px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.38);display:grid;place-items:center;box-shadow:0 20px 40px -20px rgba(0,0,0,.5)">
+                    <div style="position:relative;width:48px;height:48px">
+                      <span style="position:absolute;top:18px;left:0;width:48px;height:12px;border-radius:6px;background:#fff"></span>
+                      <span style="position:absolute;left:18px;top:0;width:12px;height:48px;border-radius:6px;background:#fff"></span>
+                    </div>
+                  </div>
+                  <div style="text-align:center">
+                    <div dir="ltr" style="font-size:30px;font-weight:700;color:#fff;letter-spacing:-.02em">Medico</div>
+                    <div style="margin-top:9px;font-size:13.5px;font-weight:300;color:rgba(255,255,255,.85)">رفيقك في كل موعد طبي</div>
+                  </div>
+                </div>
+              </div>
+
+              <sc-if value="{{ showTrust }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;justify-content:center;gap:18px;margin-bottom:18px;color:rgba(255,255,255,.8);font-size:11.5px">
+                  <span>+٢٤٠٠ طبيب</span>
+                  <span style="opacity:.5">·</span>
+                  <span>حجز فوري</span>
+                  <span style="opacity:.5">·</span>
+                  <span>بيانات مشفّرة</span>
+                </div>
+              </sc-if>
+
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <button onClick="{{ goSignup }}" style="width:100%;height:56px;border:0;border-radius:18px;background:#fff;color:#0E7F6E;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 14px 28px -14px rgba(0,0,0,.45);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">إنشاء حساب جديد</button>
+                <button onClick="{{ goSignin }}" style="width:100%;height:56px;border:1px solid rgba(255,255,255,.55);border-radius:18px;background:rgba(255,255,255,.12);color:#fff;font-family:inherit;font-size:16px;font-weight:500;cursor:pointer;transition:background .15s ease" style-hover="background:rgba(255,255,255,.22)">تسجيل الدخول</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSignin }}">
+            <div style="display:flex;flex-direction:column;height:100%">
+              <div style="padding:30px 28px 26px">
+                <div style="font-size:27px;font-weight:700;color:#fff">أهلاً بعودتك</div>
+                <div style="margin-top:6px;font-size:14px;font-weight:300;color:rgba(255,255,255,.86)">سجّل دخولك لمتابعة مواعيدك</div>
+              </div>
+
+              <div style="flex:1;min-height:0;background:#fff;border-radius:34px 34px 0 0;padding:24px 28px 20px;box-sizing:border-box;display:flex;flex-direction:column;animation:scIn .4s ease both">
+
+                <sc-if value="{{ banner }}">
+                  <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:16px;padding:12px 14px;border-radius:14px;background:{{ bannerBg }};border:1px solid {{ bannerBorder }}">
+                    <span style="flex:none;width:7px;height:7px;margin-top:6px;border-radius:50%;background:{{ bannerDot }}"></span>
+                    <span style="font-size:12.5px;line-height:1.6;color:{{ bannerText }};font-weight:400">{{ banner }}</span>
+                  </div>
+                </sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin-bottom:7px">البريد الإلكتروني</label>
+                <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="أدخل بريدك الإلكتروني" style="width:100%;height:50px;box-sizing:border-box;padding:0 16px;border-radius:16px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                <sc-if value="{{ emailError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ emailError }}</div></sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin:13px 0 7px">كلمة المرور</label>
+                <div style="position:relative">
+                  <input type="{{ pwType }}" value="{{ password }}" onChange="{{ setPassword }}" placeholder="أدخل كلمة المرور" style="width:100%;height:50px;box-sizing:border-box;padding:0 16px 0 62px;border-radius:16px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                  <button onClick="{{ togglePw }}" style="position:absolute;left:8px;top:7px;height:36px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#0E8F79;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">{{ pwLabel }}</button>
+                </div>
+                <sc-if value="{{ passwordError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ passwordError }}</div></sc-if>
+
+                <div style="display:flex;margin-top:11px">
+                  <button onClick="{{ goForgot }}" style="border:0;background:transparent;padding:0;color:#0E8F79;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer" style-hover="color:#1E7FC6">نسيت كلمة المرور؟</button>
+                </div>
+
+                <button onClick="{{ submitSignin }}" style="margin-top:16px;width:100%;height:54px;border:0;border-radius:18px;background:linear-gradient(270deg,#0FA57C 0%,#0D9E97 50%,#1E7FC6 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 16px 30px -14px rgba(15,140,140,.55);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">{{ signinLabel }}</button>
+
+                <div style="display:flex;align-items:center;gap:12px;margin:14px 0 12px">
+                  <span style="flex:1;height:1px;background:#E6ECEB"></span>
+                  <span style="font-size:12px;color:#8C9A9E">أو</span>
+                  <span style="flex:1;height:1px;background:#E6ECEB"></span>
+                </div>
+
+                <button onClick="{{ google }}" style="width:100%;height:50px;border:1.5px solid #DDE5E4;border-radius:16px;background:#fff;color:#0B2438;font-family:inherit;font-size:14.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s ease,background .15s ease" style-hover="border-color:#0FA57C;background:#F7FBFA">
+                  <span style="width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid #E6ECEB;color:#4285F4;font:700 13px system-ui,sans-serif;display:grid;place-items:center">G</span>
+                  <span>تسجيل الدخول باستخدام Google</span>
+                </button>
+
+                <div style="flex:1"></div>
+                <div style="text-align:center;font-size:13.5px;color:#5A7386;font-weight:300">
+                  ليس لديك حساب؟
+                  <button onClick="{{ goSignup }}" style="border:0;background:transparent;padding:0 4px;color:#0E8F79;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer">أنشئ حسابًا</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSignup }}">
+            <div style="display:flex;flex-direction:column;height:100%">
+              <div style="padding:30px 28px 22px">
+                <div style="font-size:26px;font-weight:700;color:#fff">إنشاء حساب</div>
+                <div style="margin-top:6px;font-size:13.5px;font-weight:300;color:rgba(255,255,255,.86)">خطوة واحدة وتبدأ الحجز</div>
+              </div>
+
+              <div style="flex:1;min-height:0;background:#fff;border-radius:34px 34px 0 0;padding:22px 28px 16px;box-sizing:border-box;display:flex;flex-direction:column;animation:scIn .4s ease both">
+
+                <sc-if value="{{ banner }}">
+                  <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:12px;padding:11px 13px;border-radius:14px;background:{{ bannerBg }};border:1px solid {{ bannerBorder }}">
+                    <span style="flex:none;width:7px;height:7px;margin-top:5px;border-radius:50%;background:{{ bannerDot }}"></span>
+                    <span style="font-size:12px;line-height:1.55;color:{{ bannerText }}">{{ banner }}</span>
+                  </div>
+                </sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin-bottom:7px">الاسم الكامل</label>
+                <input value="{{ name }}" onChange="{{ setName }}" placeholder="مثال: سارة العامري" style="width:100%;height:46px;box-sizing:border-box;padding:0 16px;border-radius:15px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                <sc-if value="{{ nameError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ nameError }}</div></sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin:11px 0 7px">البريد الإلكتروني</label>
+                <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="أدخل بريدك الإلكتروني" style="width:100%;height:46px;box-sizing:border-box;padding:0 16px;border-radius:15px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                <sc-if value="{{ emailError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ emailError }}</div></sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin:11px 0 7px">كلمة المرور</label>
+                <div style="position:relative">
+                  <input type="{{ pwType }}" value="{{ password }}" onChange="{{ setPassword }}" placeholder="٨ أحرف على الأقل" style="width:100%;height:46px;box-sizing:border-box;padding:0 16px 0 62px;border-radius:15px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                  <button onClick="{{ togglePw }}" style="position:absolute;left:8px;top:5px;height:36px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#0E8F79;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">{{ pwLabel }}</button>
+                </div>
+                <div style="display:flex;gap:5px;margin-top:8px">
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar1 }}"></span>
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar2 }}"></span>
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar3 }}"></span>
+                </div>
+                <sc-if value="{{ passwordError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ passwordError }}</div></sc-if>
+
+                <div onClick="{{ toggleTerms }}" style="display:flex;align-items:flex-start;gap:10px;margin-top:11px;cursor:pointer">
+                  <span style="flex:none;width:20px;height:20px;margin-top:1px;border-radius:6px;border:1.5px solid #C3D0CE;background:{{ termsBg }};color:#fff;font-size:12px;display:grid;place-items:center">{{ termsMark }}</span>
+                  <span style="font-size:12px;line-height:1.6;color:#5A7386;font-weight:300">أوافق على <span style="color:#0E8F79;font-weight:500">شروط الاستخدام</span> و<span style="color:#0E8F79;font-weight:500">سياسة الخصوصية</span></span>
+                </div>
+                <sc-if value="{{ termsError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ termsError }}</div></sc-if>
+
+                <button onClick="{{ submitSignup }}" style="margin-top:11px;width:100%;height:52px;border:0;border-radius:18px;background:linear-gradient(270deg,#0FA57C 0%,#0D9E97 50%,#1E7FC6 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 16px 30px -14px rgba(15,140,140,.55);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">{{ signupLabel }}</button>
+
+                <div style="display:flex;align-items:center;gap:12px;margin:11px 0 9px">
+                  <span style="flex:1;height:1px;background:#E6ECEB"></span>
+                  <span style="font-size:12px;color:#8C9A9E">أو</span>
+                  <span style="flex:1;height:1px;background:#E6ECEB"></span>
+                </div>
+
+                <button onClick="{{ google }}" style="width:100%;height:48px;border:1.5px solid #DDE5E4;border-radius:16px;background:#fff;color:#0B2438;font-family:inherit;font-size:14.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s ease,background .15s ease" style-hover="border-color:#0FA57C;background:#F7FBFA">
+                  <span style="width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid #E6ECEB;color:#4285F4;font:700 13px system-ui,sans-serif;display:grid;place-items:center">G</span>
+                  <span>إنشاء حساب باستخدام Google</span>
+                </button>
+
+                <div style="flex:1"></div>
+                <div style="text-align:center;font-size:13px;color:#5A7386;font-weight:300">
+                  لديك حساب بالفعل؟
+                  <button onClick="{{ goSignin }}" style="border:0;background:transparent;padding:0 4px;color:#0E8F79;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer">تسجيل الدخول</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isOtp }}">
+            <div style="display:flex;flex-direction:column;height:100%">
+              <div style="padding:12px 28px 24px">
+                <button onClick="{{ goSignup }}" style="width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:17px;line-height:1;cursor:pointer;font-family:inherit">‹</button>
+                <div style="margin-top:16px;font-size:26px;font-weight:700;color:#fff">تأكيد البريد</div>
+                <div style="margin-top:6px;font-size:14px;font-weight:300;color:rgba(255,255,255,.86);line-height:1.7">أرسلنا رمزًا من ٦ أرقام إلى<br><span dir="ltr" style="display:inline-block;font-weight:500;color:#fff">{{ emailShown }}</span></div>
+              </div>
+
+              <div style="flex:1;min-height:0;background:#fff;border-radius:34px 34px 0 0;padding:30px 26px 20px;box-sizing:border-box;display:flex;flex-direction:column;animation:scIn .4s ease both">
+                <div dir="ltr" style="display:flex;gap:9px;justify-content:center">
+                  <sc-for list="{{ otpCells }}" as="cell" hint-placeholder-count="6">
+                    <input value="{{ cell.v }}" onChange="{{ cell.on }}" maxlength="1" style="width:44px;height:56px;box-sizing:border-box;text-align:center;border-radius:15px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:22px;font-weight:600;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                  </sc-for>
+                </div>
+                <sc-if value="{{ otpError }}"><div style="margin-top:10px;text-align:center;font-size:12px;color:#C0392B">{{ otpError }}</div></sc-if>
+
+                <button onClick="{{ submitOtp }}" style="margin-top:26px;width:100%;height:54px;border:0;border-radius:18px;background:linear-gradient(270deg,#0FA57C 0%,#0D9E97 50%,#1E7FC6 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 16px 30px -14px rgba(15,140,140,.55);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">تأكيد الرمز</button>
+
+                <div style="margin-top:20px;text-align:center;font-size:13px;color:#5A7386;font-weight:300">{{ resendText }}</div>
+                <sc-if value="{{ canResend }}">
+                  <div style="margin-top:8px;text-align:center">
+                    <button onClick="{{ resend }}" style="border:0;background:transparent;padding:6px;color:#0E8F79;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer">إعادة إرسال الرمز</button>
+                  </div>
+                </sc-if>
+
+                <div style="flex:1"></div>
+                <div style="text-align:center;font-size:12.5px;color:#8C9A9E;font-weight:300;line-height:1.7">تحقّق من مجلد الرسائل غير المرغوب فيها<br>إن لم يصلك الرمز</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isForgot }}">
+            <div style="display:flex;flex-direction:column;height:100%">
+              <div style="padding:12px 28px 24px">
+                <button onClick="{{ goSignin }}" style="width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:17px;line-height:1;cursor:pointer;font-family:inherit">‹</button>
+                <div style="margin-top:16px;font-size:26px;font-weight:700;color:#fff">استعادة كلمة المرور</div>
+                <div style="margin-top:6px;font-size:14px;font-weight:300;color:rgba(255,255,255,.86);line-height:1.7">أدخل بريدك وسنرسل لك رابطًا<br>لإعادة تعيين كلمة المرور</div>
+              </div>
+
+              <div style="flex:1;min-height:0;background:#fff;border-radius:34px 34px 0 0;padding:28px 28px 20px;box-sizing:border-box;display:flex;flex-direction:column;animation:scIn .4s ease both">
+                <sc-if value="{{ banner }}">
+                  <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:16px;padding:12px 14px;border-radius:14px;background:{{ bannerBg }};border:1px solid {{ bannerBorder }}">
+                    <span style="flex:none;width:7px;height:7px;margin-top:6px;border-radius:50%;background:{{ bannerDot }}"></span>
+                    <span style="font-size:12.5px;line-height:1.6;color:{{ bannerText }}">{{ banner }}</span>
+                  </div>
+                </sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin-bottom:7px">البريد الإلكتروني</label>
+                <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="أدخل بريدك الإلكتروني" style="width:100%;height:50px;box-sizing:border-box;padding:0 16px;border-radius:16px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                <sc-if value="{{ emailError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ emailError }}</div></sc-if>
+
+                <button onClick="{{ submitForgot }}" style="margin-top:20px;width:100%;height:54px;border:0;border-radius:18px;background:linear-gradient(270deg,#0FA57C 0%,#0D9E97 50%,#1E7FC6 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 16px 30px -14px rgba(15,140,140,.55);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">إرسال الرابط</button>
+
+                <div style="flex:1"></div>
+                
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isReset }}">
+            <div style="display:flex;flex-direction:column;height:100%">
+              <div style="padding:12px 28px 24px">
+                <button onClick="{{ goForgot }}" style="width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:17px;line-height:1;cursor:pointer;font-family:inherit">‹</button>
+                <div style="margin-top:16px;font-size:26px;font-weight:700;color:#fff">كلمة مرور جديدة</div>
+                <div style="margin-top:6px;font-size:14px;font-weight:300;color:rgba(255,255,255,.86)">اختر كلمة مرور قوية لا تستخدمها في مكان آخر</div>
+              </div>
+
+              <div style="flex:1;min-height:0;background:#fff;border-radius:34px 34px 0 0;padding:26px 28px 20px;box-sizing:border-box;display:flex;flex-direction:column;animation:scIn .4s ease both">
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin-bottom:7px">كلمة المرور الجديدة</label>
+                <div style="position:relative">
+                  <input type="{{ pwType }}" value="{{ password }}" onChange="{{ setPassword }}" placeholder="٨ أحرف على الأقل" style="width:100%;height:50px;box-sizing:border-box;padding:0 16px 0 62px;border-radius:16px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                  <button onClick="{{ togglePw }}" style="position:absolute;left:8px;top:7px;height:36px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#0E8F79;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">{{ pwLabel }}</button>
+                </div>
+                <div style="display:flex;gap:5px;margin-top:8px">
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar1 }}"></span>
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar2 }}"></span>
+                  <span style="flex:1;height:4px;border-radius:2px;background:{{ bar3 }}"></span>
+                </div>
+                <sc-if value="{{ passwordError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ passwordError }}</div></sc-if>
+
+                <label style="display:block;font-size:13px;font-weight:500;color:#0B2438;margin:14px 0 7px">تأكيد كلمة المرور</label>
+                <input type="{{ pwType }}" value="{{ confirm }}" onChange="{{ setConfirm }}" placeholder="أعد كتابة كلمة المرور" style="width:100%;height:50px;box-sizing:border-box;padding:0 16px;border-radius:16px;border:1.5px solid #E3EBEA;background:#F2F7F6;font-family:inherit;font-size:14.5px;color:#0B2438;outline:none" style-focus="border-color:#0FA57C;background:#fff">
+                <sc-if value="{{ confirmError }}"><div style="margin-top:5px;font-size:11.5px;color:#C0392B">{{ confirmError }}</div></sc-if>
+
+                <button onClick="{{ submitReset }}" style="margin-top:20px;width:100%;height:54px;border:0;border-radius:18px;background:linear-gradient(270deg,#0FA57C 0%,#0D9E97 50%,#1E7FC6 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 16px 30px -14px rgba(15,140,140,.55);transition:transform .15s ease" style-hover="transform:translateY(-1px)" style-active="transform:translateY(1px)">تحديث كلمة المرور</button>
+
+                <div style="flex:1"></div>
+                <div style="text-align:center;font-size:12.5px;color:#8C9A9E;font-weight:300">سيتم إخراجك من الأجهزة الأخرى بعد التحديث</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isDone }}">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 34px;box-sizing:border-box;text-align:center;gap:22px;animation:scIn .45s ease both">
+              <div style="width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);display:grid;place-items:center;color:#fff;font-size:38px;font-weight:300">✓</div>
+              <div style="font-size:24px;font-weight:700;color:#fff">{{ doneTitle }}</div>
+              <div style="font-size:14.5px;line-height:1.75;font-weight:300;color:rgba(255,255,255,.88)">{{ doneBody }}</div>
+              <button onClick="{{ goWelcome }}" style="margin-top:6px;height:52px;padding:0 30px;border:1px solid rgba(255,255,255,.55);border-radius:16px;background:rgba(255,255,255,.14);color:#fff;font-family:inherit;font-size:15px;font-weight:500;cursor:pointer" style-hover="background:rgba(255,255,255,.24)">عودة إلى البداية</button>
+            </div>
+          </sc-if>
+
+        </div>
+
+        <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.55)"></div>
+      </div>
+    </div>
+
+    <div dir="rtl" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;width:378px">
+      <button onClick="{{ goWelcome }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">تعريف</button>
+      <button onClick="{{ goSignin }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">دخول</button>
+      <button onClick="{{ goSignup }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">تسجيل</button>
+      <button onClick="{{ goOtp }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">تحقّق</button>
+      <button onClick="{{ goForgot }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">نسيت</button>
+      <button onClick="{{ goReset }}" style="padding:7px 13px;border-radius:9px;border:1px solid rgba(11,36,56,.14);background:#fff;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:#0B2438;cursor:pointer" style-hover="border-color:#0FA57C">إعادة تعيين</button>
+      <button onClick="{{ toggleOffline }}" style="padding:7px 13px;border-radius:9px;border:1px solid {{ offlineBorder }};background:{{ offlineBg }};font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;color:{{ offlineColor }};cursor:pointer">{{ offlineLabel }}</button>
+    </div>
+  </div>
+
+  <div dir="rtl" style="width:320px;text-align:right;font:400 13px/1.8 'IBM Plex Sans Arabic',system-ui,sans-serif;color:#3d4a54;display:flex;flex-direction:column;gap:18px;padding-top:34px">
+    <div>
+      <div style="font-weight:600;color:#0B2438;margin-bottom:6px">ما تغيّر</div>
+      شاشة الترحيب صارت ساكنة: لوحة زجاجية واحدة في المنتصف تحمل الشعار والاسم وسطرًا تعريفيًا تحته، ثم زرّان فقط. حُذفت الشرائح الثلاث ونقاطها. زر Google في النماذج أسفل فاصل «أو»، والبريد وكلمة المرور هما الأساس.
+    </div>
+    <div>
+      <div style="font-weight:600;color:#0B2438;margin-bottom:6px">التدفّق</div>
+      تعريف ← تسجيل ← تحقّق بالرمز ← تم. وللعائدين: دخول ← نسيت ← إعادة تعيين ← تم. الرمز يُطلب بعد التسجيل بالبريد فقط، لا بعد Google.
+    </div>
+    <div>
+      <div style="font-weight:600;color:#0B2438;margin-bottom:6px">لتجربة الحالات</div>
+      كلمة المرور <span dir="ltr" style="display:inline-block;font-family:ui-monospace,monospace;font-size:11.5px">medico2026</span> تنجح، وأي كلمة أخرى تُظهر خطأ «بيانات غير صحيحة». زر «بلا اتصال» يحوّل كل إرسال إلى حالة انقطاع الشبكة. الرمز الصحيح <span dir="ltr" style="display:inline-block;font-family:ui-monospace,monospace;font-size:11.5px">123456</span>.
+    </div>
+    <div>
+      <div style="font-weight:600;color:#0B2438;margin-bottom:6px">اللوحة الوسطى</div>
+      علامة الشعار مؤقتة (صليب طبي بأشكال بسيطة). أرسل ملف الشعار وسأركّبه في المكان نفسه؛ اللوحة <span dir="ltr" style="display:inline-block">312×330</span>، والعلامة داخلها <span dir="ltr" style="display:inline-block">104×104</span>.
+    </div>
+    <div style="border-top:1px solid rgba(11,36,56,.12);padding-top:14px;color:#6a7681">
+      <div style="font-weight:600;color:#0B2438;margin-bottom:6px">الخطوات التالية</div>
+      شعار Google الرسمي، حالة تحميل على الأزرار، وشاشة «تم إرسال الرابط» بين نسيت وإعادة التعيين.
+    </div>
+  </div>
+
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;welcome&quot;,&quot;signin&quot;,&quot;signup&quot;,&quot;otp&quot;,&quot;forgot&quot;,&quot;reset&quot;],&quot;default&quot;:&quot;welcome&quot;,&quot;tsType&quot;:&quot;'welcome'|'signin'|'signup'|'otp'|'forgot'|'reset'&quot;,&quot;section&quot;:&quot;سلوك&quot;},&quot;strictValidation&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;سلوك&quot;},&quot;showTrustRow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;محتوى&quot;}}">
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    this.state = { screen: p.startScreen || 'welcome', slide:0, email:'', password:'', confirm:'', name:'',
+      otp:['','','','','',''], showPw:false, terms:false, touched:false, otpTouched:false,
+      banner:'', bannerKind:'error', offline:false, resend:30, done:'' };
+  }
+  componentDidMount(){
+    this.sec = setInterval(() => {
+      this.setState(s => (s.screen === 'otp' && s.resend > 0) ? { resend: s.resend - 1 } : null);
+    }, 1000);
+  }
+  componentWillUnmount(){ clearInterval(this.sec); }
+  go(s){ this.setState({ screen:s, touched:false, otpTouched:false, banner:'' }); }
+  strength(){
+    const p = this.state.password; let s = 0;
+    if (p.length >= 8) s++;
+    if (/[A-Za-z]/.test(p) && /[0-9]/.test(p)) s++;
+    if (p.length >= 12 || /[^A-Za-z0-9]/.test(p)) s++;
+    return p ? Math.max(1, s) : 0;
+  }
+  errs(mode){
+    const s = this.state;
+    if (!s.touched) return {};
+    const o = {}, strict = this.props.strictValidation !== false;
+    if (!s.email.trim()) o.emailError = 'البريد الإلكتروني مطلوب';
+    else if (strict && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(s.email)) o.emailError = 'صيغة البريد غير صحيحة';
+    if (mode !== 'forgot'){
+      if (!s.password) o.passwordError = 'كلمة المرور مطلوبة';
+      else if (strict && s.password.length < 8) o.passwordError = 'يجب أن تكون ٨ أحرف على الأقل';
+    }
+    if (mode === 'signup'){
+      if (!s.name.trim()) o.nameError = 'الاسم مطلوب';
+      if (!s.terms) o.termsError = 'يلزم الموافقة على الشروط';
+    }
+    if (mode === 'reset'){
+      if (!s.confirm) o.confirmError = 'أعد كتابة كلمة المرور';
+      else if (s.confirm !== s.password) o.confirmError = 'الكلمتان غير متطابقتين';
+    }
+    return o;
+  }
+  submit(mode){
+    this.setState({ touched:true, banner:'' }, () => {
+      if (Object.keys(this.errs(mode)).length) return;
+      if (this.state.offline){
+        this.setState({ banner:'لا يوجد اتصال بالإنترنت. تحقّق من الشبكة ثم أعد المحاولة.', bannerKind:'warn' });
+        return;
+      }
+      if (mode === 'signin' && this.state.password !== 'medico2026'){
+        this.setState({ banner:'البريد الإلكتروني أو كلمة المرور غير صحيحة.', bannerKind:'error' });
+        return;
+      }
+      if (mode === 'signup'){ this.setState({ screen:'otp', touched:false, resend:30, otp:['','','','','',''] }); return; }
+      if (mode === 'forgot'){ this.setState({ screen:'reset', touched:false, password:'', confirm:'' }); return; }
+      this.setState({ screen:'done', done:mode, touched:false });
+    });
+  }
+  submitOtp(){
+    const code = this.state.otp.join('');
+    this.setState({ otpTouched:true }, () => {
+      if (code.length === 6 && (code === '123456' || this.props.strictValidation === false))
+        this.setState({ screen:'done', done:'signup', otpTouched:false });
+    });
+  }
+  setOtp(i, v){
+    const d = (v || '').replace(/[^0-9]/g,'').slice(-1);
+    const otp = this.state.otp.slice(); otp[i] = d;
+    this.setState({ otp });
+  }
+  renderVals(){
+    const s = this.state;
+    const mode = s.screen === 'signup' ? 'signup' : s.screen === 'forgot' ? 'forgot' : s.screen === 'reset' ? 'reset' : 'signin';
+    const e = this.errs(mode), st = this.strength();
+    const bar = i => st >= i ? (st === 1 ? '#E0A33C' : st === 2 ? '#0D9E97' : '#0FA57C') : '#E6ECEF';
+    const otpCode = s.otp.join('');
+    const bk = s.bannerKind === 'warn';
+    return {
+      screen: s.screen,
+      isWelcome: s.screen === 'welcome', isSignin: s.screen === 'signin', isSignup: s.screen === 'signup',
+      isOtp: s.screen === 'otp', isForgot: s.screen === 'forgot', isReset: s.screen === 'reset', isDone: s.screen === 'done',
+      showTrust: this.props.showTrustRow !== false,
+      email: s.email, password: s.password, confirm: s.confirm, name: s.name,
+      emailShown: s.email || 'name@email.com',
+      pwType: s.showPw ? 'text' : 'password',
+      pwLabel: s.showPw ? 'إخفاء' : 'إظهار',
+      termsBg: s.terms ? '#0FA57C' : '#fff', termsMark: s.terms ? '✓' : '',
+      bar1: bar(1), bar2: bar(2), bar3: bar(3),
+      emailError: e.emailError || '', passwordError: e.passwordError || '',
+      nameError: e.nameError || '', termsError: e.termsError || '', confirmError: e.confirmError || '',
+      banner: s.banner,
+      bannerBg: bk ? '#FFF8EC' : '#FDECEA', bannerBorder: bk ? '#F2DDB8' : '#F5C9C3',
+      bannerDot: bk ? '#D08700' : '#C0392B', bannerText: bk ? '#7A5300' : '#93231A',
+      signinLabel: 'تسجيل الدخول', signupLabel: 'إنشاء الحساب',
+      otpCells: s.otp.map((v, i) => ({ v, on: ev => this.setOtp(i, ev.target.value) })),
+      otpError: s.otpTouched ? (otpCode.length < 6 ? 'أدخل الأرقام الستة كاملة' : (otpCode !== '123456' ? 'الرمز غير صحيح، تحقّق وأعد المحاولة' : '')) : '',
+      resendText: s.resend > 0 ? 'يمكنك إعادة الإرسال بعد ' + s.resend + ' ثانية' : 'لم يصلك الرمز؟',
+      canResend: s.resend === 0,
+      resend: () => this.setState({ resend:30, otp:['','','','','',''], otpTouched:false }),
+      offline: s.offline,
+      offlineLabel: s.offline ? 'بلا اتصال ✓' : 'بلا اتصال',
+      offlineBg: s.offline ? '#FFF8EC' : '#fff',
+      offlineBorder: s.offline ? '#E5C98F' : 'rgba(11,36,56,.14)',
+      offlineColor: s.offline ? '#7A5300' : '#0B2438',
+      toggleOffline: () => this.setState({ offline: !s.offline, banner:'' }),
+      doneTitle: s.done === 'google' ? 'تم الربط بحساب Google' : s.done === 'reset' ? 'تم تحديث كلمة المرور' : s.done === 'signup' ? 'تم تأكيد حسابك' : 'تم تسجيل الدخول',
+      doneBody: s.done === 'signin' ? 'مواعيدك القادمة جاهزة في لوحتك.' : s.done === 'reset' ? 'يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.' : 'أهلًا بك في Medico. اختر التخصص واحجز أول موعد.',
+      setEmail: ev => this.setState({ email: ev.target.value }),
+      setPassword: ev => this.setState({ password: ev.target.value }),
+      setConfirm: ev => this.setState({ confirm: ev.target.value }),
+      setName: ev => this.setState({ name: ev.target.value }),
+      togglePw: () => this.setState({ showPw: !s.showPw }),
+      toggleTerms: () => this.setState({ terms: !s.terms }),
+      goWelcome: () => this.go('welcome'), goSignin: () => this.go('signin'), goSignup: () => this.go('signup'),
+      goOtp: () => this.go('otp'), goForgot: () => this.go('forgot'), goReset: () => this.go('reset'),
+      google: () => this.setState({ screen:'done', done:'google', touched:false, banner:'' }),
+      submitSignin: () => this.submit('signin'), submitSignup: () => this.submit('signup'),
+      submitForgot: () => this.submit('forgot'), submitReset: () => this.submit('reset'),
+      submitOtp: () => this.submitOtp()
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -111,7 +111,66 @@ abstract final class AuroraColors {
   static const mutedDark = Color(0xFF7C948E);
 }
 
-/// The two gradients in the app. They are genuinely different treatments and
+/// The auth surface's own palette.
+///
+/// Deliberately separate from [AuroraColors] rather than folded into it. The
+/// app runs a two-surface system: Aurora for the in-app product (Home, queue
+/// card, onboarding, empty states) and this for the brand/auth screens —
+/// Welcome, Sign In, Sign Up, OTP. The two are close cousins, not the same
+/// set: the auth ink is a cool navy (#0B2438) where Aurora's is a warm
+/// blue-green (#122B28), and the field fill and hairlines shift with it.
+///
+/// Keeping them apart is what stops a future "tidy-up" from collapsing one
+/// into the other and quietly restyling Home. Nothing outside the auth
+/// screens should read these, and the auth screens should not read
+/// [AuroraColors]' text/field tokens.
+abstract final class AuthColors {
+  // The four gradient stops. Named for their position on the ramp, not for
+  // any semantic role — only [AuroraGradients.authHero] and
+  // [AuroraGradients.authButton] should paint with them.
+  static const green = Color(0xFF0FA57C);
+  static const teal = Color(0xFF0D9E97);
+  static const cyan = Color(0xFF1492C1);
+  static const blue = Color(0xFF1E7FC6);
+
+  /// Primary text on the white sheet.
+  static const ink = Color(0xFF0B2438);
+
+  /// Supporting copy — footer prompts, checkbox terms, resend timer.
+  static const secondary = Color(0xFF5A7386);
+
+  /// The quietest text tier: the "أو" divider label and the OTP spam-folder
+  /// hint.
+  static const muted = Color(0xFF8C9A9E);
+
+  /// Interactive text on white — "نسيت كلمة المرور؟", the footer links, the
+  /// password show/hide toggle. Darker than [green] so it holds at 13px.
+  static const link = Color(0xFF0E8F79);
+
+  /// The Welcome screen's primary button label, on solid white.
+  static const onWhiteButton = Color(0xFF0E7F6E);
+
+  /// Field fill at rest. Fields go white on focus.
+  static const fieldFill = Color(0xFFF2F7F6);
+  static const fieldBorder = Color(0xFFE3EBEA);
+
+  /// The Google button's resting border — a touch warmer than [fieldBorder],
+  /// because it sits on white rather than on a filled field.
+  static const outlineBorder = Color(0xFFDDE5E4);
+
+  /// The "أو" hairline.
+  static const divider = Color(0xFFE6ECEB);
+
+  /// The unchecked terms box.
+  static const checkboxBorder = Color(0xFFC3D0CE);
+
+  /// Inline field-level validation text. Not [AuroraColors.danger] — that red
+  /// is tuned against the Aurora palette and reads hotter than this surface
+  /// wants at 11.5px.
+  static const danger = Color(0xFFC0392B);
+}
+
+/// The four gradients in the app. They are genuinely different treatments and
 /// are not interchangeable.
 abstract final class AuroraGradients {
   /// The 135° two-stop brand gradient: blue at the start, green at the end.
@@ -135,6 +194,54 @@ abstract final class AuroraGradients {
       AuroraColors.primaryBlue,
     ],
     stops: [0.0, 0.55, 1.0],
+  );
+
+  /// The auth screens' full-screen canvas: CSS `linear-gradient(163deg,
+  /// #0FA57C 0%, #0D9E97 36%, #1492C1 70%, #1E7FC6 100%)`.
+  ///
+  /// A four-stop ramp, one stop longer than [backdrop], because it travels
+  /// further across the hue wheel — green all the way to a true blue rather
+  /// than green to the brand's blue — and three stops band visibly over 800pt
+  /// of phone.
+  ///
+  /// 163° in CSS is measured clockwise from "to top", so the axis points down
+  /// and slightly to the right: `(sin 163°, -cos 163°)` = `(0.29, 0.96)`,
+  /// which is the begin/end pair below. Absolute [Alignment], not
+  /// [AlignmentDirectional] — the ramp is a fixed physical diagonal and must
+  /// not mirror under the app's RTL directionality.
+  ///
+  /// Separate from [backdrop] on purpose. [backdrop] is consumed by the
+  /// in-app product surface and is locked; this is the auth/brand surface.
+  /// The two-gradient split is deliberate and permanent.
+  static const authHero = LinearGradient(
+    begin: Alignment(-0.29, -0.96),
+    end: Alignment(0.29, 0.96),
+    colors: [
+      AuthColors.green,
+      AuthColors.teal,
+      AuthColors.cyan,
+      AuthColors.blue,
+    ],
+    stops: [0.0, 0.36, 0.70, 1.0],
+  );
+
+  /// The auth screens' primary button: CSS `linear-gradient(270deg, #0FA57C
+  /// 0%, #0D9E97 50%, #1E7FC6 100%)`.
+  ///
+  /// 270° points to the left, so the 0% stop sits on the *right* edge —
+  /// green on the right, blue on the left. A different geometry from
+  /// [authHero]'s diagonal, which is why it is its own token rather than a
+  /// reuse: a button is 54pt tall and a diagonal ramp across it reads as a
+  /// smudge, where a horizontal one reads as a sweep.
+  ///
+  /// [AuthColors.cyan] is deliberately absent — over ~300pt of button width
+  /// three stops are plenty, and dropping it keeps the blue end from arriving
+  /// too early.
+  static const authButton = LinearGradient(
+    begin: Alignment.centerRight,
+    end: Alignment.centerLeft,
+    colors: [AuthColors.green, AuthColors.teal, AuthColors.blue],
+    stops: [0.0, 0.5, 1.0],
   );
 }
 

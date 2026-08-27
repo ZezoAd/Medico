@@ -491,8 +491,7 @@ class _CardContent extends StatelessWidget {
         // Only offered when the channel dropped but the device is still
         // online. Device-offline staleness gets no button — a retry there
         // can only fail.
-        if (isStale &&
-            card.stalenessReason == StalenessReason.channelDrop) ...[
+        if (isStale && card.stalenessReason == StalenessReason.channelDrop) ...[
           const SizedBox(height: AuroraSpacing.lg),
           _RetryButton(onPressed: card.onRetry),
         ],
@@ -576,10 +575,7 @@ class _QueueProgressBar extends StatelessWidget {
       borderRadius: BorderRadius.circular(AuroraRadius.pill),
       child: Stack(
         children: [
-          Container(
-            height: 8,
-            color: Colors.white.withValues(alpha: 0.24),
-          ),
+          Container(height: 8, color: Colors.white.withValues(alpha: 0.24)),
           Positioned.fill(
             child: AnimatedFractionallySizedBox(
               duration: AuroraMotion.standard,

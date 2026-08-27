@@ -8,6 +8,7 @@ import '../services/profile_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/auth_error_mapper.dart';
 import '../widgets/auth_error_banner.dart';
+import '../widgets/auth_surface.dart';
 import 'auth_gate.dart';
 
 enum _OtpStatus { empty, filling, loading, success, failure }
@@ -53,9 +54,10 @@ enum OtpPurpose {
   reVerification,
 }
 
-/// Six-digit email verification screen matching [SignInPage]'s visual
-/// language. The caller sends the first code immediately before pushing this
-/// screen, so screen entry starts the resend cooldown rather than a send.
+/// Six-digit email verification screen, in the auth surface's gradient-hero
+/// over white-sheet shape. The caller sends the first code immediately before
+/// pushing this screen, so screen entry starts the resend cooldown rather
+/// than a send.
 ///
 /// Which channel is used for both sending and verifying is decided entirely
 /// by [purpose] — see [OtpPurpose] for why one flow is not enough.
@@ -97,7 +99,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   String? _errorMessage;
   bool _resending = false;
   bool _sendFailed = false;
-  bool _mounted = false;
 
   /// When the code being verified was sent — the only thing that separates a
   /// mistyped code from an expired one, since Supabase reports both the same
@@ -124,9 +125,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     // `signUp` already sent the first code just before this screen was
     // pushed, so the cooldown starts on entry, not on the first resend.
     _startResendCooldown();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _mounted = true);
-    });
   }
 
   @override
@@ -291,138 +289,89 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: Stack(
-          children: [
-            const Positioned.fill(child: _GradientBackdrop()),
-            Positioned(
-              top: -120,
-              left: -100,
-              child: _SoftCircle(size: 280, opacity: 0.06),
+    return AuthSheetScaffold(
+      hero: _buildHero(),
+      sheetPadding: const EdgeInsets.fromLTRB(26, 30, 26, 20),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 350),
+        switchInCurve: Curves.easeOutBack,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(scale: animation, child: child),
+        ),
+        child: KeyedSubtree(
+          key: ValueKey(_status == _OtpStatus.success),
+          child: _status == _OtpStatus.success ? _buildSuccess() : _buildForm(),
+        ),
+      ),
+      // Hidden once the code is accepted: the success state owns the sheet
+      // for its 1200ms, and a spam-folder tip under a green checkmark is
+      // advice about a problem that no longer exists.
+      footer: _status == _OtpStatus.success ? null : _buildSpamHint(),
+    );
+  }
+
+  /// Back chevron, heading, and the address the code actually went to.
+  Widget _buildHero() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(28, 12, 28, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pops rather than pushing anything: this screen is always reached
+          // by a push — from Sign Up after `signUp`, or from Sign In's
+          // resend-a-code banner action — so back is whichever of those sent
+          // the person here.
+          AuthBackButton(onPressed: () => Navigator.of(context).maybePop()),
+          const SizedBox(height: 16),
+          Text(
+            'تأكيد البريد',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AuroraText.display(
+              size: 26,
+              weight: FontWeight.w700,
+              color: Colors.white,
             ),
-            Positioned(
-              bottom: -80,
-              right: -70,
-              child: _SoftCircle(size: 220, opacity: 0.05),
-            ),
-            SafeArea(child: _buildBody()),
-            if (_showBanner)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: AuthErrorBanner(
-                      message: _errorMessage!,
-                      onRetry: _bannerRetry,
-                      onDismiss: () => setState(() {
-                        _errorMessage = null;
-                        _sendFailed = false;
-                      }),
+          ),
+          const SizedBox(height: 6),
+          Text.rich(
+            TextSpan(
+              children: [
+                // Western digits, per the app-wide numerals default — the
+                // source file reads "٦ أرقام".
+                const TextSpan(text: 'أرسلنا رمزًا من 6 أرقام إلى\n'),
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  // The address is Latin text inside an Arabic sentence, so
+                  // it is force-wrapped LTR — otherwise the RTL run reorders
+                  // its dots and @ and shows the person an address that is
+                  // not the one the mail went to.
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      widget.email,
+                      style: AuroraText.body(
+                        size: 14,
+                        weight: FontWeight.w500,
+                        color: Colors.white,
+                        height: 1.7,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 44),
-          _buildBrand(),
-          const SizedBox(height: 20),
-          Expanded(
-            child: AnimatedSlide(
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOut,
-              offset: _mounted ? Offset.zero : const Offset(0, 0.05),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 400),
-                opacity: _mounted ? 1 : 0,
-                child: _buildCard(),
-              ),
+              ],
+            ),
+            style: AuroraText.body(
+              size: 14,
+              weight: FontWeight.w300,
+              color: Colors.white.withValues(alpha: 0.86),
+              height: 1.7,
             ),
           ),
-          const SizedBox(height: 24),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBrand() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withValues(alpha: 0.15),
-          ),
-          child: const Icon(
-            Icons.monitor_heart_outlined,
-            size: 18,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(width: 9),
-        const Text(
-          'Medico',
-          style: TextStyle(
-            fontSize: 16.5,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: AuroraColors.ink.withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: SingleChildScrollView(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 350),
-          switchInCurve: Curves.easeOutBack,
-          switchOutCurve: Curves.easeIn,
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: ScaleTransition(scale: animation, child: child),
-          ),
-          child: KeyedSubtree(
-            key: ValueKey(_status == _OtpStatus.success),
-            child: _status == _OtpStatus.success
-                ? _buildSuccess()
-                : _buildForm(),
-          ),
-        ),
       ),
     );
   }
@@ -434,47 +383,36 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'تحقق من بريدك الإلكتروني',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AuroraColors.ink,
-            height: 1.3,
+        // Inline at the top of the sheet, the same placement Sign In and Sign
+        // Up use — it no longer floats over the hero, where it covered the
+        // heading and the address.
+        if (_showBanner) ...[
+          AuthErrorBanner(
+            message: _errorMessage!,
+            onRetry: _bannerRetry,
+            onDismiss: () => setState(() {
+              _errorMessage = null;
+              _sendFailed = false;
+            }),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text.rich(
-          TextSpan(
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: AuroraColors.secondary,
-              height: 1.5,
-            ),
-            children: [
-              const TextSpan(text: 'أدخلنا رمزًا مكونًا من 6 أرقام إلى '),
-              TextSpan(
-                text: widget.email,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: AuroraColors.ink,
-                ),
-              ),
-            ],
-          ),
-        ),
+          const SizedBox(height: 20),
+        ],
+        _buildPinInput(disabled: disabled, hasError: hasError),
         if (widget.passwordUnchanged) ...[
-          const SizedBox(height: 14),
+          const SizedBox(height: 18),
           _buildPasswordUnchangedNote(),
         ],
-        const SizedBox(height: 24),
-        _buildPinInput(disabled: disabled, hasError: hasError),
-        const SizedBox(height: 24),
-        _buildVerifyButton(),
-        const SizedBox(height: 18),
-        _buildResendRow(),
+        const SizedBox(height: 26),
+        AuthPrimaryButton(
+          label: _status == _OtpStatus.loading ? 'جاري التحقق…' : 'تأكيد الرمز',
+          loading: _status == _OtpStatus.loading,
+          enabled: _isComplete,
+          onPressed: (_isComplete && _status != _OtpStatus.loading)
+              ? _verify
+              : null,
+        ),
+        const SizedBox(height: 20),
+        _buildResendBlock(),
       ],
     );
   }
@@ -487,32 +425,33 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Widget _buildPinInput({required bool disabled, required bool hasError}) {
     final defaultTheme = PinTheme(
       width: 44,
-      height: 52,
-      textStyle: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        color: AuroraColors.ink,
+      height: 56,
+      textStyle: AuroraText.body(
+        size: 22,
+        weight: FontWeight.w600,
+        color: AuthColors.ink,
       ),
       decoration: BoxDecoration(
-        color: AuroraColors.tonal,
-        borderRadius: BorderRadius.circular(12),
+        color: AuthColors.fieldFill,
+        borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: hasError ? AuroraColors.danger : AuroraColors.divider,
+          color: hasError ? AuthColors.danger : AuthColors.fieldBorder,
           width: 1.5,
         ),
       ),
     );
+    // Focus flips the fill to white as well as the border, matching every
+    // other field on the surface.
     final focusedTheme = defaultTheme.copyWith(
       decoration: BoxDecoration(
-        color: AuroraColors.tonal,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: hasError ? AuroraColors.danger : AuroraColors.primary,
-          width: 2,
+          color: hasError ? AuthColors.danger : AuthColors.green,
+          width: 1.5,
         ),
       ),
     );
-    final submittedTheme = defaultTheme;
 
     return Center(
       child: Directionality(
@@ -524,10 +463,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           enabled: !disabled,
           autofocus: true,
           keyboardType: TextInputType.number,
-          separatorBuilder: (_) => const SizedBox(width: 8),
+          separatorBuilder: (_) => const SizedBox(width: 9),
           defaultPinTheme: defaultTheme,
           focusedPinTheme: focusedTheme,
-          submittedPinTheme: submittedTheme,
+          submittedPinTheme: defaultTheme,
           errorPinTheme: defaultTheme,
           forceErrorState: hasError,
           showCursor: true,
@@ -549,19 +488,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: amber.withValues(alpha: 0.28)),
       ),
-      child: const Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, size: 18, color: amber),
-          SizedBox(width: 8),
+          const Icon(Icons.info_outline_rounded, size: 18, color: amber),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               'هذا الحساب مسجل بالفعل وبانتظار التفعيل، وأرسلنا لك رمزًا جديدًا. '
               'كلمة المرور لم تتغير — كلمة المرور الأصلية هي السارية.',
-              style: TextStyle(
-                fontSize: 12.5,
-                color: AuroraColors.ink,
-                fontWeight: FontWeight.w500,
+              style: AuroraText.body(
+                size: 12.5,
+                weight: FontWeight.w500,
+                color: AuthColors.ink,
                 height: 1.5,
               ),
             ),
@@ -571,159 +510,105 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
-  Widget _buildVerifyButton() {
-    final enabled = _isComplete && _status != _OtpStatus.loading;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: const LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [Color(0xFF17B47F), Color(0xFF1E8FCB)],
+  /// The timer line, and — only once it has run out — the resend button
+  /// under it.
+  ///
+  /// Two stacked elements rather than one sentence with a tappable tail, as
+  /// drawn: while the cooldown runs there is nothing to tap, so a link styled
+  /// to look tappable would be a lie for its first 60 seconds.
+  Widget _buildResendBlock() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          _resending
+              ? 'جاري الإرسال…'
+              : _coolingDown
+              ? 'يمكنك إعادة الإرسال بعد $_resendSeconds ثانية'
+              : 'لم يصلك الرمز؟',
+          textAlign: TextAlign.center,
+          style: AuroraText.body(
+            size: 13,
+            weight: FontWeight.w300,
+            color: AuthColors.secondary,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: enabled ? 0.2 : 0.0),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: SizedBox(
-        height: 54,
-        child: TextButton(
-          onPressed: enabled ? _verify : null,
-          style: TextButton.styleFrom(
-            disabledBackgroundColor: AuroraColors.divider,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_status == _OtpStatus.loading) ...[
-                const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 9),
-              ],
-              Text(
-                _status == _OtpStatus.loading ? 'جاري التحقق…' : 'تحقق',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: enabled ? Colors.white : AuroraColors.secondary,
+        if (!_coolingDown && !_resending) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton(
+              onPressed: _resend,
+              style: TextButton.styleFrom(
+                minimumSize: const Size(0, 40),
+                padding: const EdgeInsets.all(6),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'إعادة إرسال الرمز',
+                style: AuroraText.body(
+                  size: 13.5,
+                  weight: FontWeight.w600,
+                  color: AuthColors.link,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        ],
+      ],
     );
   }
 
-  Widget _buildResendRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'لم يصلك الرمز؟',
-          style: TextStyle(fontSize: 13, color: AuroraColors.secondary),
-        ),
-        const SizedBox(width: 4),
-        GestureDetector(
-          onTap: (_resending || _coolingDown) ? null : _resend,
-          child: Text(
-            _resending
-                ? 'جاري الإرسال…'
-                : _coolingDown
-                ? 'إعادة الإرسال خلال $_resendSeconds'
-                : 'إعادة إرسال الرمز',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: _coolingDown
-                  ? AuroraColors.secondary
-                  : AuroraColors.primary,
-            ),
-          ),
-        ),
-      ],
+  Widget _buildSpamHint() {
+    return Text(
+      'تحقّق من مجلد الرسائل غير المرغوب فيها\nإن لم يصلك الرمز',
+      textAlign: TextAlign.center,
+      style: AuroraText.body(
+        size: 12.5,
+        weight: FontWeight.w300,
+        color: AuthColors.muted,
+        height: 1.7,
+      ),
     );
   }
 
   // Copy considered: "تم التحقق، أهلاً بيك" (this one) vs. the flatter
   // "تم التحقق بنجاح" and the more playful "اتأكد الرمز، يلا بينا" — this
-  // reads warmest without tipping into filler, matching the Aurora sheet's
+  // reads warmest without tipping into filler, matching the surface's
   // calm-not-corporate tone.
   Widget _buildSuccess() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: AuroraColors.success,
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: AuroraColors.success,
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              size: 34,
+              color: Colors.white,
+            ),
           ),
-          child: const Icon(Icons.check_rounded, size: 34, color: Colors.white),
-        ),
-        const SizedBox(height: 18),
-        const Text(
-          'تم التحقق، أهلاً بيك',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AuroraColors.ink,
+          const SizedBox(height: 18),
+          Text(
+            'تم التحقق، أهلاً بيك',
+            style: AuroraText.display(
+              size: 18,
+              weight: FontWeight.w700,
+              color: AuthColors.ink,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'بنجهز كل حاجة… لحظات وتوصل.',
-          style: TextStyle(fontSize: 13.5, color: AuroraColors.secondary),
-        ),
-      ],
-    );
-  }
-}
-
-/// The 165° teal→blue canvas the whole screen sits on — mirrors
-/// [SignInPage]'s backdrop so both screens read as one continuous surface.
-class _GradientBackdrop extends StatelessWidget {
-  const _GradientBackdrop();
-
-  @override
-  Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(gradient: AuroraGradients.backdrop),
-      child: SizedBox.expand(),
-    );
-  }
-}
-
-/// Translucent decorative circle bleeding off the screen edges.
-class _SoftCircle extends StatelessWidget {
-  const _SoftCircle({required this.size, required this.opacity});
-
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
+          const SizedBox(height: 8),
+          Text(
+            'بنجهز كل حاجة… لحظات وتوصل.',
+            style: AuroraText.body(size: 13.5, color: AuthColors.secondary),
+          ),
+        ],
       ),
     );
   }

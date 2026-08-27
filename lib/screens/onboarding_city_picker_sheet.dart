@@ -152,7 +152,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                         AuroraSpacing.xl,
                         0,
                         AuroraSpacing.xl,
-                        AuroraSpacing.xl + MediaQuery.of(context).padding.bottom,
+                        AuroraSpacing.xl +
+                            MediaQuery.of(context).padding.bottom,
                       ),
                       children: [
                         for (final name in matches)

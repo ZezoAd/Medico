@@ -79,10 +79,15 @@
     "ast_hash": "f09e5b966b8dfb259764000af21cb861",
     "semantic_hash": "f09e5b966b8dfb259764000af21cb861"
   },
-  "lib/screens/sign_in_screen.dart": {
-    "mtime": 1787787305.1931112,
-    "ast_hash": "cddb49dcfb7dd1e5585089f69f7089da",
+  "lib/screens/sign_in_page.dart": {
+    "mtime": 1787682104.7914622,
+    "ast_hash": "71f5aad6bc789ab1f6f74bf26c4ef86b",
     "semantic_hash": ""
+  },
+  "lib/screens/sign_in_screen.dart": {
+    "mtime": 1786665362.1965652,
+    "ast_hash": "0e0e2372a976b3d4c95c18565a07232f",
+    "semantic_hash": "0e0e2372a976b3d4c95c18565a07232f"
   },
   "macos/Flutter/GeneratedPluginRegistrant.swift": {
     "mtime": 1787420098.1330256,
@@ -108,6 +113,11 @@
     "mtime": 1784847421.1806197,
     "ast_hash": "93c22dae2d93f3dc1402e121901f582b",
     "semantic_hash": "93c22dae2d93f3dc1402e121901f582b"
+  },
+  "test/sign_in_page_test.dart": {
+    "mtime": 1787682261.5273023,
+    "ast_hash": "65481196b1e7ad1cc6ff843a781ea8ff",
+    "semantic_hash": ""
   },
   "test/widget_test.dart": {
     "mtime": 1786324025.3715363,
@@ -165,18 +175,18 @@
     "semantic_hash": ""
   },
   "lib/screens/otp_verification_screen.dart": {
-    "mtime": 1787710998.6598866,
-    "ast_hash": "59baee3131aa00c9dfd3ee67aa1df9ea",
+    "mtime": 1787437428.7363539,
+    "ast_hash": "6fe90410caa315f35e40624629dbc3f5",
     "semantic_hash": ""
   },
   "lib/screens/sign_up_screen.dart": {
-    "mtime": 1787787382.5398605,
-    "ast_hash": "8dcf5c04ebdefb714da9f5fd65c330d7",
+    "mtime": 1787682104.7895749,
+    "ast_hash": "5ea90c7bb012f1328069d074ecbd670a",
     "semantic_hash": ""
   },
   "test/sign_up_screen_test.dart": {
-    "mtime": 1787787403.1083522,
-    "ast_hash": "55f0047e32bbebac6b2c54d071bcd58e",
+    "mtime": 1787681034.4003618,
+    "ast_hash": "a6299b5c300305e23fb0bb0ddf3f8471",
     "semantic_hash": ""
   },
   "lib/models/user_profile.dart": {
@@ -215,8 +225,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/auth_error_banner.dart": {
-    "mtime": 1787711535.9020314,
-    "ast_hash": "8cbe7655fb1509b42a6ad0c30e78eb3e",
+    "mtime": 1787363385.2398353,
+    "ast_hash": "fdfa6d0ddaddde724ac293445c93b74d",
     "semantic_hash": ""
   },
   "assets/icons/google_logo.svg": {
@@ -235,8 +245,8 @@
     "semantic_hash": "5cb5888ebb4cc9e1a61257d2295844fc"
   },
   "test/inline_error_overflow_test.dart": {
-    "mtime": 1787711255.551213,
-    "ast_hash": "573a2d1699095653fdf9ca8946874ac3",
+    "mtime": 1787674213.2028806,
+    "ast_hash": "b559e42d55939eace8b8acaf1444b344",
     "semantic_hash": ""
   },
   "supabase/migrations/004_signup_verified.sql": {
@@ -270,8 +280,8 @@
     "semantic_hash": ""
   },
   "lib/utils/arabic_formatting.dart": {
-    "mtime": 1787711787.036491,
-    "ast_hash": "e8e480af50916176fd09df7be336ecee",
+    "mtime": 1787444351.3184416,
+    "ast_hash": "71bab7cb35a99646b24b6f80429d32d8",
     "semantic_hash": ""
   },
   "lib/utils/wait_estimate.dart": {
@@ -280,8 +290,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/queue_status_card.dart": {
-    "mtime": 1787787429.0347033,
-    "ast_hash": "41219bd83eb984d6afea6da2a1cb77d8",
+    "mtime": 1787452024.066421,
+    "ast_hash": "7594cb4fb115c09514042ec5bf9d6312",
     "semantic_hash": ""
   },
   "lib/dev/onboarding_preview.dart": {
@@ -295,8 +305,8 @@
     "semantic_hash": ""
   },
   "lib/screens/onboarding_city_picker_sheet.dart": {
-    "mtime": 1787787428.825836,
-    "ast_hash": "5c3c98228f3cae363e195a0b206db423",
+    "mtime": 1787439573.9643037,
+    "ast_hash": "14f35d96e11659c5133ac286c2ed0b12",
     "semantic_hash": ""
   },
   "lib/screens/onboarding_completion_screen.dart": {
@@ -360,8 +370,8 @@
     "semantic_hash": ""
   },
   "lib/theme/aurora_tokens.dart": {
-    "mtime": 1787787429.0435786,
-    "ast_hash": "7ed97ccc6fb8149c6964386b16dfd358",
+    "mtime": 1787665360.5693407,
+    "ast_hash": "c6f1075e177780721920fdbb58750c25",
     "semantic_hash": ""
   },
   "lib/widgets/aurora_buttons.dart": {
@@ -375,8 +385,8 @@
     "semantic_hash": ""
   },
   "lib/screens/auth_gate.dart": {
-    "mtime": 1787711016.371266,
-    "ast_hash": "dcb259da656bb5e778d9fe0d612cba90",
+    "mtime": 1787507187.5010557,
+    "ast_hash": "12cf236b223f64a569c1bcaf99ba692d",
     "semantic_hash": ""
   },
   "lib/services/onboarding_sync_service.dart": {
@@ -385,8 +395,8 @@
     "semantic_hash": ""
   },
   "test/onboarding_progress_test.dart": {
-    "mtime": 1787711787.0445504,
-    "ast_hash": "3fa0ec20144dbc3fcc56e0d39ea3f354",
+    "mtime": 1787437341.3921068,
+    "ast_hash": "102a85bdf9f83e0867ed7daba8dba1ae",
     "semantic_hash": ""
   },
   "supabase/migrations/005_onboarding_fields.sql": {
@@ -400,8 +410,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/global_offline_strip.dart": {
-    "mtime": 1787787429.007575,
-    "ast_hash": "c28644a068a4db36ae9bee8a318b5f24",
+    "mtime": 1787444475.9491434,
+    "ast_hash": "3465fd3905969a896d24a4fa90d6731c",
     "semantic_hash": ""
   },
   "lib/screens/profile_tab.dart": {
@@ -424,54 +434,29 @@
     "ast_hash": "de8de13216e6c987adef8a63d5d3d1b4",
     "semantic_hash": ""
   },
+  "lib/widgets/auth_tab_switcher.dart": {
+    "mtime": 1787678526.0676675,
+    "ast_hash": "a8873fd3ea16488f4f6d4de1260b5e63",
+    "semantic_hash": ""
+  },
   "lib/widgets/home_empty_state_card.dart": {
     "mtime": 1787674832.29558,
     "ast_hash": "00c02b90310ca5e6f280e01b99b6f5a6",
     "semantic_hash": ""
   },
+  "lib/screens/auth_shell.dart": {
+    "mtime": 1787682098.0471494,
+    "ast_hash": "aef0682df6b783af5480a78ed247a1c1",
+    "semantic_hash": ""
+  },
   "lib/widgets/home_specialty_chips.dart": {
-    "mtime": 1787787429.0185735,
-    "ast_hash": "5b30f2c0c1481ea18b4647cf19f1eaf8",
+    "mtime": 1787686560.564464,
+    "ast_hash": "99133aef908c3353efea517869c35649",
     "semantic_hash": ""
   },
   "test/home_specialty_chips_test.dart": {
-    "mtime": 1787711787.04355,
-    "ast_hash": "3f0c7b1a7c192e75f0b723102e1f20c8",
-    "semantic_hash": ""
-  },
-  "lib/screens/welcome_screen.dart": {
-    "mtime": 1787711555.6711166,
-    "ast_hash": "5e53d19def728e6764f6af0e57b2f35f",
-    "semantic_hash": ""
-  },
-  "lib/widgets/auth_surface.dart": {
-    "mtime": 1787787285.6755896,
-    "ast_hash": "bcf54e532c8f95fe3f62ff256b07d1b4",
-    "semantic_hash": ""
-  },
-  "test/auth_test_support.dart": {
-    "mtime": 1787711370.5628407,
-    "ast_hash": "6318d0a353793f01e679927a033aba46",
-    "semantic_hash": ""
-  },
-  "test/otp_verification_screen_test.dart": {
-    "mtime": 1787711627.6776245,
-    "ast_hash": "3561251ce4516766aa0aaa3a6550a46c",
-    "semantic_hash": ""
-  },
-  "test/sign_in_screen_test.dart": {
-    "mtime": 1787787429.0566778,
-    "ast_hash": "18a8e9f97e802cb9718afc1af9aa4a68",
-    "semantic_hash": ""
-  },
-  "test/welcome_screen_test.dart": {
-    "mtime": 1787711102.703628,
-    "ast_hash": "534624c33510a6b7208f4f84b65dd588",
-    "semantic_hash": ""
-  },
-  "lib/design_reference/Auth Screens.dc.html": {
-    "mtime": 1787708908.0,
-    "ast_hash": "4407609de34e7ff7c14e39b0fe7b2452",
+    "mtime": 1787686752.7864568,
+    "ast_hash": "39f334a2df18f6cd314d3c557bf0d13c",
     "semantic_hash": ""
   }
 }

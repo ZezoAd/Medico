@@ -61,7 +61,11 @@ class _OfflineStripBody extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.wifi_off_rounded, size: 14, color: Color(0xFFEAF0EC)),
+          const Icon(
+            Icons.wifi_off_rounded,
+            size: 14,
+            color: Color(0xFFEAF0EC),
+          ),
           const SizedBox(width: AuroraSpacing.sm),
           Flexible(
             child: Text(

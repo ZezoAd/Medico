@@ -119,8 +119,7 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
             // second scroll bounce on top of the page's.
             physics: const ClampingScrollPhysics(),
             itemCount: _specialties.length,
-            separatorBuilder: (_, _) =>
-                const SizedBox(width: AuroraSpacing.sm),
+            separatorBuilder: (_, _) => const SizedBox(width: AuroraSpacing.sm),
             itemBuilder: (context, index) {
               final specialty = _specialties[index];
               return _SpecialtyChip(

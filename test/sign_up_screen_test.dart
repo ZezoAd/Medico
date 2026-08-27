@@ -1,184 +1,273 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:medico/screens/sign_in_screen.dart';
 import 'package:medico/screens/sign_up_screen.dart';
+import 'package:medico/theme/aurora_tokens.dart';
+import 'package:medico/widgets/auth_surface.dart';
 
-/// "إنشاء حساب" now labels both the switcher tab and the submit button, so
-/// finders for either have to say which one they mean.
+import 'auth_test_support.dart';
+
+/// The submit button. "إنشاء حساب" is the hero heading and "تسجيل الدخول" is
+/// the footer link, so the button's own label is the unambiguous one.
 final submitButton = find.descendant(
-  of: find.byType(TextButton),
-  matching: find.text('إنشاء حساب'),
+  of: find.byType(AuthPrimaryButton),
+  matching: find.text('إنشاء الحساب'),
 );
 
-/// Renders [SignUpScreen] at a given logical size and fails on any overflow.
-///
-/// A RenderFlex overflow is reported as a Flutter error during paint, which
-/// the test binding records and surfaces as a test failure — so simply pumping
-/// at each size is the assertion.
-Future<void> pumpAt(WidgetTester tester, Size logical, double dpr) async {
-  tester.view.devicePixelRatio = dpr;
-  tester.view.physicalSize = logical * dpr;
-  addTearDown(tester.view.reset);
-
-  await tester.pumpWidget(const MaterialApp(home: SignUpScreen()));
+/// Ticks the checkbox, which gates the submit button.
+Future<void> agreeToTerms(WidgetTester tester) async {
+  await tester.tap(find.byType(Checkbox));
   await tester.pumpAndSettle();
 }
 
 void main() {
-  const budgetAndroid = Size(360, 640);
-  const modernPhone = Size(390, 844);
-  const largePhone = Size(428, 926);
+  group('lays out without overflow', () {
+    for (final size in const [
+      shortPhone,
+      Size(360, 640),
+      Size(375, 667),
+      Size(393, 873),
+      Size(428, 926),
+    ]) {
+      testWidgets('${size.width.toInt()}x${size.height.toInt()}', (
+        tester,
+      ) async {
+        await pumpAt(tester, const SignUpScreen(), size);
 
-  group('fits without scrolling or overflow', () {
-    testWidgets('360x640 budget Android', (tester) async {
-      await pumpAt(tester, budgetAndroid, 2.0);
-      expect(submitButton, findsOneWidget);
+        expect(submitButton, findsOneWidget);
+        expect(find.text('إنشاء حساب باستخدام Google'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('an open keyboard scrolls rather than overflowing', (
+      tester,
+    ) async {
+      // This is the regression the old height-threshold machinery existed
+      // for. The sheet is Expanded now, so it simply gets shorter and its
+      // scroll view takes over — there is no "should I scroll?" decision left
+      // to get wrong, and nothing reads the window height.
+      await pumpAt(
+        tester,
+        const SignUpScreen(),
+        const Size(393, 873),
+        keyboardInset: 340,
+      );
+
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
-    testWidgets('390x844 standard modern phone', (tester) async {
-      await pumpAt(tester, modernPhone, 2.0);
-      expect(submitButton, findsOneWidget);
+    testWidgets('a 1.3x font setting still fits', (tester) async {
+      await pumpAt(
+        tester,
+        const SignUpScreen(),
+        const Size(360, 800),
+        textScale: 1.3,
+      );
+      expect(tester.takeException(), isNull);
     });
+  });
 
-    testWidgets('428x926 large phone', (tester) async {
-      await pumpAt(tester, largePhone, 3.0);
-      expect(submitButton, findsOneWidget);
-    });
+  testWidgets('carries the sign-up copy from the design', (tester) async {
+    await pumpAt(tester, const SignUpScreen(), phone);
+
+    expect(find.text('إنشاء حساب'), findsOneWidget);
+    expect(find.text('خطوة واحدة وتبدأ الحجز'), findsOneWidget);
+    expect(heroGradientOf(tester), AuroraGradients.authHero);
   });
 
   testWidgets('has a single full name field, no first/last split', (
     tester,
   ) async {
-    await pumpAt(tester, modernPhone, 2.0);
+    await pumpAt(tester, const SignUpScreen(), phone);
 
     expect(find.text('الاسم الكامل'), findsOneWidget);
     expect(find.text('الاسم الأول'), findsNothing);
     expect(find.text('اسم العائلة'), findsNothing);
+    expect(find.byType(TextField), findsNWidgets(3));
   });
 
-  testWidgets('has no back button', (tester) async {
-    await pumpAt(tester, modernPhone, 2.0);
+  testWidgets('numerals are Western, never Arabic-Indic', (tester) async {
+    await pumpAt(tester, const SignUpScreen(), phone);
 
+    // The design's placeholder reads "٨ أحرف على الأقل".
+    expect(find.text('8 أحرف على الأقل'), findsOneWidget);
+    expectNoArabicIndicDigits(tester);
+  });
+
+  group('the terms checkbox gates submit', () {
+    testWidgets('starts unchecked, and an unchecked submit does nothing', (
+      tester,
+    ) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isFalse);
+
+      await tester.enterText(find.byType(TextField).at(0), 'Jane Doe');
+      await tester.enterText(find.byType(TextField).at(1), 'jane@example.com');
+      await tester.enterText(find.byType(TextField).at(2), 'password123');
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+      // onPressed is null while unchecked, so not even validation runs.
+      expect(find.text('الرجاء إدخال الاسم الكامل.'), findsNothing);
+    });
+
+    testWidgets('the copy beside the box is part of the tap target', (
+      tester,
+    ) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+
+      // A 20pt box is a hard thing to hit; the sentence is what people aim
+      // at, so the whole row toggles.
+      await tester.tap(find.textContaining('سياسة الخصوصية'));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+    });
+
+    testWidgets('checking it enables submit and validation runs', (
+      tester,
+    ) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+      await agreeToTerms(tester);
+
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+      expect(find.text('الرجاء إدخال الاسم الكامل.'), findsOneWidget);
+      expect(find.text('الرجاء إدخال البريد الإلكتروني'), findsOneWidget);
+      expect(find.text('الرجاء إدخال كلمة المرور'), findsOneWidget);
+    });
+  });
+
+  group('password rules', () {
+    testWidgets('eight characters is the whole rule', (tester) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+      await agreeToTerms(tester);
+
+      // Letters-only, digits-only and symbols-only all pass: there is
+      // deliberately no character-composition requirement.
+      for (final password in ['abcdefgh', '12345678', r'!!!!!!!!']) {
+        await tester.enterText(find.byType(TextField).at(2), password);
+        await tester.pumpAndSettle();
+        expect(
+          find.text('يجب أن تكون كلمة المرور 8 أحرف على الأقل'),
+          findsNothing,
+          reason: '$password should be accepted',
+        );
+      }
+    });
+
+    testWidgets('seven characters is rejected', (tester) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+      await agreeToTerms(tester);
+
+      await tester.enterText(find.byType(TextField).at(0), 'Jane Doe');
+      await tester.enterText(find.byType(TextField).at(1), 'jane@example.com');
+      await tester.enterText(find.byType(TextField).at(2), 'short12');
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('يجب أن تكون كلمة المرور 8 أحرف على الأقل'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('nothing rates the password beyond the length rule', (
+      tester,
+    ) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+
+      // The three-segment strength meter was built and then removed. Its
+      // segments were the only AnimatedContainers on this screen, so their
+      // absence is the check that no remnant of it is still being drawn.
+      await tester.enterText(find.byType(TextField).at(2), 'abc');
+      await tester.pumpAndSettle();
+      expect(find.byType(AnimatedContainer), findsNothing);
+
+      await tester.enterText(
+        find.byType(TextField).at(2),
+        r'Str0ng!Passphrase',
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(AnimatedContainer), findsNothing);
+    });
+  });
+
+  group('footer returns to Sign In without stacking', () {
+    testWidgets('pushed from Sign In: pops back to the live route', (
+      tester,
+    ) async {
+      final observer = _RouteCounter();
+      tester.view.devicePixelRatio = 2.0;
+      tester.view.physicalSize = phone * 2.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(navigatorObservers: [observer], home: const SignInScreen()),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('أنشئ حسابًا'));
+      await tester.pumpAndSettle();
+
+      final depthOnSignUp = observer.depth;
+      await tester.tap(find.text('تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(observer.depth, depthOnSignUp - 1);
+      expect(find.byType(SignInScreen), findsOneWidget);
+      expect(find.byType(SignUpScreen), findsNothing);
+    });
+
+    testWidgets('pushed from Welcome: replaces itself with Sign In', (
+      tester,
+    ) async {
+      await pumpAt(tester, const SignUpScreen(), phone);
+
+      // Nothing to pop back to but Welcome, so the footer swaps this route
+      // for a Sign In instead — the person still lands where the link said.
+      await tester.tap(find.text('تسجيل الدخول'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SignInScreen), findsOneWidget);
+      expect(find.byType(SignUpScreen), findsNothing);
+    });
+  });
+
+  testWidgets('has no back button of its own', (tester) async {
+    await pumpAt(tester, const SignUpScreen(), phone);
+
+    // The back chevron belongs to OTP. Sign Up is reached by a push, so the
+    // system gesture already covers it.
+    expect(find.byType(AuthBackButton), findsNothing);
     expect(find.byIcon(Icons.arrow_forward_rounded), findsNothing);
     expect(find.byIcon(Icons.arrow_back_rounded), findsNothing);
   });
 
-  testWidgets('privacy checkbox starts unchecked and gates submit', (
-    tester,
-  ) async {
-    await pumpAt(tester, modernPhone, 2.0);
+  testWidgets('the tab-pill shell is gone', (tester) async {
+    await pumpAt(tester, const SignUpScreen(), phone);
 
-    final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
-    expect(checkbox.value, isFalse);
-
-    // Submit is disabled while unchecked: tapping does nothing observable
-    // (no navigation, no loading state) — filling the form and tapping
-    // must not produce a validation error either, since onPressed is null.
-    await tester.enterText(find.byType(TextField).at(0), 'Jane Doe');
-    await tester.enterText(find.byType(TextField).at(1), 'jane@example.com');
-    await tester.enterText(find.byType(TextField).at(2), 'password123');
-    await tester.tap(submitButton);
-    await tester.pumpAndSettle();
-    expect(find.text('الرجاء إدخال الاسم الكامل.'), findsNothing);
-
-    await tester.tap(find.byType(Checkbox));
-    await tester.pump();
-
-    final checkedBox = tester.widget<Checkbox>(find.byType(Checkbox));
-    expect(checkedBox.value, isTrue);
+    expect(find.byType(PageView), findsNothing);
+    expect(find.byType(SignInScreen, skipOffstage: false), findsNothing);
   });
+}
 
-  group('scrolls only when the screen is short', () {
-    Future<int> scrollViewsAt(
-      WidgetTester tester,
-      Size size, {
-      double textScale = 1.0,
-      double keyboardInset = 0,
-    }) async {
-      tester.view.physicalSize = size;
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        MaterialApp(
-          builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(textScale),
-              viewInsets: EdgeInsets.only(bottom: keyboardInset),
-            ),
-            child: child!,
-          ),
-          home: const SignUpScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      return tester.widgetList(find.byType(SingleChildScrollView)).length;
-    }
+class _RouteCounter extends NavigatorObserver {
+  int depth = 0;
 
-    testWidgets('tall screens get no scroll view at all', (tester) async {
-      // 873 and 800 are the two logical heights a 1080x2400 Tecno reports,
-      // depending on the DPR Android picks for a 6.67" panel.
-      for (final size in const [
-        Size(393, 873),
-        Size(360, 800),
-        Size(412, 915),
-      ]) {
-        expect(
-          await scrollViewsAt(tester, size),
-          0,
-          reason: 'no scroll view expected at ${size.height}',
-        );
-        expect(tester.takeException(), isNull);
-      }
-    });
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) => depth++;
 
-    testWidgets('short screens still scroll rather than overflow', (
-      tester,
-    ) async {
-      for (final size in const [Size(375, 667), Size(320, 568)]) {
-        expect(
-          await scrollViewsAt(tester, size),
-          1,
-          reason: 'scroll view expected at ${size.height}',
-        );
-        expect(tester.takeException(), isNull);
-      }
-    });
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) => depth--;
 
-    testWidgets('a larger font setting scrolls a short screen', (tester) async {
-      // 800pt clears the flat 750 bar, but at 1.15x the content no longer
-      // fits — the threshold scales so this lands on a scroll view instead
-      // of overflowing by ~79px.
-      expect(await scrollViewsAt(tester, const Size(360, 800)), 0);
-      expect(
-        await scrollViewsAt(tester, const Size(360, 800), textScale: 1.3),
-        1,
-      );
-      expect(tester.takeException(), isNull);
-    });
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      depth--;
 
-    testWidgets('an open keyboard scrolls even on the tallest screen', (
-      tester,
-    ) async {
-      // The regression this guards: the decision used to read the *window*
-      // height, which does not shrink when the keyboard opens. A 873pt device
-      // therefore kept the non-scrolling branch while its real slot had
-      // collapsed to ~590, and the form overflowed by 44px behind the
-      // keyboard.
-      expect(await scrollViewsAt(tester, const Size(393, 873)), 0);
-      expect(
-        await scrollViewsAt(tester, const Size(393, 873), keyboardInset: 320),
-        1,
-      );
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('a genuinely tall screen still does not scroll at 1.3x', (
-      tester,
-    ) async {
-      // The clamp keeps the bar low enough that an 873pt screen, where the
-      // content does still fit at 1.3x, is not pushed onto a scroll view.
-      expect(await scrollViewsAt(tester, const Size(412, 915)), 0);
-      expect(tester.takeException(), isNull);
-    });
-  });
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {}
 }

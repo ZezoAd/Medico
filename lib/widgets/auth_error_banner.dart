@@ -37,9 +37,7 @@ class AuthErrorBanner extends StatefulWidget {
   ///
   /// Pass false when [onRetry] is the only way forward rather than one option
   /// among several, since a banner that carries the sole exit must not delete
-  /// itself while it is being read. The role-mismatch banner on [SignInPage]
-  /// is the case this exists for: the session is live, no navigation happens
-  /// automatically, and tapping the action is what moves the person on.
+  /// itself while it is being read.
   final bool autoDismiss;
 
   @override
@@ -124,47 +122,70 @@ class _AuthErrorBannerState extends State<AuthErrorBanner> {
               ),
             ],
           ),
+          // Icon and dismiss anchor the two ends; the message and its action
+          // stack between them.
+          //
+          // The action used to be a fourth child of this row. That worked
+          // while the banner floated over the screen at 16pt insets, and
+          // stopped working the moment it moved inside the auth sheet's 28pt
+          // padding: 24pt narrower is enough that a real label —
+          // "إرسال رمز تحقق جديد" — squeezes the message column to nothing
+          // and still overflows. Stacking removes the competition for width
+          // rather than trading one truncation for another.
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                widget.severity == AuthErrorSeverity.warning
-                    ? Icons.warning_amber_rounded
-                    : Icons.error_outline,
-                size: 18,
-                color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Icon(
+                  widget.severity == AuthErrorSeverity.warning
+                      ? Icons.warning_amber_rounded
+                      : Icons.error_outline,
+                  size: 18,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  widget.message,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    height: 1.4,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        widget.message,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    if (widget.onRetry != null)
+                      TextButton(
+                        onPressed: widget.onRetry,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          foregroundColor: Colors.white,
+                          alignment: AlignmentDirectional.centerStart,
+                        ),
+                        child: Text(
+                          widget.retryLabel ?? 'حاول مرة أخرى',
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              if (widget.onRetry != null)
-                TextButton(
-                  onPressed: widget.onRetry,
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(
-                    widget.retryLabel ?? 'حاول مرة أخرى',
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white,
-                    ),
-                  ),
-                ),
               if (widget.onDismiss != null)
                 IconButton(
                   onPressed: _handleManualDismiss,

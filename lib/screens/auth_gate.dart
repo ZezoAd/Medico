@@ -16,7 +16,7 @@ import '../utils/auth_error_mapper.dart';
 import '../widgets/aurora_buttons.dart';
 import 'home_screen.dart';
 import 'onboarding_flow_screen.dart';
-import 'sign_in_screen.dart';
+import 'welcome_screen.dart';
 
 /// Resolves where a signed-in patient belongs and renders it.
 ///
@@ -234,7 +234,15 @@ class _AuthGateState extends State<AuthGate> {
         return _GateRetry(onRetry: _resolve);
 
       case _GateStatus.signedOut:
-        return SignInScreen(
+        // Welcome, not Sign In, is the signed-out root now — the auth
+        // screens are separate routes and something has to sit under them.
+        //
+        // A forced sign-out still has to land on Sign In, which is the only
+        // screen that can act on the message: Welcome forwards itself to Sign
+        // In on its first frame whenever these are set, so the banner and its
+        // "resend a code" action arrive exactly where they did before, with
+        // Welcome underneath rather than an empty navigator.
+        return WelcomeScreen(
           initialErrorMessage: _signedOutMessage,
           initialUnconfirmedEmail: _unconfirmedEmail,
         );
