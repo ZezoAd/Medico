@@ -191,76 +191,168 @@ void main() {
   });
 
   group('the footer folds away under the keyboard', () {
-    // The two sizes the collapsible subheading was originally verified at.
+    // The two sizes the collapsible was originally verified at.
     for (final size in const [Size(360, 740), Size(412, 915)]) {
       final tag = '${size.width.toInt()}x${size.height.toInt()}';
 
-      testWidgets('$tag: collapses on focus and comes back on unfocus', (
+      testWidgets('$tag: folds when the keyboard opens, returns when it goes', (
         tester,
       ) async {
         await pumpAt(tester, const SignInScreen(), size);
 
-        final collapsible = find.byType(AuthCollapsibleOnFocus);
+        // Measured on the collapsible itself rather than on the prompt: the
+        // prompt is not in the tree at all while collapsed, so a finder for it
+        // cannot report a height of zero — only an absence.
+        final collapsible = find.byType(AuthCollapsible);
         final resting = tester.getRect(collapsible).height;
         expect(resting, greaterThan(0));
         expect(find.text('ليس لديك حساب؟'), findsOneWidget);
 
-        // Measured on the collapsible itself: AnimatedCrossFade keeps both
-        // children laid out, so the prompt's own rect never reports the
-        // collapse.
-        final field = tester.widget<TextField>(find.byType(TextField).first);
-        field.focusNode!.requestFocus();
-        await tester.pumpAndSettle();
+        await setKeyboardInset(tester, const SignInScreen(), size, 320);
         expect(tester.getRect(collapsible).height, 0);
 
-        field.focusNode!.unfocus();
-        await tester.pumpAndSettle();
+        await setKeyboardInset(tester, const SignInScreen(), size, 0);
         expect(tester.getRect(collapsible).height, resting);
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('$tag: focus plus a real keyboard inset does not overflow', (
-        tester,
-      ) async {
-        // The regression this guards: the footer is a fixed sibling pinned to
-        // the sheet's bottom edge, and resizeToAvoidBottomInset moves that
-        // edge. Left in place it rode up the screen; collapsed it is simply
-        // not there, and the scroll area above gets the space back.
+      testWidgets('$tag: no overflow with the keyboard up', (tester) async {
+        // The footer is a fixed sibling pinned to the sheet's bottom edge, and
+        // resizeToAvoidBottomInset moves that edge. Left in place it rode up
+        // the screen; collapsed it is simply not there, and the scroll area
+        // above gets the space back.
         await pumpAt(tester, const SignInScreen(), size, keyboardInset: 320);
 
-        final field = tester.widget<TextField>(find.byType(TextField).first);
-        field.focusNode!.requestFocus();
-        await tester.pumpAndSettle();
-
-        expect(tester.getRect(find.byType(AuthCollapsibleOnFocus)).height, 0);
-        expect(tester.takeException(), isNull);
-
-        // Nothing clipped on the way back out either.
-        field.focusNode!.unfocus();
-        await tester.pumpAndSettle();
-        expect(find.text('أنشئ حسابًا'), findsOneWidget);
+        expect(tester.getRect(find.byType(AuthCollapsible)).height, 0);
         expect(tester.takeException(), isNull);
       });
     }
 
+    testWidgets('returns after a back-gesture dismiss, which never unfocuses', (
+      tester,
+    ) async {
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignInScreen(), size);
+
+      final field = tester.widget<TextField>(find.byType(TextField).first);
+      final node = field.focusNode!;
+
+      // Open the keyboard the way a tap does.
+      node.requestFocus();
+      await setKeyboardInset(tester, const SignInScreen(), size, 320);
+      expect(tester.getRect(find.byType(AuthCollapsible)).height, 0);
+
+      // Now the actual regression. Android's back gesture hides the IME
+      // without closing the input connection, so EditableText's
+      // connectionClosed() — the only thing in Flutter that unfocuses on
+      // dismissal — never runs. Reproduced faithfully by dropping the inset
+      // and touching nothing else: no unfocus(), no receiveAction, no tap
+      // elsewhere, any of which would mask the bug by flipping focus for us.
+      await setKeyboardInset(tester, const SignInScreen(), size, 0);
+
+      // The premise of the bug: focus really does survive the dismissal.
+      // If this ever stops holding, the test below stops proving anything.
+      expect(
+        node.hasFocus,
+        isTrue,
+        reason: 'the field must still be focused, or this is not the bug',
+      );
+
+      // …and the footer is back anyway, because the collapse follows the
+      // keyboard rather than the focus node.
+      expect(tester.getRect(find.byType(AuthCollapsible)).height, isNonZero);
+      expect(find.text('ليس لديك حساب؟'), findsOneWidget);
+
+      // Back, and genuinely usable — not merely painted.
+      await tester.tap(find.text('أنشئ حسابًا'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SignUpScreen), findsOneWidget);
+    });
+
     testWidgets('the collapsed prompt cannot be tapped by accident', (
       tester,
     ) async {
-      await pumpAt(tester, const SignInScreen(), const Size(360, 740));
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignInScreen(), size, keyboardInset: 320);
 
-      final field = tester.widget<TextField>(find.byType(TextField).first);
-      field.focusNode!.requestFocus();
-      await tester.pumpAndSettle();
+      // The collapse is a plain swap for a zero-height box, not a crossfade
+      // that keeps its hidden child built — so while the keyboard is up the
+      // prompt is out of the tree entirely and there is nothing left to
+      // mis-tap. That is strictly stronger than the old guarantee (built, but
+      // outside the hit-test rect), which is why this asserts absence rather
+      // than tapping and hoping the tap misses.
+      expect(find.text('أنشئ حسابًا'), findsNothing);
+      expect(find.text('ليس لديك حساب؟'), findsNothing);
 
-      // AnimatedCrossFade keeps the hidden child built, so this proves the
-      // zero-height layout really does put it outside the hit-test rect —
-      // otherwise typing an email could push Sign Up.
-      await tester.tap(find.text('أنشئ حسابًا'), warnIfMissed: false);
-      await tester.pumpAndSettle();
+      await setKeyboardInset(tester, const SignInScreen(), size, 0);
 
+      expect(find.text('أنشئ حسابًا'), findsOneWidget);
       expect(find.byType(SignUpScreen), findsNothing);
       expect(find.byType(SignInScreen), findsOneWidget);
     });
+
+    testWidgets('returns instantly, without animating back in', (tester) async {
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignInScreen(), size);
+      final collapsible = find.byType(AuthCollapsible);
+      final resting = tester.getRect(collapsible).height;
+
+      await setKeyboardInset(tester, const SignInScreen(), size, 320);
+      expect(tester.getRect(collapsible).height, 0);
+
+      // One frame after the keyboard leaves, the prompt is already at its full
+      // resting height. A crossfade or a size tween would still be partway
+      // through here — which is exactly what this used to look like on the
+      // device, the prompt visibly growing back after the keyboard had gone.
+      await setKeyboardInsetForOneFrame(tester, const SignInScreen(), size, 0);
+      expect(tester.getRect(collapsible).height, resting);
+      expect(find.text('أنشئ حسابًا'), findsOneWidget);
+
+      // ...and settling changes nothing, so there was no tween to finish.
+      await tester.pumpAndSettle();
+      expect(tester.getRect(collapsible).height, resting);
+    });
+
+    testWidgets('hides instantly too, in the other direction', (tester) async {
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignInScreen(), size);
+
+      await setKeyboardInsetForOneFrame(
+        tester,
+        const SignInScreen(),
+        size,
+        320,
+      );
+      expect(tester.getRect(find.byType(AuthCollapsible)).height, 0);
+      expect(find.text('أنشئ حسابًا'), findsNothing);
+    });
+  });
+
+  group('the focused field clears the keyboard', () {
+    // Sign Up's password field is what was reported, but both screens share
+    // AuthSheetScaffold's scroll view, so the same guarantee is asserted here
+    // rather than assumed from the sibling suite.
+    for (final size in const [Size(360, 740), Size(360, 640)]) {
+      for (final (index, label) in const [
+        (0, 'البريد الإلكتروني'),
+        (1, 'كلمة المرور'),
+      ]) {
+        final tag = '${size.width.toInt()}x${size.height.toInt()}';
+        testWidgets('$tag: $label scrolls clear of the keyboard', (
+          tester,
+        ) async {
+          await pumpAt(tester, const SignInScreen(), size);
+
+          final field = find.byType(AuthTextField).at(index);
+          tester.widget<AuthTextField>(field).focusNode.requestFocus();
+          await setKeyboardInset(tester, const SignInScreen(), size, 320);
+          await tester.pumpAndSettle();
+
+          expectFieldClearOfKeyboard(tester, field, label: label);
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
   });
 
   group('footer', () {

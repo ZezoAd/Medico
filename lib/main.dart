@@ -5,6 +5,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/splash_screen.dart';
+import 'services/theme_service.dart';
+import 'theme/app_theme.dart';
 
 class _NoStretchScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -22,6 +24,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: '.env', isOptional: true);
+
+  // Before `runApp`, so the very first frame is already the stored theme.
+  // Loading it inside the widget tree instead would paint one light frame and
+  // then swap, which is the flash this ordering exists to avoid.
+  await ThemeController.init();
 
   final supabaseUrl = dotenv.env['SUPABASE_URL'];
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
@@ -62,19 +69,20 @@ class MedicoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      scrollBehavior: _NoStretchScrollBehavior(),
-      debugShowCheckedModeBanner: false,
-      title: 'Medico',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2A9D8F),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFFAF7F2),
-        useMaterial3: true,
+    // Rebuilds only this [MaterialApp] when the preference changes, which is
+    // the whole app but nothing above it — the theme swap is instant and needs
+    // no per-screen participation.
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeController.instance,
+      builder: (context, mode, _) => MaterialApp(
+        scrollBehavior: _NoStretchScrollBehavior(),
+        debugShowCheckedModeBanner: false,
+        title: 'Medico',
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: mode,
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }

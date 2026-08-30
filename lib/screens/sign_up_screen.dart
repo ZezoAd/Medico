@@ -390,6 +390,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(height: 12),
         ],
       ),
+      // Same treatment as Sign In's footer, and for the same reason — this
+      // screen has three fields rather than two, so it spends *more* of its
+      // life with the keyboard up, not less.
+      collapseFooterWithKeyboard: true,
       footer: AuthFooterPrompt(
         prompt: 'لديك حساب بالفعل؟',
         actionLabel: 'تسجيل الدخول',

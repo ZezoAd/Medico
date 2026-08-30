@@ -39,6 +39,7 @@ Future<void> pumpAt(
   double textScale = 1.0,
   double keyboardInset = 0,
   bool settle = true,
+  int? frames,
 }) async {
   tester.view.devicePixelRatio = dpr;
   tester.view.physicalSize = size * dpr;
@@ -56,12 +57,70 @@ Future<void> pumpAt(
       home: screen,
     ),
   );
-  if (settle) {
+  if (frames != null) {
+    // `pumpWidget` has already laid out one frame; anything beyond that is
+    // deliberate extra time, so the caller's count starts from there.
+    for (var i = 1; i < frames; i++) {
+      await tester.pump();
+    }
+  } else if (settle) {
     await tester.pumpAndSettle();
   } else {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
   }
+}
+
+/// Changes the reported keyboard inset on an already-pumped screen, leaving
+/// its [State] — and its focus — untouched.
+///
+/// This is how a keyboard dismissal gets simulated honestly. Android's back
+/// gesture hides the IME without closing the input connection, so
+/// `EditableText.connectionClosed()` never fires and the focused node keeps
+/// `hasFocus == true`; the *only* thing that actually changes is
+/// `viewInsets.bottom` going to zero. Calling `FocusNode.unfocus()` or
+/// `tester.testTextInput.receiveAction()` instead would flip focus as a side
+/// effect and quietly paper over exactly the bug worth catching.
+///
+/// Re-pumps rather than mutating in place: `tester.view.viewInsets` is
+/// physical-pixel plumbing that a `MediaQuery` override in [pumpAt] would
+/// shadow anyway. Passing the same `screen` widget of the same type means the
+/// element is updated rather than replaced, so the `State` object, its
+/// controllers and its focus nodes all survive the pump — which is the whole
+/// point.
+Future<void> setKeyboardInset(
+  WidgetTester tester,
+  Widget screen,
+  Size size,
+  double inset, {
+  double dpr = 2.0,
+}) async {
+  await pumpAt(tester, screen, size, dpr: dpr, keyboardInset: inset);
+}
+
+/// [setKeyboardInset], stopped after a single frame.
+///
+/// The one frame is the whole point. An `Animated*` wrapper is still mid-tween
+/// one frame in, so anything measured here that already equals its settled
+/// value cannot have animated to get there — which is how the footer's
+/// instant show/hide is asserted rather than assumed. Pumping and settling
+/// would report the same numbers either way.
+Future<void> setKeyboardInsetForOneFrame(
+  WidgetTester tester,
+  Widget screen,
+  Size size,
+  double inset, {
+  double dpr = 2.0,
+}) async {
+  await pumpAt(
+    tester,
+    screen,
+    size,
+    dpr: dpr,
+    keyboardInset: inset,
+    settle: false,
+    frames: 1,
+  );
 }
 
 /// Tears the tree down inside the test body.
@@ -109,6 +168,45 @@ void expectNoArabicIndicDigits(WidgetTester tester) {
       reason: 'Arabic-Indic digits in: $data',
     );
   }
+}
+
+/// Fails unless [field] ended up clear of the keyboard rather than balanced
+/// on its edge.
+///
+/// The bar is deliberately above what Flutter gives you for free. The
+/// framework reveals the *caret* when the keyboard arrives and stops the
+/// instant it is technically on screen, which on these two forms leaves
+/// 26-45pt under the field — visible, but the cramped "half-covered" state
+/// that prompted `AuthTextField`'s own reveal. That reveal centres the field
+/// in what is left of the viewport, which measures 51pt or better for every
+/// field on both screens at both sizes below, so [minSlack] separates the two
+/// outcomes rather than merely restating whichever one is current.
+///
+/// Not applicable where the scroll extent runs out first — at 320x568 with a
+/// 320pt keyboard the viewport is under 100pt and centring is all the room
+/// there is.
+void expectFieldClearOfKeyboard(
+  WidgetTester tester,
+  Finder field, {
+  double minSlack = 48,
+  String? label,
+}) {
+  final rect = tester.getRect(field);
+  final viewport = tester.getRect(find.byType(SingleChildScrollView));
+  final where = label == null ? '' : ' ($label)';
+
+  expect(
+    rect.top,
+    greaterThanOrEqualTo(viewport.top),
+    reason: 'the field$where scrolled off the top of the sheet',
+  );
+  expect(
+    viewport.bottom - rect.bottom,
+    greaterThanOrEqualTo(minSlack),
+    reason:
+        'the field$where is sitting on the keyboard, not clear of it — '
+        'only ${(viewport.bottom - rect.bottom).toStringAsFixed(1)}pt below it',
+  );
 }
 
 /// Every [Text] on screen, flattened — including the rich-text runs, which

@@ -7,7 +7,10 @@
 /// must reference these tokens rather than re-declaring literals.
 library;
 
-import 'package:flutter/widgets.dart';
+// `material`, not `widgets`: [AuroraPalette] is a [ThemeExtension] and
+// `context.aurora` reads it back off [Theme], both of which live in Material.
+// This file otherwise still declares nothing but literals.
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Colour tokens. Values are locked — see CLAUDE.md "Locked design system".
@@ -45,8 +48,14 @@ abstract final class AuroraColors {
   /// Validation and failure.
   static const danger = Color(0xFFDC2626);
 
-  /// Recoverable warnings — the amber variant of the auth error banner.
+  /// Recoverable warnings — the amber variant of the auth error banner, and
+  /// the rating pill's mark on Home's Featured Doctors card.
   static const warning = Color(0xFFD97706);
+
+  /// [warning]'s tinted backdrop — the rating pill's fill on a light surface.
+  /// A flat opaque value rather than `warning.withValues(alpha: …)` because it
+  /// sits on [surface] and must not shift if the card's fill ever does.
+  static const warningTint = Color(0xFFFBEEDD);
 
   /// Confirmation, e.g. the OTP verify checkmark. Deliberately *not*
   /// [primary]: it reads as a system success state, not as branding.
@@ -109,6 +118,36 @@ abstract final class AuroraColors {
 
   /// Tertiary text — the counterpart to [muted].
   static const mutedDark = Color(0xFF7C948E);
+
+  /// The rating pill's mark in dark mode — the counterpart to [warning].
+  ///
+  /// The one status colour that has to flip. The others ([danger], [success])
+  /// carry white text on a filled control, so their own hue never has to be
+  /// read against a dark surface; the rating pill is the inverse — [warning]
+  /// *is* the text, at 11pt, and #D97706 on [tonalDark] lands around 2.6:1.
+  /// This is the same amber lifted until it holds.
+  static const warningDark = Color(0xFFF2B855);
+
+  /// [warningTint]'s counterpart: [warning] at 18% over a dark surface. Kept
+  /// translucent, unlike the light tint, so it reads as a wash on whatever
+  /// dark fill it lands on rather than as a second opaque swatch.
+  static const warningTintDark = Color(0x2ED97706);
+
+  // The accent that carries brand green as *text on a tonal fill* rather than
+  // as a gradient behind white. [primary] cannot do this job in either theme:
+  // it is tuned to sit under white type, and inverted to green-on-tonal it
+  // drops under the contrast floor. `home_empty_state_card.dart` already hit
+  // this and solved it privately for its one white pill; these are the
+  // theme-aware pair, so the next widget that needs it does not mint a third.
+
+  /// Green on a light tonal fill — the specialty label and the initials
+  /// fallback on the Featured Doctors card.
+  static const accentOnTonal = Color(0xFF0F6E56);
+
+  /// The counterpart to [accentOnTonal]. Light rather than deep, because on
+  /// [tonalDark] the contrast has to come from the type being *brighter* than
+  /// its backdrop, not darker.
+  static const accentOnTonalDark = Color(0xFF6FE3BD);
 }
 
 /// The auth surface's own palette.
@@ -382,4 +421,247 @@ abstract final class AuroraShadows {
       blurRadius: 40,
     ),
   ];
+
+  /// Dark mode's card lift. Depth on a dark surface comes from a plain black
+  /// drop, not from the tinted greens above — those were mixed against white
+  /// and turn to mud once the backdrop is dark.
+  static const cardDark = [
+    BoxShadow(
+      color: Color(0x73000000), // black 45%
+      offset: Offset(0, 6),
+      blurRadius: 14,
+    ),
+  ];
+}
+
+/// The half of [AuroraColors] that changes with the theme, resolved from
+/// context rather than referenced as a constant.
+///
+/// [AuroraColors] stays exactly as it is — a flat list of literals, and still
+/// the single place a hue is defined. This is the *selector* on top of it:
+/// every value here names one of those constants, and which one depends on the
+/// active [ThemeData]. Widgets that used to branch on
+/// `MediaQuery.platformBrightnessOf` read `context.aurora` instead, so the
+/// answer comes from the app's own theme — which honours the person's
+/// light/dark/system choice — rather than from the device setting the app was
+/// previously ignoring.
+///
+/// Brand hues are deliberately absent. [AuroraColors.primary],
+/// [AuroraColors.primaryBlue] and the status colours are the same ink in both
+/// themes and should keep being referenced directly; only surfaces, text and
+/// the elevation that sits under them flip.
+@immutable
+class AuroraPalette extends ThemeExtension<AuroraPalette> {
+  const AuroraPalette({
+    required this.ink,
+    required this.secondary,
+    required this.muted,
+    required this.background,
+    required this.surface,
+    required this.tonal,
+    required this.tonalBlue,
+    required this.divider,
+    required this.disabledInk,
+    required this.accentOnTonal,
+    required this.ratingAmber,
+    required this.ratingAmberBg,
+    required this.heroGradient,
+    required this.heroBorder,
+    required this.heroShadow,
+    required this.cardShadow,
+    required this.pillShadow,
+  });
+
+  /// Primary text.
+  final Color ink;
+
+  /// Supporting text and icons.
+  final Color secondary;
+
+  /// Tertiary text, chevrons, placeholder glyphs.
+  final Color muted;
+
+  /// The app background behind every scaffold.
+  final Color background;
+
+  /// Cards and sheets — the layer that sits on [background].
+  final Color surface;
+
+  /// Quiet filled areas: field fills, unselected pills, list-tile selection.
+  final Color tonal;
+
+  /// [tonal]'s blue-side counterpart.
+  final Color tonalBlue;
+
+  /// Hairline separators.
+  final Color divider;
+
+  /// Text and icons on a disabled control.
+  final Color disabledInk;
+
+  /// Brand green as *type*, on [tonal] or [surface] — not as a gradient behind
+  /// white. The Featured Doctors card's specialty label and initials fallback.
+  final Color accentOnTonal;
+
+  /// The rating pill's star and figure.
+  ///
+  /// One of the few status hues that is theme-aware rather than fixed: unlike
+  /// [AuroraColors.danger] and [AuroraColors.success], which are only ever
+  /// seen carrying white type on a filled control, this amber *is* the type.
+  final Color ratingAmber;
+
+  /// The rating pill's fill, under [ratingAmber].
+  final Color ratingAmberBg;
+
+  /// The gradient on the two hero cards — Home's queue card and its empty
+  /// state. Dark mode uses the pre-darkened stops rather than the light ramp,
+  /// which glows against a dark backdrop.
+  final LinearGradient heroGradient;
+
+  /// A hairline on the hero cards, dark mode only. The light ramp separates
+  /// itself from a pale background on its own; against [bgDark] it needs an
+  /// edge or it bleeds into the page.
+  final BoxBorder? heroBorder;
+
+  /// Elevation under a hero card.
+  final List<BoxShadow> heroShadow;
+
+  /// Elevation under an ordinary card.
+  final List<BoxShadow> cardShadow;
+
+  /// Elevation under a selected pill. Empty in dark mode — a drop shadow on a
+  /// dark surface reads as grime, not as lift.
+  final List<BoxShadow> pillShadow;
+
+  static const light = AuroraPalette(
+    ink: AuroraColors.ink,
+    secondary: AuroraColors.secondary,
+    muted: AuroraColors.muted,
+    background: AuroraColors.background,
+    surface: AuroraColors.surface,
+    tonal: AuroraColors.tonal,
+    tonalBlue: AuroraColors.tonalBlue,
+    divider: AuroraColors.divider,
+    disabledInk: AuroraColors.disabledInk,
+    accentOnTonal: AuroraColors.accentOnTonal,
+    ratingAmber: AuroraColors.warning,
+    ratingAmberBg: AuroraColors.warningTint,
+    heroGradient: AuroraGradients.aurora,
+    heroBorder: null,
+    heroShadow: [
+      // A tight, deep-green lift rather than the flatter AuroraShadows.card,
+      // which is tuned for white surfaces.
+      BoxShadow(
+        color: Color(0x6B062D24), // rgba(6,45,36,0.42)
+        offset: Offset(0, 14),
+        blurRadius: 26,
+      ),
+    ],
+    cardShadow: AuroraShadows.card,
+    pillShadow: AuroraShadows.pill,
+  );
+
+  static const dark = AuroraPalette(
+    ink: AuroraColors.inkDark,
+    secondary: AuroraColors.secondaryDark,
+    muted: AuroraColors.mutedDark,
+    background: AuroraColors.bgDark,
+    surface: AuroraColors.tonalDark,
+    tonal: AuroraColors.tonalDark,
+    // No separate blue-side tonal in dark: at this lightness the two would be
+    // a couple of points apart and read as the same colour, so the one
+    // surface does both jobs rather than pretending to a distinction.
+    tonalBlue: AuroraColors.tonalDark,
+    divider: Color(0x1FFFFFFF), // white 12%
+    disabledInk: AuroraColors.mutedDark,
+    accentOnTonal: AuroraColors.accentOnTonalDark,
+    ratingAmber: AuroraColors.warningDark,
+    ratingAmberBg: AuroraColors.warningTintDark,
+    heroGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [AuroraColors.gradientStartDark, AuroraColors.gradientEndDark],
+    ),
+    heroBorder: Border.fromBorderSide(
+      BorderSide(color: Color(0x14FFFFFF)), // white 8%
+    ),
+    heroShadow: AuroraShadows.cardDark,
+    cardShadow: AuroraShadows.cardDark,
+    pillShadow: [],
+  );
+
+  @override
+  AuroraPalette copyWith({
+    Color? ink,
+    Color? secondary,
+    Color? muted,
+    Color? background,
+    Color? surface,
+    Color? tonal,
+    Color? tonalBlue,
+    Color? divider,
+    Color? disabledInk,
+    Color? accentOnTonal,
+    Color? ratingAmber,
+    Color? ratingAmberBg,
+    LinearGradient? heroGradient,
+    BoxBorder? heroBorder,
+    List<BoxShadow>? heroShadow,
+    List<BoxShadow>? cardShadow,
+    List<BoxShadow>? pillShadow,
+  }) {
+    return AuroraPalette(
+      ink: ink ?? this.ink,
+      secondary: secondary ?? this.secondary,
+      muted: muted ?? this.muted,
+      background: background ?? this.background,
+      surface: surface ?? this.surface,
+      tonal: tonal ?? this.tonal,
+      tonalBlue: tonalBlue ?? this.tonalBlue,
+      divider: divider ?? this.divider,
+      disabledInk: disabledInk ?? this.disabledInk,
+      accentOnTonal: accentOnTonal ?? this.accentOnTonal,
+      ratingAmber: ratingAmber ?? this.ratingAmber,
+      ratingAmberBg: ratingAmberBg ?? this.ratingAmberBg,
+      heroGradient: heroGradient ?? this.heroGradient,
+      heroBorder: heroBorder ?? this.heroBorder,
+      heroShadow: heroShadow ?? this.heroShadow,
+      cardShadow: cardShadow ?? this.cardShadow,
+      pillShadow: pillShadow ?? this.pillShadow,
+    );
+  }
+
+  @override
+  AuroraPalette lerp(ThemeExtension<AuroraPalette>? other, double t) {
+    if (other is! AuroraPalette) return this;
+    return AuroraPalette(
+      ink: Color.lerp(ink, other.ink, t)!,
+      secondary: Color.lerp(secondary, other.secondary, t)!,
+      muted: Color.lerp(muted, other.muted, t)!,
+      background: Color.lerp(background, other.background, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      tonal: Color.lerp(tonal, other.tonal, t)!,
+      tonalBlue: Color.lerp(tonalBlue, other.tonalBlue, t)!,
+      divider: Color.lerp(divider, other.divider, t)!,
+      disabledInk: Color.lerp(disabledInk, other.disabledInk, t)!,
+      accentOnTonal: Color.lerp(accentOnTonal, other.accentOnTonal, t)!,
+      ratingAmber: Color.lerp(ratingAmber, other.ratingAmber, t)!,
+      ratingAmberBg: Color.lerp(ratingAmberBg, other.ratingAmberBg, t)!,
+      heroGradient: LinearGradient.lerp(heroGradient, other.heroGradient, t)!,
+      heroBorder: BoxBorder.lerp(heroBorder, other.heroBorder, t),
+      heroShadow: BoxShadow.lerpList(heroShadow, other.heroShadow, t)!,
+      cardShadow: BoxShadow.lerpList(cardShadow, other.cardShadow, t)!,
+      pillShadow: BoxShadow.lerpList(pillShadow, other.pillShadow, t)!,
+    );
+  }
+}
+
+/// `context.aurora` — the palette for the active theme.
+///
+/// Falls back to [AuroraPalette.light] rather than throwing when the extension
+/// is missing, which is what a bare `MaterialApp` in a widget test gives you.
+/// A test that forgot the theme should render the light palette, not crash.
+extension AuroraPaletteContext on BuildContext {
+  AuroraPalette get aurora =>
+      Theme.of(this).extension<AuroraPalette>() ?? AuroraPalette.light;
 }

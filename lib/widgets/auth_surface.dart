@@ -95,6 +95,7 @@ class AuthSheetScaffold extends StatelessWidget {
     required this.body,
     this.footer,
     this.sheetPadding = const EdgeInsets.fromLTRB(28, 24, 28, 20),
+    this.collapseFooterWithKeyboard = false,
   });
 
   final Widget hero;
@@ -102,8 +103,34 @@ class AuthSheetScaffold extends StatelessWidget {
   final Widget? footer;
   final EdgeInsets sheetPadding;
 
+  /// Folds [footer] away while the soft keyboard is up.
+  ///
+  /// Opt-in rather than automatic. Sign In and Sign Up want it: their footers
+  /// are navigation prompts nobody reads mid-typing, and both are anchored to
+  /// an edge the keyboard moves. OTP does not: it autofocuses its pin field,
+  /// so the keyboard is up for that screen's entire life and collapsing on it
+  /// would mean its spam-folder hint is never seen at all.
+  final bool collapseFooterWithKeyboard;
+
   @override
   Widget build(BuildContext context) {
+    // Read here, and only here — this context sits *above* the Scaffold that
+    // [AuthScreen] builds, so it sees the real keyboard inset. (It mattered
+    // even more when that Scaffold still resized: a resizing Scaffold hides
+    // the inset from its own body, so the same read inside the sheet was a
+    // constant 0.)
+    //
+    // Rebuild cost is close to nil despite this running on every frame of the
+    // keyboard animation: [hero] and [body] arrive as already-built widget
+    // instances, so the element tree short-circuits both subtrees on
+    // `identical()` and only these few wrappers are re-created.
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardUp = keyboardInset > 0;
+    final footer = this.footer;
+    final resolvedFooter = footer == null || !collapseFooterWithKeyboard
+        ? footer
+        : AuthCollapsible(collapsed: keyboardUp, child: footer);
+
     return AuthScreen(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -117,8 +144,23 @@ class AuthSheetScaffold extends StatelessWidget {
                   top: Radius.circular(authSheetRadius),
                 ),
               ),
+              // The keyboard is dodged *here*, by padding the sheet's
+              // contents, rather than by letting the Scaffold resize the whole
+              // body — see [AuthScreen]. The white Container above this stays
+              // full-height and keeps painting behind the keyboard.
+              //
+              // While the keyboard is up its inset *replaces* the sheet's own
+              // bottom padding rather than adding to it. Adding them was what
+              // put a white line above the keyboard: the scroll view stopped
+              // `sheetPadding.bottom` short of the IME, and that gap is sheet
+              // — white, directly under the clipped submit button and
+              // directly over the keyboard, which is exactly where it reads
+              // as a line. The keyboard is the bottom edge while it is up, so
+              // it does not need a margin above it as well.
               child: Padding(
-                padding: sheetPadding,
+                padding: sheetPadding.copyWith(
+                  bottom: keyboardUp ? keyboardInset : sheetPadding.bottom,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -128,7 +170,7 @@ class AuthSheetScaffold extends StatelessWidget {
                         child: body,
                       ),
                     ),
-                    ?footer,
+                    ?resolvedFooter,
                   ],
                 ),
               ),
@@ -156,16 +198,35 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          behavior: HitTestBehavior.opaque,
-          child: Stack(
-            children: [
-              const Positioned.fill(child: AuthBackdrop()),
-              SafeArea(bottom: false, child: child),
-            ],
+      child: DecoratedBox(
+        decoration: const BoxDecoration(gradient: AuroraGradients.authHero),
+        child: Scaffold(
+          // The screen does not resize for the keyboard. It paints the full
+          // window at all times and the IME slides up over it, which is the
+          // only arrangement where nothing can appear between the form and
+          // the keyboard: a resizing body has to hand its vacated strip to
+          // *something* — the Scaffold's own surface, or the Android window
+          // behind it — and for a frame or two, whenever the IME's edge and
+          // the reported inset disagree, that something is visible as a band
+          // above the keyboard. [AuthSheetScaffold] dodges the IME by padding
+          // the sheet's contents instead, so the controls still clear it.
+          //
+          // The gradient is also lifted outside the Scaffold (above) and the
+          // Android window background is brand-blue rather than white (see
+          // NormalTheme in styles.xml): belt and braces, so that even a
+          // compositor-level gap during a window resize is brand-coloured
+          // rather than a white flash.
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: false,
+          body: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            behavior: HitTestBehavior.opaque,
+            child: Stack(
+              children: [
+                const Positioned.fill(child: AuthBackdrop()),
+                SafeArea(bottom: false, child: child),
+              ],
+            ),
           ),
         ),
       ),
@@ -333,7 +394,19 @@ class AuthTextField extends StatefulWidget {
 }
 
 class _AuthTextFieldState extends State<AuthTextField> {
+  /// Clear space to leave under the field once it has been revealed.
+  ///
+  /// Flutter's own reveal is the caret's, and it stops the moment the caret is
+  /// technically on screen — which leaves the field balanced on the keyboard's
+  /// edge with about half a field's height to spare. That is the "kinda
+  /// covered" state this exists to fix, so the bar has to sit above it.
+  static const _revealMargin = 48.0;
+
   late bool _focused = widget.focusNode.hasFocus;
+
+  /// Last keyboard height seen. Only growth matters — a keyboard on its way
+  /// out never needs anything scrolled into view.
+  double _lastBottomInset = 0;
 
   @override
   void initState() {
@@ -363,6 +436,73 @@ class _AuthTextFieldState extends State<AuthTextField> {
     if (!mounted) return;
     final focused = widget.focusNode.hasFocus;
     if (focused != _focused) setState(() => _focused = focused);
+    // Covers tapping a second field while the keyboard is already up: no
+    // metrics change fires then, so [didChangeMetrics] would never hear it.
+    if (focused) _scheduleReveal();
+  }
+
+  /// The keyboard opening is what actually hides a field, and it arrives a
+  /// beat *after* the tap that focused it — so the reveal has to hang off the
+  /// keyboard's arrival, not off the focus change.
+  ///
+  /// Off the inherited [MediaQuery] rather than off `didChangeMetrics` and the
+  /// raw `View`, deliberately. The sheet does not resize for the keyboard (see
+  /// [AuthScreen]) so nothing strips the inset out of the MediaQuery on the
+  /// way down here, and this is the same value the sheet pads itself by — so
+  /// this fires in exactly the frames the viewport actually shrinks. The raw
+  /// view is also invisible to a widget test that supplies the keyboard by
+  /// overriding MediaQuery, which is most of them.
+  ///
+  /// Something has to do this: nothing in Flutter scrolls a *field* into view
+  /// on its own. The framework reveals the caret, and stops as soon as the
+  /// caret is technically on screen — see [_revealMargin].
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final inset = MediaQuery.viewInsetsOf(context).bottom;
+    final grew = inset > _lastBottomInset;
+    _lastBottomInset = inset;
+    if (grew && widget.focusNode.hasFocus) _scheduleReveal();
+  }
+
+  /// Post-frame, so the padded-down viewport this measures against is the one
+  /// the keyboard just produced rather than the one it replaced.
+  void _scheduleReveal() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !widget.focusNode.hasFocus) return;
+      _revealIfObscured();
+    });
+  }
+
+  void _revealIfObscured() {
+    final scrollable = Scrollable.maybeOf(context);
+    if (scrollable == null) return;
+
+    final field = context.findRenderObject() as RenderBox?;
+    final viewport = scrollable.context.findRenderObject() as RenderBox?;
+    if (field == null ||
+        viewport == null ||
+        !field.hasSize ||
+        !viewport.hasSize) {
+      return;
+    }
+
+    final top = field.localToGlobal(Offset.zero, ancestor: viewport).dy;
+    final bottom = top + field.size.height;
+    // Already sitting clear of the keyboard with room to spare — leave it
+    // alone. Scrolling a field that was perfectly visible is its own bug.
+    if (top >= 0 && bottom + _revealMargin <= viewport.size.height) return;
+
+    // Mid-viewport rather than flush against the bottom edge: `ensureVisible`
+    // with the usual minimal alignment parks the field *on* the keyboard's
+    // edge, which is the complaint this exists to answer. Clamped by the
+    // scroll extents, so a field near the top of a short form does not move.
+    Scrollable.ensureVisible(
+      context,
+      alignment: 0.5,
+      duration: AuroraMotion.standard,
+      curve: AuroraMotion.easeOut,
+    );
   }
 
   @override
@@ -655,28 +795,32 @@ class AuthGoogleButton extends StatelessWidget {
   }
 }
 
-/// Folds [child] away — height and all — while a field is focused.
+/// Folds [child] away — height and all — when [collapsed] goes true.
 ///
-/// Restored from the retired `auth_shell.dart`, where it wrapped each card's
-/// pitch line for exactly this reason. It came back for the footer prompt,
-/// which has the same problem in a worse form: the footer is a fixed sibling
-/// pinned to the bottom of the sheet, so when `resizeToAvoidBottomInset`
-/// shrinks the Scaffold for the keyboard, the footer rides up the screen with
-/// the sheet's bottom edge instead of staying put or scrolling away. Collapsed
-/// it simply is not there, and the scroll area above gets the space back.
+/// Descended from the one in the retired `auth_shell.dart`, which wrapped
+/// each card's pitch line. It came back for the footer prompt, which has the
+/// same problem in a worse form: the footer is a fixed sibling pinned to the
+/// bottom of the sheet's content box, so when that box is padded down for the
+/// keyboard the footer rides up the screen with it instead of staying put or
+/// scrolling away. Collapsed it simply is not there, and the scroll area
+/// above gets the space back.
 ///
-/// [AnimatedCrossFade] rather than a bare `if`: it tweens the height and the
-/// opacity together, so the content above glides rather than snapping, and it
-/// keeps both children built so there is no rebuild cost at the moment of the
-/// switch. Aligned to the bottom here — the collapse should close downward,
-/// toward the edge the footer is anchored to, rather than dragging the form
-/// above it along.
+/// Named for what it does, not for what drives it — deliberately. The first
+/// version was `AuthCollapsibleOnFocus` and took its cue from
+/// `FocusNode.hasFocus`, which shipped a bug: Android's back gesture hides
+/// the IME without closing the input connection, so `EditableText`'s
+/// `connectionClosed()` never runs, the node never unfocuses, and the footer
+/// stayed folded away indefinitely. The keyboard's own inset is the honest
+/// signal and [AuthSheetScaffold] reads it; this widget just swaps.
 ///
-/// While collapsed the layout sizes to a zero-height box, so the hidden child
-/// falls outside the hit-test rect and the link underneath it cannot be
-/// tapped by accident.
-class AuthCollapsibleOnFocus extends StatelessWidget {
-  const AuthCollapsibleOnFocus({
+/// The swap is instant — a bare `if`, not an [AnimatedCrossFade]. It used to
+/// tween height and opacity together, and that read as the prompt *growing
+/// back* out of nothing every time the keyboard went away: a second piece of
+/// motion chasing the keyboard's own, drawing the eye to the bottom of the
+/// screen at exactly the moment the person is done down there. The prompt is
+/// chrome. It should be present or absent, never arriving.
+class AuthCollapsible extends StatelessWidget {
+  const AuthCollapsible({
     super.key,
     required this.collapsed,
     required this.child,
@@ -687,18 +831,11 @@ class AuthCollapsibleOnFocus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      firstChild: child,
-      secondChild: const SizedBox(width: double.infinity, height: 0),
-      crossFadeState: collapsed
-          ? CrossFadeState.showSecond
-          : CrossFadeState.showFirst,
-      duration: AuroraMotion.standard,
-      firstCurve: AuroraMotion.easeOut,
-      secondCurve: AuroraMotion.easeOut,
-      sizeCurve: AuroraMotion.easeOut,
-      alignment: Alignment.bottomCenter,
-    );
+    // Zero-height rather than nothing at all: the sheet's Column measures this
+    // slot either way, and a zero box keeps the hidden prompt out of the
+    // hit-test rect so the link underneath cannot be tapped by accident.
+    if (collapsed) return const SizedBox(width: double.infinity, height: 0);
+    return child;
   }
 }
 

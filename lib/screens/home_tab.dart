@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
+import '../widgets/home_featured_doctors.dart';
 import '../widgets/home_specialty_chips.dart';
 
 /// Home tab body.
 ///
-/// The fixed top bar plus the empty-state card, and nothing else — the rest
-/// of the Home spec (location pill, specialty filters, previously-visited
-/// doctors, upcoming booking) is still to come.
+/// The fixed top bar, then a scrolling column: the empty-state card, the
+/// browse-by-specialty chips, and the featured-doctors carousel. The rest of
+/// the Home spec (location pill, previously-visited doctors, upcoming booking)
+/// is still to come.
+///
+/// Everything below the top bar is presentation only. None of it has a backing
+/// query — the chips filter nothing, the doctors are hardcoded, and every CTA
+/// is inert — because the tables and flows they would talk to do not exist
+/// yet. Each one carries its own note on what it is waiting for.
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
@@ -61,6 +68,14 @@ class _HomeTabState extends State<HomeTab> {
                 // so the chip row only moves its own highlight. The callback
                 // is left unwired rather than pointed at a stub.
                 const HomeSpecialtyChips(),
+                const SizedBox(height: AuroraSpacing.xxl),
+                // Inert for the same reason again, and one step further: the
+                // doctors themselves are hardcoded. There is no `doctors`
+                // table, so this section shows placeholder people to prove the
+                // layout, not data. `onBook` is left unwired — there is no
+                // booking flow for it to open — and the whole list is replaced
+                // once a real query exists. See `models/doctor.dart`.
+                const HomeFeaturedDoctors(),
               ],
             ),
           ),
@@ -105,11 +120,13 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.aurora;
+
     return Container(
       height: height,
       padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
       decoration: BoxDecoration(
-        color: AuroraColors.tonal,
+        color: palette.tonal,
         borderRadius: BorderRadius.circular(AuroraRadius.pill),
       ),
       // Magnifier and placeholder read as one cluster on the pill's right
@@ -125,11 +142,7 @@ class _SearchBar extends StatelessWidget {
       // parks the placeholder against the magnifier.
       child: Row(
         children: [
-          const Icon(
-            Icons.search_rounded,
-            size: 20,
-            color: AuroraColors.secondary,
-          ),
+          Icon(Icons.search_rounded, size: 20, color: palette.secondary),
           const SizedBox(width: AuroraSpacing.sm),
           Expanded(
             child: Text(
@@ -138,7 +151,7 @@ class _SearchBar extends StatelessWidget {
               style: AuroraText.body(
                 size: 14,
                 weight: FontWeight.w500,
-                color: AuroraColors.secondary,
+                color: palette.secondary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -157,6 +170,8 @@ class _NotificationBell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.aurora;
+
     return SizedBox(
       width: size,
       height: size,
@@ -168,14 +183,14 @@ class _NotificationBell extends StatelessWidget {
             width: size,
             height: size,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AuroraColors.tonal,
+            decoration: BoxDecoration(
+              color: palette.tonal,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.notifications_none_rounded,
               size: 22,
-              color: AuroraColors.ink,
+              color: palette.ink,
             ),
           ),
           // Static. Nothing counts unread notifications yet, so this is the
@@ -189,7 +204,7 @@ class _NotificationBell extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AuroraColors.danger,
                 shape: BoxShape.circle,
-                border: Border.all(color: AuroraColors.tonal, width: 1.5),
+                border: Border.all(color: palette.tonal, width: 1.5),
               ),
             ),
           ),

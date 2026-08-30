@@ -6,22 +6,28 @@
 // that one is built around connectivity scenarios that mean nothing here, and
 // each preview owns its own `main()` so it can be launched with -t on its own.
 //
-// The brightness switcher lives here, in the harness. The card reads the
-// platform brightness and has no switcher of its own.
+// The mode switcher lives here, in the harness. The card has none of its own —
+// it reads [AuroraPalette] off the ambient theme, so switching `themeMode` is
+// what drives it. This used to override `MediaQuery.platformBrightness`
+// instead, back when the card read the device setting directly because the app
+// had no dark theme for it to follow; there is one now, and the override no
+// longer reaches the card at all.
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
 
 void main() => runApp(const _PreviewApp());
 
 enum _Mode {
-  system('حسب النظام'),
-  light('فاتح'),
-  dark('داكن');
+  system('حسب النظام', ThemeMode.system),
+  light('فاتح', ThemeMode.light),
+  dark('داكن', ThemeMode.dark);
 
-  const _Mode(this.label);
+  const _Mode(this.label, this.themeMode);
   final String label;
+  final ThemeMode themeMode;
 }
 
 class _PreviewApp extends StatefulWidget {
@@ -38,79 +44,60 @@ class _PreviewAppState extends State<_PreviewApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: _mode.themeMode,
       home: Builder(
-        // Inner context so the MediaQuery override below is the one the card
-        // sees. Overriding `platformBrightness` — not `ThemeData.brightness`
-        // or `themeMode` — is what actually drives the card: it reads
-        // `MediaQuery.platformBrightnessOf`, which a theme toggle cannot
-        // reach. That is the same reason the app can't theme these cards
-        // today, so the harness has to reproduce it faithfully.
         builder: (context) {
-          final platform = MediaQuery.platformBrightnessOf(context);
-          final brightness = switch (_mode) {
-            _Mode.system => platform,
-            _Mode.light => Brightness.light,
-            _Mode.dark => Brightness.dark,
-          };
-          final isDark = brightness == Brightness.dark;
+          final palette = context.aurora;
 
-          return MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(platformBrightness: brightness),
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor: isDark
-                    ? AuroraColors.bgDark
-                    : const Color(0xFFFAF7F2),
-                body: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(AuroraSpacing.xl),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Wrap(
-                          spacing: AuroraSpacing.sm,
-                          runSpacing: AuroraSpacing.sm,
-                          children: [
-                            for (final mode in _Mode.values)
-                              ChoiceChip(
-                                label: Text(mode.label),
-                                selected: _mode == mode,
-                                onSelected: (_) => setState(() => _mode = mode),
-                              ),
-                          ],
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AuroraSpacing.xl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Wrap(
+                        spacing: AuroraSpacing.sm,
+                        runSpacing: AuroraSpacing.sm,
+                        children: [
+                          for (final mode in _Mode.values)
+                            ChoiceChip(
+                              label: Text(mode.label),
+                              selected: _mode == mode,
+                              onSelected: (_) => setState(() => _mode = mode),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: AuroraSpacing.xl),
+                      // Inert, as it is in the app: no search flow exists to
+                      // open, so the harness does not invent one either.
+                      const HomeEmptyStateCard(),
+                      const SizedBox(height: AuroraSpacing.xxl),
+                      // Both themes at once, so the pair can be compared
+                      // without toggling back and forth.
+                      Text(
+                        'المظهران معاً',
+                        style: AuroraText.body(
+                          size: AuroraFontSize.bodyLg,
+                          weight: FontWeight.w700,
+                          color: palette.ink,
                         ),
-                        const SizedBox(height: AuroraSpacing.xl),
-                        // Inert, as it is in the app: no search flow exists
-                        // to open, so the harness does not invent one either.
-                        const HomeEmptyStateCard(),
-                        const SizedBox(height: AuroraSpacing.xxl),
-                        // Both brightnesses at once, so the pair can be
-                        // compared without toggling back and forth.
-                        Text(
-                          'المظهران معاً',
-                          style: AuroraText.body(
-                            size: AuroraFontSize.bodyLg,
-                            weight: FontWeight.w700,
-                            color: isDark
-                                ? AuroraColors.inkDark
-                                : AuroraColors.ink,
-                          ),
-                        ),
-                        const SizedBox(height: AuroraSpacing.md),
-                        const _Forced(
-                          brightness: Brightness.light,
-                          child: HomeEmptyStateCard(),
-                        ),
-                        const SizedBox(height: AuroraSpacing.lg),
-                        const _Forced(
-                          brightness: Brightness.dark,
-                          child: HomeEmptyStateCard(),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: AuroraSpacing.md),
+                      const _Forced(
+                        theme: AppThemeVariant.light,
+                        child: HomeEmptyStateCard(),
+                      ),
+                      const SizedBox(height: AuroraSpacing.lg),
+                      const _Forced(
+                        theme: AppThemeVariant.dark,
+                        child: HomeEmptyStateCard(),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -122,25 +109,29 @@ class _PreviewAppState extends State<_PreviewApp> {
   }
 }
 
-/// Renders [child] as though the platform were in [brightness], on the
-/// background that brightness would put behind it.
-class _Forced extends StatelessWidget {
-  const _Forced({required this.brightness, required this.child});
+enum AppThemeVariant { light, dark }
 
-  final Brightness brightness;
+/// Renders [child] under one theme regardless of the harness's own setting,
+/// on the background that theme would put behind it.
+class _Forced extends StatelessWidget {
+  const _Forced({required this.theme, required this.child});
+
+  final AppThemeVariant theme;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(platformBrightness: brightness),
-      child: ColoredBox(
-        color: brightness == Brightness.dark
-            ? AuroraColors.bgDark
-            : const Color(0xFFFAF7F2),
-        child: Padding(
-          padding: const EdgeInsets.all(AuroraSpacing.lg),
-          child: child,
+    final data = theme == AppThemeVariant.dark ? AppTheme.dark : AppTheme.light;
+
+    return Theme(
+      data: data,
+      child: Builder(
+        builder: (context) => ColoredBox(
+          color: context.aurora.background,
+          child: Padding(
+            padding: const EdgeInsets.all(AuroraSpacing.lg),
+            child: child,
+          ),
         ),
       ),
     );

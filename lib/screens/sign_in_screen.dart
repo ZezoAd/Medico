@@ -87,11 +87,6 @@ class _SignInScreenState extends State<SignInScreen> {
   OtpPurpose _pendingOtpPurpose = OtpPurpose.signupConfirmation;
   bool _resendingConfirmation = false;
 
-  /// True while either field holds focus, i.e. while the keyboard is up and
-  /// competing for the vertical space the footer prompt occupies. See
-  /// [AuthCollapsibleOnFocus].
-  bool _fieldFocused = false;
-
   @override
   void initState() {
     super.initState();
@@ -111,19 +106,11 @@ class _SignInScreenState extends State<SignInScreen> {
     }
     _emailFocusNode.addListener(_onEmailFocusChange);
     _passwordFocusNode.addListener(_onPasswordFocusChange);
-    for (final node in [_emailFocusNode, _passwordFocusNode]) {
-      node.addListener(_onAnyFieldFocusChange);
-    }
-  }
-
-  /// Collapses the footer the moment the keyboard claims the screen.
-  ///
-  /// Separate from the per-field blur listeners above: those fire validation
-  /// and only rebuild when an error actually changes, so they cannot be used
-  /// to observe focus itself.
-  void _onAnyFieldFocusChange() {
-    final focused = _emailFocusNode.hasFocus || _passwordFocusNode.hasFocus;
-    if (focused != _fieldFocused) setState(() => _fieldFocused = focused);
+    // No third "is any field focused" listener here any more. The footer's
+    // collapse used to hang off one, and focus turned out to be the wrong
+    // question: Android's back gesture hides the keyboard without unfocusing
+    // anything, so the answer stayed `true` and the footer never came back.
+    // [AuthSheetScaffold] watches the keyboard inset instead.
   }
 
   @override
@@ -455,18 +442,16 @@ class _SignInScreenState extends State<SignInScreen> {
           const SizedBox(height: 12),
         ],
       ),
-      // Folded away while a field is focused. The footer is anchored to the
-      // sheet's bottom edge, and `resizeToAvoidBottomInset` moves that edge
-      // when the keyboard opens — so left alone it climbs the screen behind
-      // the keyboard instead of holding still. Nobody is reading "ليس لديك
-      // حساب؟" mid-typing, so it steps out and the form gets the space.
-      footer: AuthCollapsibleOnFocus(
-        collapsed: _fieldFocused,
-        child: AuthFooterPrompt(
-          prompt: 'ليس لديك حساب؟',
-          actionLabel: 'أنشئ حسابًا',
-          onPressed: _goSignUp,
-        ),
+      // Folded away while the keyboard is up. The footer is anchored to the
+      // sheet's bottom edge, and `resizeToAvoidBottomInset` moves that edge —
+      // so left alone it climbs the screen behind the keyboard instead of
+      // holding still. Nobody is reading "ليس لديك حساب؟" mid-typing, so it
+      // steps out and the form gets the space.
+      collapseFooterWithKeyboard: true,
+      footer: AuthFooterPrompt(
+        prompt: 'ليس لديك حساب؟',
+        actionLabel: 'أنشئ حسابًا',
+        onPressed: _goSignUp,
       ),
     );
   }

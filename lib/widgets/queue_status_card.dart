@@ -145,14 +145,10 @@ class _QueueStatusCardState extends State<QueueStatusCard>
   /// ring so a drop reads as "working on it" rather than "frozen".
   static const _retryWindow = Duration(seconds: 10);
 
-  // Same hues as the light gradient, precomputed at 22% toward black rather
-  // than blended at runtime — a soft light-mode glow reads as broken on a
-  // dark surface, so dark mode needs its own flat darkened values, not a
-  // shader blend. Ordered to match AuroraGradients.aurora: blue → green.
-  static const _gradientColorsDark = [
-    Color(0xFF20729D), // #2A93C9 scrimmed 22% toward black
-    Color(0xFF17794F), // #1D9E75 scrimmed 22% toward black
-  ];
+  // The dark gradient's stops used to be a private copy here. They are
+  // [AuroraColors.gradientStartDark]/[gradientEndDark], reached through
+  // [AuroraPalette.heroGradient], so this card and the empty state cannot
+  // drift apart.
 
   // Each blob drifts on its own prime-ish period so the three never visibly
   // resynchronise into a pulse. Mirrors the reference's 26s/34s/21s.
@@ -247,11 +243,12 @@ class _QueueStatusCardState extends State<QueueStatusCard>
 
   @override
   Widget build(BuildContext context) {
-    // main.dart's MaterialApp declares only a light ThemeData — there is no
-    // darkTheme/themeMode for Theme.of(context).brightness to reflect, so it
-    // would report `light` even on a dark device. Read the platform setting
-    // directly until that wiring exists.
-    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    // Was `MediaQuery.platformBrightnessOf`, back when main.dart declared no
+    // darkTheme for `Theme.of` to reflect. The card's dark treatment now lives
+    // in the palette — see [AuroraPalette.heroShadow], which carries the
+    // reference's 0 18px 36px -20px rgba(6,45,36,0.55) in light and a plain
+    // black drop in dark.
+    final palette = context.aurora;
     final isStale = widget.connectionStatus == QueueConnectionStatus.stale;
 
     return GestureDetector(
@@ -259,27 +256,8 @@ class _QueueStatusCardState extends State<QueueStatusCard>
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AuroraRadius.xl),
-          border: isDark
-              ? Border.all(color: Colors.white.withValues(alpha: 0.08))
-              : null,
-          boxShadow: isDark
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.45),
-                    blurRadius: 14,
-                    offset: const Offset(0, 6),
-                  ),
-                ]
-              : [
-                  // The reference's 0 18px 36px -20px rgba(6,45,36,0.55):
-                  // a tight, deep-green lift rather than the flatter
-                  // AuroraShadows.card, which is tuned for white surfaces.
-                  BoxShadow(
-                    color: const Color(0xFF062D24).withValues(alpha: 0.42),
-                    blurRadius: 26,
-                    offset: const Offset(0, 14),
-                  ),
-                ],
+          border: palette.heroBorder,
+          boxShadow: palette.heroShadow,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AuroraRadius.xl),
@@ -295,15 +273,7 @@ class _QueueStatusCardState extends State<QueueStatusCard>
             children: [
               Positioned.fill(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: isDark
-                        ? const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: _gradientColorsDark,
-                          )
-                        : AuroraGradients.aurora,
-                  ),
+                  decoration: BoxDecoration(gradient: palette.heroGradient),
                 ),
               ),
               Positioned(

@@ -8,6 +8,7 @@
 // and has no switcher of its own.
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
 import '../widgets/global_offline_strip.dart';
 import '../widgets/queue_status_card.dart';
 
@@ -79,12 +80,16 @@ class _PreviewAppState extends State<_PreviewApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Themed so the card resolves the same [AuroraPalette] it does in the app.
+    // This harness is about connectivity scenarios, not appearance, so it
+    // stays pinned to light — `home_empty_state_card_preview.dart` is the one
+    // with the light/dark switcher.
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: const Color(0xFFFAF7F2),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),

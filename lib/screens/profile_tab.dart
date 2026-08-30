@@ -4,8 +4,10 @@ library;
 import 'package:flutter/material.dart';
 
 import '../models/onboarding_data.dart';
+import '../services/theme_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../widgets/gender_avatar.dart';
+import 'theme_picker_sheet.dart';
 
 /// Banner plus settings list, in one scroll view.
 ///
@@ -134,12 +136,14 @@ class _ProfileBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.aurora;
+
     return Container(
       padding: const EdgeInsets.all(AuroraSpacing.lg),
       decoration: BoxDecoration(
-        color: AuroraColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(AuroraRadius.lg),
-        boxShadow: AuroraShadows.card,
+        boxShadow: palette.cardShadow,
       ),
       // RTL puts the avatar at the visual right, the text block beside it and
       // the pencil at the far left — the mirror of the LTR mock, which is the
@@ -155,17 +159,18 @@ class _ProfileBanner extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: AuroraText.body(size: 18, weight: FontWeight.w700),
+                  style: AuroraText.body(
+                    size: 18,
+                    weight: FontWeight.w700,
+                    color: palette.ink,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: AuroraSpacing.xs),
                 Text(
                   contact,
-                  style: AuroraText.body(
-                    size: 14,
-                    color: AuroraColors.secondary,
-                  ),
+                  style: AuroraText.body(size: 14, color: palette.secondary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -176,7 +181,7 @@ class _ProfileBanner extends StatelessWidget {
           // INERT. No edit-profile screen exists yet, so this is the
           // affordance only — deliberately not an IconButton, which would
           // ripple and imply it did something.
-          const Icon(Icons.edit_outlined, size: 20, color: AuroraColors.muted),
+          Icon(Icons.edit_outlined, size: 20, color: palette.muted),
         ],
       ),
     );
@@ -197,11 +202,13 @@ class _SettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.aurora;
+
     return Container(
       decoration: BoxDecoration(
-        color: AuroraColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(AuroraRadius.lg),
-        boxShadow: AuroraShadows.card,
+        boxShadow: palette.cardShadow,
       ),
       // Clips the sign-out row's ripple to the card's rounded corners.
       clipBehavior: Clip.antiAlias,
@@ -215,6 +222,19 @@ class _SettingsCard extends StatelessWidget {
           // The Arabic/Western numeral switch itself is separate work; this
           // is only its entry point.
           const _SettingsRow(icon: Icons.pin_outlined, label: 'الأرقام'),
+          const _RowDivider(),
+          // The first row here that actually does something. It shows its
+          // current value in the trailing slot, which the inert rows have no
+          // use for — a chevron alone cannot say "System" versus "Dark".
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: ThemeController.instance,
+            builder: (context, mode, _) => _SettingsRow(
+              icon: Icons.brightness_6_outlined,
+              label: 'المظهر',
+              value: themeModeLabel(mode),
+              onTap: () => showThemePickerSheet(context),
+            ),
+          ),
           const _RowDivider(),
           const _SettingsRow(
             icon: Icons.headset_mic_outlined,
@@ -238,46 +258,73 @@ class _SettingsCard extends StatelessWidget {
   }
 }
 
-/// An inert settings row.
+/// A settings row.
 ///
-/// Has no [InkWell] on purpose. Every one of these is a placeholder for a
-/// destination that has not been built, and a ripple would promise a tap
-/// target that does nothing — so the row is a plain layout, not a disabled
-/// button.
+/// Inert unless given an [onTap]. Most of these are still placeholders for
+/// destinations that have not been built, and a ripple would promise a tap
+/// target that does nothing — so a row without a callback stays a plain
+/// layout rather than becoming a disabled button. المظهر is the first one to
+/// pass a callback, and gets the [InkWell] that goes with it.
 class _SettingsRow extends StatelessWidget {
-  const _SettingsRow({required this.icon, required this.label});
+  const _SettingsRow({
+    required this.icon,
+    required this.label,
+    this.value,
+    this.onTap,
+  });
 
   final IconData icon;
   final String label;
 
+  /// The current setting, shown before the chevron. Null on the rows that do
+  /// not have a value to report.
+  final String? value;
+
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final palette = context.aurora;
+    final value = this.value;
+
+    final row = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AuroraSpacing.lg,
         vertical: AuroraSpacing.lg,
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AuroraColors.secondary),
+          Icon(icon, size: 20, color: palette.secondary),
           const SizedBox(width: AuroraSpacing.md),
           Expanded(
             child: Text(
               label,
-              style: AuroraText.body(size: 15, weight: FontWeight.w500),
+              style: AuroraText.body(
+                size: 15,
+                weight: FontWeight.w500,
+                color: palette.ink,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          if (value != null) ...[
+            Text(
+              value,
+              style: AuroraText.body(size: 14, color: palette.secondary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: AuroraSpacing.xs),
+          ],
           // Points away from the text, i.e. leftward under RTL.
-          const Icon(
-            Icons.chevron_left_rounded,
-            size: 20,
-            color: AuroraColors.muted,
-          ),
+          Icon(Icons.chevron_left_rounded, size: 20, color: palette.muted),
         ],
       ),
     );
+
+    if (onTap == null) return row;
+    return InkWell(onTap: onTap, child: row);
   }
 }
 
@@ -295,7 +342,7 @@ class _SignOutRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ink = enabled ? AuroraColors.danger : AuroraColors.disabledInk;
+    final ink = enabled ? AuroraColors.danger : context.aurora.disabledInk;
 
     return InkWell(
       onTap: enabled && !busy ? onTap : null,
@@ -338,12 +385,12 @@ class _RowDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
+    return Divider(
       height: 1,
       thickness: 1,
       indent: AuroraSpacing.lg,
       endIndent: AuroraSpacing.lg,
-      color: AuroraColors.divider,
+      color: context.aurora.divider,
     );
   }
 }

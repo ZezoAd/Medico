@@ -237,6 +237,106 @@ void main() {
     });
   });
 
+  group('the footer folds away under the keyboard', () {
+    testWidgets('folds when the keyboard opens, returns when it goes', (
+      tester,
+    ) async {
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignUpScreen(), size);
+
+      final collapsible = find.byType(AuthCollapsible);
+      final resting = tester.getRect(collapsible).height;
+      expect(resting, greaterThan(0));
+
+      await setKeyboardInset(tester, const SignUpScreen(), size, 320);
+      expect(tester.getRect(collapsible).height, 0);
+      expect(tester.takeException(), isNull);
+
+      await setKeyboardInset(tester, const SignUpScreen(), size, 0);
+      expect(tester.getRect(collapsible).height, resting);
+    });
+
+    testWidgets('returns after a back-gesture dismiss, which never unfocuses', (
+      tester,
+    ) async {
+      // Sign Up had the same latent bug as Sign In — three fields rather than
+      // two, so it spends more of its life with the keyboard up, not less.
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignUpScreen(), size);
+
+      final node = tester
+          .widget<TextField>(find.byType(TextField).first)
+          .focusNode!;
+      node.requestFocus();
+      await setKeyboardInset(tester, const SignUpScreen(), size, 320);
+      expect(tester.getRect(find.byType(AuthCollapsible)).height, 0);
+
+      // Only the inset moves — no unfocus(), which is what makes this the
+      // real back-gesture case rather than a trivially passing one.
+      await setKeyboardInset(tester, const SignUpScreen(), size, 0);
+
+      expect(
+        node.hasFocus,
+        isTrue,
+        reason: 'the field must still be focused, or this is not the bug',
+      );
+      expect(tester.getRect(find.byType(AuthCollapsible)).height, isNonZero);
+      expect(find.text('لديك حساب بالفعل؟'), findsOneWidget);
+    });
+
+    testWidgets('returns instantly, without animating back in', (tester) async {
+      const size = Size(360, 740);
+      await pumpAt(tester, const SignUpScreen(), size);
+      final collapsible = find.byType(AuthCollapsible);
+      final resting = tester.getRect(collapsible).height;
+
+      await setKeyboardInset(tester, const SignUpScreen(), size, 320);
+      expect(tester.getRect(collapsible).height, 0);
+
+      // Same guarantee as Sign In's, asserted here because it is the same
+      // widget doing it for both and a regression would hit both footers.
+      await setKeyboardInsetForOneFrame(tester, const SignUpScreen(), size, 0);
+      expect(tester.getRect(collapsible).height, resting);
+      expect(find.text('لديك حساب بالفعل؟'), findsOneWidget);
+
+      await tester.pumpAndSettle();
+      expect(tester.getRect(collapsible).height, resting);
+    });
+  });
+
+  group('the focused field clears the keyboard', () {
+    // The password field is the reported case — tapping it left it half under
+    // the keyboard. The other two ride the same scroll view, so they are held
+    // to the same bar. 640 is the tighter of the two heights and the one where
+    // the framework's own caret reveal is not enough on its own.
+    for (final size in const [Size(360, 740), Size(360, 640)]) {
+      for (final (index, label) in const [
+        (0, 'الاسم الكامل'),
+        (1, 'البريد الإلكتروني'),
+        (2, 'كلمة المرور'),
+      ]) {
+        final tag = '${size.width.toInt()}x${size.height.toInt()}';
+        testWidgets('$tag: $label scrolls clear of the keyboard', (
+          tester,
+        ) async {
+          await pumpAt(tester, const SignUpScreen(), size);
+
+          final field = find.byType(AuthTextField).at(index);
+          // Focus first, keyboard second — the real order, and the one that
+          // matters: the field is not covered until the keyboard arrives, so
+          // a reveal that fires only on focus would measure the wrong
+          // viewport and stop short.
+          tester.widget<AuthTextField>(field).focusNode.requestFocus();
+          await setKeyboardInset(tester, const SignUpScreen(), size, 320);
+          await tester.pumpAndSettle();
+
+          expectFieldClearOfKeyboard(tester, field, label: label);
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
+  });
+
   testWidgets('has no back button of its own', (tester) async {
     await pumpAt(tester, const SignUpScreen(), phone);
 

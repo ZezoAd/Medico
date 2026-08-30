@@ -90,36 +90,18 @@ class _HomeEmptyStateCardState extends State<HomeEmptyStateCard>
 
   @override
   Widget build(BuildContext context) {
-    // main.dart's MaterialApp declares only a light ThemeData — there is no
-    // darkTheme/themeMode for Theme.of(context).brightness to reflect, so it
-    // would report `light` even on a dark device. Read the platform setting
-    // directly until that wiring exists. Same workaround, and same reason, as
-    // queue_status_card.dart.
-    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    // Was `MediaQuery.platformBrightnessOf`, back when main.dart declared no
+    // darkTheme for `Theme.of` to reflect. The card's own dark treatment —
+    // pre-darkened gradient stops, a hairline edge, a plain black drop instead
+    // of the green one — now lives in the palette, so it follows the app's
+    // theme rather than the device's.
+    final palette = context.aurora;
 
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AuroraRadius.xl),
-        border: isDark
-            ? Border.all(color: Colors.white.withValues(alpha: 0.08))
-            : null,
-        boxShadow: isDark
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.45),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ]
-            : [
-                // A tight, deep-green lift rather than the flatter
-                // AuroraShadows.card, which is tuned for white surfaces.
-                BoxShadow(
-                  color: const Color(0xFF062D24).withValues(alpha: 0.42),
-                  blurRadius: 26,
-                  offset: const Offset(0, 14),
-                ),
-              ],
+        border: palette.heroBorder,
+        boxShadow: palette.heroShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AuroraRadius.xl),
@@ -134,18 +116,7 @@ class _HomeEmptyStateCardState extends State<HomeEmptyStateCard>
           children: [
             Positioned.fill(
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: isDark
-                      ? const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AuroraColors.gradientStartDark,
-                            AuroraColors.gradientEndDark,
-                          ],
-                        )
-                      : AuroraGradients.aurora,
-                ),
+                decoration: BoxDecoration(gradient: palette.heroGradient),
               ),
             ),
             Positioned(

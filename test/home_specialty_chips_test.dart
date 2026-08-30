@@ -71,6 +71,18 @@ final chipRow = find.descendant(
   matching: find.byType(Scrollable),
 );
 
+/// [label] as rendered *inside the chip row*.
+///
+/// A bare `find.text` is no longer unambiguous on Home: the Featured Doctors
+/// carousel below renders specialty labels drawn from the same vocabulary, so
+/// "أسنان", "طب عام" and "عظام" each match a chip *and* a doctor card. That
+/// overlap is correct — both name the same specialty — so the fix is for these
+/// assertions to say which one they mean, not for either widget to reword.
+Finder chipLabel(String label) => find.descendant(
+  of: find.byType(HomeSpecialtyChips),
+  matching: find.text(label),
+);
+
 /// Scrolls [label] into view. The row is lazy, so anything past the viewport
 /// is genuinely not built until dragged to — under RTL the later chips sit off
 /// the *left* edge, which a positive dx drag pulls in.
@@ -78,8 +90,8 @@ Future<void> revealChip(WidgetTester tester, String label) async {
   // Two steps, because they do different things: the drag stops the moment
   // the chip is *built*, which can still leave it hanging off the viewport
   // edge and un-tappable. `ensureVisible` then scrolls it fully in.
-  await tester.dragUntilVisible(find.text(label), chipRow, const Offset(120, 0));
-  await tester.ensureVisible(find.text(label));
+  await tester.dragUntilVisible(chipLabel(label), chipRow, const Offset(120, 0));
+  await tester.ensureVisible(chipLabel(label));
   await tester.pumpAndSettle();
 }
 
@@ -107,7 +119,7 @@ void main() {
     // list, which is the failure mode worth guarding.
     var previousX = double.infinity;
     for (final label in labels) {
-      final finder = find.text(label);
+      final finder = chipLabel(label);
       if (tester.widgetList(finder).isEmpty) break;
       final x = tester.getTopRight(finder).dx;
       if (x > previousX) {
@@ -116,12 +128,12 @@ void main() {
       previousX = x;
     }
     // "الكل" must be in that first run, hard against the right edge.
-    expect(find.text(labels.first), findsOneWidget);
+    expect(chipLabel(labels.first), findsOneWidget);
 
     // The rest exist, but only once scrolled to.
     for (final label in labels) {
       await revealChip(tester, label);
-      expect(find.text(label), findsOneWidget, reason: 'missing "$label"');
+      expect(chipLabel(label), findsOneWidget, reason: 'missing "$label"');
     }
   });
 
@@ -132,7 +144,7 @@ void main() {
 
     expect(tester.widget<Text>(selectedChipLabel()).data, 'الكل');
 
-    await tester.tap(find.text('أسنان'));
+    await tester.tap(chipLabel('أسنان'));
     await tester.pumpAndSettle();
 
     // Exactly one gradient box: the highlight moved rather than accumulating.
@@ -160,12 +172,12 @@ void main() {
     await tester.pumpAndSettle();
 
     await revealChip(tester, 'قلبية');
-    await tester.tap(find.text('قلبية'));
+    await tester.tap(chipLabel('قلبية'));
     await tester.pumpAndSettle();
     expect(keys, ['cardiology']);
 
     // Re-tapping the live chip is not a change and must stay silent.
-    await tester.tap(find.text('قلبية'));
+    await tester.tap(chipLabel('قلبية'));
     await tester.pumpAndSettle();
     expect(keys, ['cardiology']);
   });

@@ -83,11 +83,14 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
 
   @override
   Widget build(BuildContext context) {
-    // main.dart declares only a light ThemeData — no darkTheme, no themeMode —
-    // so Theme.of(context).brightness reports `light` even on a dark device.
-    // Read the platform setting directly, the same workaround (and for the
-    // same reason) as queue_status_card.dart and home_empty_state_card.dart.
-    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    // The app's own theme, not the device's. This used to read
+    // `MediaQuery.platformBrightnessOf` because there was no darkTheme for
+    // `Theme.of` to reflect — which meant that with the system in dark mode
+    // this widget painted dark-mode colours into a screen that was still
+    // light: a near-white heading on cream, and near-black chips beside a
+    // correctly teal "الكل". Both are gone now that the palette and the
+    // surface it sits on come from the same place.
+    final palette = context.aurora;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,7 +102,7 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
           textAlign: TextAlign.start,
           style: AuroraText.display(
             size: AuroraFontSize.h3,
-            color: isDark ? AuroraColors.inkDark : AuroraColors.ink,
+            color: palette.ink,
           ),
         ),
         const SizedBox(height: AuroraSpacing.md),
@@ -126,7 +129,6 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
                 label: specialty.label,
                 icon: specialty.icon,
                 selected: specialty.key == _selectedKey,
-                isDark: isDark,
                 onTap: () => _select(specialty.key),
               );
             },
@@ -144,24 +146,20 @@ class _SpecialtyChip extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.selected,
-    required this.isDark,
     required this.onTap,
   });
 
   final String label;
   final FaIconData icon;
   final bool selected;
-  final bool isDark;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final Color content;
-    if (selected) {
-      content = Colors.white;
-    } else {
-      content = isDark ? AuroraColors.secondaryDark : AuroraColors.secondary;
-    }
+    final palette = context.aurora;
+    // White on the gradient in both themes — the selected pill's fill is the
+    // brand ramp, which does not darken, so its content must not either.
+    final content = selected ? Colors.white : palette.secondary;
 
     final radius = BorderRadius.circular(AuroraRadius.pill);
 
@@ -172,11 +170,11 @@ class _SpecialtyChip extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: selected ? AuroraGradients.aurora : null,
-          color: selected
-              ? null
-              : (isDark ? AuroraColors.tonalDark : AuroraColors.tonal),
+          color: selected ? null : palette.tonal,
           borderRadius: radius,
-          boxShadow: selected && !isDark ? AuroraShadows.pill : null,
+          // Empty in dark, where a drop shadow reads as grime rather than
+          // lift — the palette carries that decision, not this widget.
+          boxShadow: selected ? palette.pillShadow : null,
         ),
         // Transparent Material so the ripple clips to the pill and paints over
         // the gradient rather than under it.
