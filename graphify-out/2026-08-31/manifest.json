@@ -260,8 +260,8 @@
     "semantic_hash": ""
   },
   "lib/screens/home_tab.dart": {
-    "mtime": 1787964559.2162478,
-    "ast_hash": "066afe10258e2ef33f4525f10e86c0de",
+    "mtime": 1788139916.2955432,
+    "ast_hash": "721b31caa0cdc81b8c8bac40042cd1b6",
     "semantic_hash": ""
   },
   "lib/utils/arabic_formatting.dart": {
@@ -370,8 +370,8 @@
     "semantic_hash": ""
   },
   "lib/screens/auth_gate.dart": {
-    "mtime": 1787711016.371266,
-    "ast_hash": "dcb259da656bb5e778d9fe0d612cba90",
+    "mtime": 1788100749.7479138,
+    "ast_hash": "841e08ac967e590a43c0d8d66c82f7d2",
     "semantic_hash": ""
   },
   "lib/services/onboarding_sync_service.dart": {
@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/home_specialty_chips.dart": {
-    "mtime": 1787857037.3766088,
-    "ast_hash": "8088906ebb793aa87a1d1922d39e85af",
+    "mtime": 1788182091.5367877,
+    "ast_hash": "3c8037d2868520b2d3d004340df4952c",
     "semantic_hash": ""
   },
   "test/home_specialty_chips_test.dart": {
@@ -470,8 +470,8 @@
     "semantic_hash": ""
   },
   "lib/models/doctor.dart": {
-    "mtime": 1787964424.4834836,
-    "ast_hash": "26525b0a74b0de92c21de33fbf6b675f",
+    "mtime": 1788133489.2114525,
+    "ast_hash": "d0a6ae857afc07b4e9c7719d2ad72217",
     "semantic_hash": ""
   },
   "lib/screens/theme_picker_sheet.dart": {
@@ -489,16 +489,6 @@
     "ast_hash": "d150d1bc19cf08ca27b1f54f1583e12c",
     "semantic_hash": ""
   },
-  "lib/widgets/home_featured_doctors.dart": {
-    "mtime": 1787965424.8837755,
-    "ast_hash": "8e5b1b4e8ffa8dc28203cf2279ef1ad5",
-    "semantic_hash": ""
-  },
-  "test/home_featured_doctors_test.dart": {
-    "mtime": 1787964735.7430732,
-    "ast_hash": "b2b55a72700cb140cf32ddcfb32a7d07",
-    "semantic_hash": ""
-  },
   "test/theme_test.dart": {
     "mtime": 1787857583.899094,
     "ast_hash": "0a9e4e5a02fc9b6246a6a4750be2f60f",
@@ -514,9 +504,39 @@
     "ast_hash": "11054859d36f5bf5def3809e4f413230",
     "semantic_hash": ""
   },
-  "lib/dev/home_featured_doctors_preview.dart": {
-    "mtime": 1787964861.766475,
-    "ast_hash": "01ebc7dc947e33fb6c47de0ed12a1c8c",
+  "lib/services/session_cache.dart": {
+    "mtime": 1788100665.1039684,
+    "ast_hash": "54460fef29982bbaad2610a01397e1e8",
+    "semantic_hash": ""
+  },
+  "test/session_expiry_test.dart": {
+    "mtime": 1788119380.609037,
+    "ast_hash": "245eecb432d04bfcc8442a28074f52d1",
+    "semantic_hash": ""
+  },
+  "lib/dev/mock_doctors.dart": {
+    "mtime": 1788139908.2675605,
+    "ast_hash": "5f6c7c7b6cd16521ce956b9a982d512a",
+    "semantic_hash": ""
+  },
+  "lib/dev/home_specialty_doctors_preview.dart": {
+    "mtime": 1788139931.6372542,
+    "ast_hash": "6617ed1f10a13896826bf5e5584672ac",
+    "semantic_hash": ""
+  },
+  "lib/widgets/home_specialty_doctors.dart": {
+    "mtime": 1788182052.0829432,
+    "ast_hash": "0eae66de8c09eb6a942ff10dc3c64bc1",
+    "semantic_hash": ""
+  },
+  "test/home_specialty_doctors_test.dart": {
+    "mtime": 1788182121.8928401,
+    "ast_hash": "dbf0dc3b14b89c97ee9520dde41ebf38",
+    "semantic_hash": ""
+  },
+  "test/zz_ticker_probe_test.dart": {
+    "mtime": 1788182208.1637232,
+    "ast_hash": "08b8862460f21e931288349b105e6bf2",
     "semantic_hash": ""
   }
 }

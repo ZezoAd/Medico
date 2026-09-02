@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medico/screens/home_tab.dart';
-import 'package:medico/widgets/home_empty_state_card.dart';
 import 'package:medico/widgets/home_specialty_chips.dart';
+import 'package:medico/widgets/queue_status_card.dart';
+
+import 'fake_connectivity.dart';
 
 /// Declaration order is display order — see the note in
 /// `home_specialty_chips.dart` on why this must not be reversed for RTL.
@@ -21,9 +23,9 @@ const labels = [
 /// Pumps the real [HomeTab] at a given logical size, in RTL, with animations
 /// disabled.
 ///
-/// The disable matters for more than speed: [HomeEmptyStateCard]'s three
-/// ambient blobs run on `repeat(reverse: true)` controllers, so a
-/// `pumpAndSettle` against a live card never settles. The card already reads
+/// The disable matters for more than speed: the hero card's three ambient
+/// blobs run on `repeat(reverse: true)` controllers, so a `pumpAndSettle`
+/// against a live card never settles. Both hero cards read
 /// `MediaQuery.disableAnimationsOf`, which is the supported way to park them.
 ///
 /// A RenderFlex overflow surfaces as a Flutter error during paint, which the
@@ -34,13 +36,19 @@ Future<void> pumpHome(WidgetTester tester, Size logical) async {
   tester.view.physicalSize = logical * 2.0;
   addTearDown(tester.view.reset);
 
+  // The chips have nothing to do with connectivity; HomeTab simply needs a
+  // service to hold, and one wired to a stream nobody feeds keeps it inert.
+  final connectivity = useFakeConnectivity();
+
   await tester.pumpWidget(
     MaterialApp(
       home: MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
-        child: const Directionality(
+        child: Directionality(
           textDirection: TextDirection.rtl,
-          child: Scaffold(body: HomeTab()),
+          child: Scaffold(
+            body: HomeTab(connectivityService: connectivity.service),
+          ),
         ),
       ),
     ),
@@ -90,7 +98,11 @@ Future<void> revealChip(WidgetTester tester, String label) async {
   // Two steps, because they do different things: the drag stops the moment
   // the chip is *built*, which can still leave it hanging off the viewport
   // edge and un-tappable. `ensureVisible` then scrolls it fully in.
-  await tester.dragUntilVisible(chipLabel(label), chipRow, const Offset(120, 0));
+  await tester.dragUntilVisible(
+    chipLabel(label),
+    chipRow,
+    const Offset(120, 0),
+  );
   await tester.ensureVisible(chipLabel(label));
   await tester.pumpAndSettle();
 }
@@ -99,13 +111,17 @@ void main() {
   const smallPhone = Size(375, 667);
   const mediumPhone = Size(448, 998);
 
-  testWidgets('sits on Home below the empty-state card', (tester) async {
+  // Reads off whichever card is in Home's hero slot rather than naming a
+  // specific one — QueueStatusCard and HomeEmptyStateCard swap places there
+  // while the Bookings data model is outstanding, and the chips sit below
+  // either.
+  testWidgets('sits on Home below the hero card', (tester) async {
     await pumpHome(tester, mediumPhone);
 
     expect(find.byType(HomeSpecialtyChips), findsOneWidget);
     expect(find.text('تصفّح حسب التخصص'), findsOneWidget);
 
-    final cardBottom = tester.getBottomLeft(find.byType(HomeEmptyStateCard)).dy;
+    final cardBottom = tester.getBottomLeft(find.byType(QueueStatusCard)).dy;
     final chipsTop = tester.getTopLeft(find.byType(HomeSpecialtyChips)).dy;
     expect(chipsTop, greaterThan(cardBottom));
   });

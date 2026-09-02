@@ -30,15 +30,34 @@ function RetryRing({ pct }) {
 }
 
 /* the fact, stated once, no animation — there's nothing to visibly "retry" */
+// LOCKED (2026-09-01): an inset rounded pill, not a full-bleed banner.
+//
+// Was an edge-to-edge ~44px bar in near-black green (#2B3733 / #EAF0EC). A
+// full-bleed bar read as a system-level takeover of the screen, which
+// overstates a condition the person often cannot act on or dismiss. It now
+// floats inside the same 16px gutter the tab content uses, at roughly half the
+// height, in a warm neutral — so it reads as one element on the page rather
+// than as chrome clamped over it.
+//
+// Shipped values live in `lib/theme/aurora_tokens.dart`
+// (AuroraColors.offlineStrip / offlineStripInk) and
+// `lib/widgets/global_offline_strip.dart`. Only the strip changed; the badge
+// states and retry-ring logic below are untouched.
 function GlobalOfflineStrip({ show }) {
   return (
     <div
       className="overflow-hidden transition-all duration-400"
-      style={{ maxHeight: show ? 44 : 0, opacity: show ? 1 : 0 }}
+      style={{ maxHeight: show ? 36 : 0, opacity: show ? 1 : 0 }}
     >
       <div
-        className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold"
-        style={{ background: "#2B3733", color: "#EAF0EC" }}
+        className="mx-4 mt-2 flex items-center gap-2 rounded-2xl px-3 py-1.5 text-xs font-bold"
+        style={{
+          background: "#5F5240",
+          color: "#E8DCC8",
+          // AuroraShadows.pill — the existing tight lift, reused rather than
+          // a new blur/opacity pair invented for this one element.
+          boxShadow: "0 2px 8px rgba(18,43,40,0.10)",
+        }}
       >
         <WifiOff className="h-3.5 w-3.5 shrink-0" />
         لا يوجد اتصال بالإنترنت حالياً

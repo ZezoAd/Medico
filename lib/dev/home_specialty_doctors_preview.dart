@@ -1,6 +1,6 @@
-// Standalone preview for HomeFeaturedDoctors — not wired into the real app.
+// Standalone preview for HomeSpecialtyDoctors — not wired into the real app.
 // Run with:
-//   flutter run -t lib/dev/home_featured_doctors_preview.dart
+//   flutter run -t lib/dev/home_specialty_doctors_preview.dart
 //
 // Its own main(), like the other two previews, so it can be launched with -t
 // without dragging their scenarios along.
@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import '../models/doctor.dart';
 import '../theme/app_theme.dart';
 import '../theme/aurora_tokens.dart';
-import '../widgets/home_featured_doctors.dart';
+import '../widgets/home_specialty_doctors.dart';
 
 void main() => runApp(const _PreviewApp());
 
@@ -37,13 +37,15 @@ const _edgeCases = [
     id: 'p1',
     name: 'د. عبدالرحمن ياسين الموسوي الكناني',
     specialty: 'طب عام',
+    specialtyKey: 'general',
     clinicName: 'مجمع الشفاء للرعاية الصحية التخصصية',
     rating: 4.7,
   ),
   Doctor(
     id: 'p2',
     name: 'د. نور',
-    specialty: 'نسائية وتوليد',
+    specialty: 'نساء وتوليد',
+    specialtyKey: 'obgyn',
     clinicName: 'الأمل',
     rating: 5.0,
   ),
@@ -53,6 +55,7 @@ const _edgeCases = [
     id: 'p3',
     name: 'د. حسين الطائي',
     specialty: 'طب عيون',
+    specialtyKey: 'ophthalmology',
     clinicName: 'عيادة النظر الواضح',
   ),
 ];
@@ -66,6 +69,11 @@ class _PreviewApp extends StatefulWidget {
 
 class _PreviewAppState extends State<_PreviewApp> {
   _Mode _mode = _Mode.light;
+
+  /// Stands in for Home's refresh counter. The app raises it on a
+  /// pull-to-refresh or a reconnect; here it is a button, so the cache-clearing
+  /// half of the carousel can be eyeballed without a network to unplug.
+  int _refreshEpoch = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +109,16 @@ class _PreviewAppState extends State<_PreviewApp> {
                             ),
                         ],
                       ),
+                      const SizedBox(height: AuroraSpacing.md),
+                      OutlinedButton.icon(
+                        onPressed: () => setState(() => _refreshEpoch++),
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text('تحديث (الجيل $_refreshEpoch)'),
+                      ),
                       const SizedBox(height: AuroraSpacing.xl),
                       // Inert here as in the app: there is no booking flow, so
                       // the harness does not invent one either.
-                      const HomeFeaturedDoctors(),
+                      HomeSpecialtyDoctors(refreshEpoch: _refreshEpoch),
                       const SizedBox(height: AuroraSpacing.xxl),
                       Text(
                         'حالات حدّية',

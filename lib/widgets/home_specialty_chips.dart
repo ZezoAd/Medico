@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../theme/aurora_tokens.dart';
+import 'home_specialty_doctors.dart';
 
 /// One entry in the specialty row.
 ///
-/// [key] is the stable ASCII identifier the future doctor-list filter will
-/// match on; [label] is what the patient reads. They are kept apart on purpose
-/// so the Arabic copy can be reworded without silently changing the filter
-/// contract.
+/// [key] is the stable ASCII identifier the doctor list filters on; [label] is
+/// what the patient reads. They are kept apart on purpose so the Arabic copy
+/// can be reworded without silently changing the filter contract.
 @immutable
 class _Specialty {
   const _Specialty(this.key, this.label, this.icon);
@@ -54,7 +54,17 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
   static const _specialties = [
     // Solid grid — the conventional "all categories" mark. An approximation:
     // there is no literal "everything" medical glyph.
-    _Specialty('all', 'الكل', FontAwesomeIcons.tableCellsLarge),
+    //
+    // The key is borrowed from the carousel rather than spelled out again:
+    // the two widgets have to agree on the "no filter" sentinel exactly, and
+    // one shared constant is what guarantees they cannot drift apart. The
+    // dependency runs one way only — the carousel knows nothing about this
+    // row.
+    _Specialty(
+      HomeSpecialtyDoctors.allSpecialtiesKey,
+      'الكل',
+      FontAwesomeIcons.tableCellsLarge,
+    ),
     _Specialty('general', 'طب عام', FontAwesomeIcons.stethoscope),
     _Specialty('dental', 'أسنان', FontAwesomeIcons.tooth),
     _Specialty('obgyn', 'نساء وتوليد', FontAwesomeIcons.personPregnant),

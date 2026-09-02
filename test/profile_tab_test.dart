@@ -13,6 +13,8 @@ import 'package:medico/screens/home_tab.dart';
 import 'package:medico/screens/profile_tab.dart';
 import 'package:medico/theme/aurora_tokens.dart';
 
+import 'fake_connectivity.dart';
+
 /// The narrowest supported width.
 const _narrow = Size(360, 800);
 
@@ -179,7 +181,11 @@ void main() {
       tester,
     ) async {
       _sizeTo(tester, _narrow);
-      await tester.pumpWidget(_host(const HomeTab()));
+      // The top bar is what is under test; the service is only what HomeTab
+      // needs in order to exist.
+      await tester.pumpWidget(
+        _host(HomeTab(connectivityService: useFakeConnectivity().service)),
+      );
       await tester.pump();
 
       final bellX = tester

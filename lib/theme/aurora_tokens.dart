@@ -61,6 +61,21 @@ abstract final class AuroraColors {
   /// [primary]: it reads as a system success state, not as branding.
   static const success = Color(0xFF16A34A);
 
+  // System chrome. Not Aurora hues and not status colours — this is the app
+  // speaking about the device rather than about anything in the app. Held to
+  // one warm-neutral pair so it reads as chrome in both themes and never as a
+  // surface, a brand mark, or an error.
+
+  /// Fill of the global offline strip. A warm mid-brown, deliberately outside
+  /// the Aurora green/blue family: being offline is a *condition*, not a
+  /// failure, so it must not borrow [danger]'s red or the brand's teal. The
+  /// warmth is what separates it from the cool greys of the app's surfaces.
+  static const offlineStrip = Color(0xFF5F5240);
+
+  /// Text and icon on [offlineStrip]. A warm cream at ~9.2:1 against it —
+  /// comfortably past WCAG AA for the strip's small bold type.
+  static const offlineStripInk = Color(0xFFE8DCC8);
+
   // Avatar colours. The Profile tab identifies the signed-in patient with a
   // silhouette rather than a photo — `profiles` has no avatar column and one
   // is not planned yet — so `profiles.gender` is the only thing that tints it.
