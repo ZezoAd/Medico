@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1543 nodes · 2053 edges · 88 communities (77 shown, 11 thin omitted)
+- 1467 nodes · 1941 edges · 87 communities (79 shown, 8 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3abc1759`
+- Built from commit: `4a217ba6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,7 +22,7 @@
 - GeneratedPluginRegistrant.swift
 - auth_error_mapper.dart
 - forgot_password_sheet.dart
-- package:flutter_test/flutter_test.dart
+- profile_tab_test.dart
 - main.dart
 - home_specialty_doctors.dart
 - auth_error_banner.dart
@@ -49,11 +49,11 @@
 - Auth Fallback Chain
 - auth_test_support.dart
 - otp_verification_screen_test.dart
-- global_offline_strip_test.dart
+- sign_in_screen_test.dart
 - static const
 - home_specialty_doctors_preview.dart
 - notification_service.dart
-- Recovery Token Verification
+- package:supabase_flutter/supabase_flutter.dart
 - onboarding_preview.dart
 - theme_service.dart
 - home_specialty_doctors_test.dart
@@ -83,34 +83,33 @@
 - onboarding_year_picker_sheet.dart
 - onboarding_milestone_stepper.dart
 - home_empty_state_card.dart
-- connectivity_service.dart
+- onboarding_data.dart
 - aurora_buttons.dart
 - firebase_options.dart
 - Password Reset Web Page
-- fake_connectivity.dart
+- ../models/onboarding_data.dart
 - _codeMessages
 - onboarding_step_header.dart
-- global_offline_strip.dart
+- String?
 - auth_gate.dart
 - gender_avatar.dart
-- dart:async
-- _OnboardingCompletionScreenState
-- SignInScreen
+- package:flutter_test/flutter_test.dart
+- inline_error_overflow_test.dart
+- welcome_screen_test.dart
 - home_screen.dart
-- Doctor
-- package:medico/widgets/home_empty_state_card.dart
+- NavigatorObserver
 
 ## God Nodes (most connected - your core abstractions)
 1. `usePress()` - 7 edges
-2. `AuroraPalette` - 5 edges
-3. `AppDelegate` - 5 edges
-4. `Gender` - 5 edges
-5. `OnboardingData` - 5 edges
-6. `SignUpScreen` - 5 edges
+2. `AppDelegate` - 5 edges
+3. `Gender` - 5 edges
+4. `OnboardingData` - 5 edges
+5. `SignUpScreen` - 5 edges
+6. `AuroraPalette` - 5 edges
 7. `AuthTextField` - 5 edges
 8. `Password Reset Web Page` - 5 edges
 9. `Recovery Token Verification` - 5 edges
-10. `_HomeScreenState` - 4 edges
+10. `HomeSpecialtyDoctors` - 4 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `ERROR_CODE_MESSAGES` --semantically_similar_to--> `_codeMessages`  [INFERRED] [semantically similar]
@@ -131,7 +130,7 @@
 - **Reset Page Screen State Machine** — web_reset_password_index_page, web_reset_password_index_screens, web_reset_password_index_showscreen, web_reset_password_index_showfatalerror [EXTRACTED 1.00]
 - **Arabic Auth Error Copy (Dart + JS, no shared code)** — web_reset_password_index_mapupdatepassworderror, web_reset_password_index_error_code_messages, lib_utils_auth_error_mapper_mapautherror, lib_utils_auth_error_mapper_codemessages [INFERRED 0.85]
 
-## Communities (88 total, 11 thin omitted)
+## Communities (87 total, 8 thin omitted)
 
 ### Community 0 - "auth_surface.dart"
 Cohesion: 0.03
@@ -161,9 +160,9 @@ Nodes (26): accountAlreadyExistsMessage, any, code, emailNotConfirmedMessage, er
 Cohesion: 0.08
 Nodes (24): auth_error_banner.dart, AuthErrorInfo, _banner, build, _cooldown, _cooldownSeconds, _cooldownTimer, createState (+16 more)
 
-### Community 7 - "package:flutter_test/flutter_test.dart"
-Cohesion: 0.11
-Nodes (17): package:flutter/rendering.dart, package:flutter_test/flutter_test.dart, package:medico/models/onboarding_data.dart, package:medico/screens/home_tab.dart, package:medico/screens/profile_tab.dart, package:medico/services/onboarding_sync_service.dart, RenderParagraph, main (+9 more)
+### Community 7 - "profile_tab_test.dart"
+Cohesion: 0.18
+Nodes (10): package:flutter/rendering.dart, package:medico/screens/home_tab.dart, package:medico/screens/profile_tab.dart, RenderParagraph, _host, isSignedIn, main, _narrow (+2 more)
 
 ### Community 8 - "main.dart"
 Cohesion: 0.12
@@ -171,23 +170,23 @@ Nodes (15): build, buildOverscrollIndicator, init, initializeApp, load, main, Me
 
 ### Community 9 - "home_specialty_doctors.dart"
 Cohesion: 0.05
-Nodes (43): ../dev/mock_doctors.dart, mockDoctors, allSpecialtiesCap, allSpecialtiesKey, _avatarSize, _BookButton, build, _cache (+35 more)
+Nodes (42): ../dev/mock_doctors.dart, Doctor, allSpecialtiesCap, allSpecialtiesKey, _avatarSize, _BookButton, build, _cache (+34 more)
 
 ### Community 10 - "auth_error_banner.dart"
 Cohesion: 0.09
 Nodes (22): AuthErrorBanner, _AuthErrorBannerState, AuthErrorSeverity, autoDismiss, _autoDismissDelay, _autoDismissTimer, build, createState (+14 more)
 
 ### Community 11 - "user_profile.dart"
-Cohesion: 0.05
-Nodes (36): double?, int?, clinicName, id, name, photoUrl, rating, specialty (+28 more)
+Cohesion: 0.12
+Nodes (16): doctor, fromMap, fromText, fullName, gender, hasCompletedOnboarding, id, isDoctor (+8 more)
 
 ### Community 12 - "StatelessWidget"
 Cohesion: 0.08
-Nodes (25): AuthBackButton, AuthBackdrop, AuthCollapsible, AuthFieldLabel, AuthFooterPrompt, AuthGoogleButton, AuthHero, AuthInlineError (+17 more)
+Nodes (26): AuthBackButton, AuthBackdrop, AuthCollapsible, AuthFieldLabel, AuthFooterPrompt, AuthGoogleButton, AuthHero, AuthInlineError (+18 more)
 
 ### Community 13 - "aurora_tokens.dart"
 Cohesion: 0.02
-Nodes (97): AuroraPalette get, BoxBorder?, accentOnTonal, accentOnTonalDark, aurora, AuroraColors, AuroraFontSize, AuroraGradients (+89 more)
+Nodes (95): AuroraPalette get, BoxBorder?, accentOnTonal, accentOnTonalDark, aurora, AuroraColors, AuroraFontSize, AuroraGradients (+87 more)
 
 ### Community 14 - "onboarding_sync_service.dart"
 Cohesion: 0.11
@@ -218,20 +217,20 @@ Cohesion: 0.06
 Nodes (31): build, busy, contact, createState, email, enabled, _fallbackContact, _fallbackName (+23 more)
 
 ### Community 26 - "onboarding_gender_control.dart"
-Cohesion: 0.17
-Nodes (12): build, _canSlide, createState, didUpdateWidget, initState, OnboardingGenderControl, _OnboardingGenderControlState, onChanged (+4 more)
+Cohesion: 0.15
+Nodes (13): build, _canSlide, createState, didUpdateWidget, initState, OnboardingGenderControl, _OnboardingGenderControlState, onChanged (+5 more)
 
 ### Community 30 - "State"
-Cohesion: 0.19
-Nodes (14): _PreviewApp, _PreviewAppState, _PreviewApp, _PreviewAppState, AuthTextField, _AuthTextFieldState, HomeEmptyStateCard, _HomeEmptyStateCardState (+6 more)
+Cohesion: 0.17
+Nodes (16): _PreviewApp, _PreviewAppState, _PreviewApp, _PreviewAppState, SignInScreen, _SignInScreenState, WelcomeScreen, _WelcomeScreenState (+8 more)
 
 ### Community 33 - "home_specialty_chips_test.dart"
 Cohesion: 0.12
-Nodes (15): chipLabel, chipRow, connectivity, descendant, dragUntilVisible, ensureVisible, labels, main (+7 more)
+Nodes (15): package:medico/widgets/home_empty_state_card.dart, chipLabel, chipRow, descendant, dragUntilVisible, ensureVisible, labels, main (+7 more)
 
 ### Community 34 - "welcome_screen.dart"
 Cohesion: 0.09
-Nodes (23): _BrandMark, _BrandPanel, build, createState, _CrossBar, _forwarding, height, initialErrorMessage (+15 more)
+Nodes (21): _BrandMark, _BrandPanel, build, createState, _CrossBar, _forwarding, height, initialErrorMessage (+13 more)
 
 ### Community 35 - "Auth Fallback Chain"
 Cohesion: 0.28
@@ -242,76 +241,76 @@ Cohesion: 0.07
 Nodes (27): arabicIndic, decorated, dpr, expectFieldClearOfKeyboard, expectNoArabicIndicDigits, false, heroGradientOf, inset (+19 more)
 
 ### Community 37 - "otp_verification_screen_test.dart"
-Cohesion: 0.15
-Nodes (12): Directionality, AuthPrimaryButton, package:medico/screens/otp_verification_screen.dart, package:pinput/pinput.dart, Pinput, Size, _email, keyboardInset (+4 more)
+Cohesion: 0.17
+Nodes (11): Directionality, package:medico/screens/otp_verification_screen.dart, package:pinput/pinput.dart, Pinput, Size, _email, keyboardInset, passwordUnchanged (+3 more)
 
-### Community 38 - "global_offline_strip_test.dart"
-Cohesion: 0.12
-Nodes (15): AnimatedOpacity, Container, Icon, package:medico/screens/home_screen.dart, package:medico/theme/app_theme.dart, package:medico/widgets/global_offline_strip.dart, package:medico/widgets/queue_status_card.dart, main (+7 more)
+### Community 38 - "sign_in_screen_test.dart"
+Cohesion: 0.18
+Nodes (10): AuthTextField, _AuthTextFieldState, depth, didPop, didPush, didRemove, didReplace, main (+2 more)
 
 ### Community 39 - "static const"
 Cohesion: 0.25
 Nodes (7): forget, _onboardedPrefix, remember, SessionCache, _verifiedPrefix, package:shared_preferences/shared_preferences.dart, static const
 
 ### Community 40 - "home_specialty_doctors_preview.dart"
-Cohesion: 0.12
-Nodes (16): AppThemeVariant, build, child, createState, _EdgeCaseRow, _edgeCases, _Forced, label (+8 more)
+Cohesion: 0.11
+Nodes (17): AppThemeVariant, build, child, createState, _EdgeCaseRow, _edgeCases, _Forced, label (+9 more)
 
 ### Community 41 - "notification_service.dart"
 Cohesion: 0.29
 Nodes (6): dart:io, NotificationService, registerDeviceToken, requestPermission, package:firebase_messaging/firebase_messaging.dart, package:permission_handler/permission_handler.dart
 
-### Community 42 - "Recovery Token Verification"
-Cohesion: 0.40
-Nodes (6): signup_verified Gate, signupVerified, OtpPurpose, markSignupVerified, Recovery Token Verification, JS-Execution Scanner Defense
+### Community 42 - "package:supabase_flutter/supabase_flutter.dart"
+Cohesion: 0.20
+Nodes (10): signup_verified Gate, signupVerified, OtpPurpose, fetchCurrentProfile, markSignupVerified, ProfileService, ../models/user_profile.dart, package:supabase_flutter/supabase_flutter.dart (+2 more)
 
 ### Community 43 - "onboarding_preview.dart"
 Cohesion: 0.33
 Nodes (5): build, main, _PreviewApp, package:flutter/foundation.dart, ../screens/onboarding_flow_screen.dart
 
 ### Community 44 - "theme_service.dart"
-Cohesion: 0.20
-Nodes (9): init, instance, _key, load, save, service, setMode, ThemeService (+1 more)
+Cohesion: 0.18
+Nodes (10): dart:async, init, instance, _key, load, save, service, setMode (+2 more)
 
 ### Community 45 - "home_specialty_doctors_test.dart"
-Cohesion: 0.08
-Nodes (23): DoctorCard, package:medico/dev/mock_doctors.dart, package:medico/models/doctor.dart, package:medico/widgets/home_specialty_doctors.dart, ScrollableState, fake, _longName, main (+15 more)
+Cohesion: 0.07
+Nodes (26): fake_connectivity.dart, DoctorCard, package:medico/dev/mock_doctors.dart, package:medico/models/doctor.dart, package:medico/widgets/home_specialty_doctors.dart, package:medico/widgets/queue_status_card.dart, return, ScrollableState (+18 more)
 
 ### Community 46 - "sign_in_screen.dart"
 Cohesion: 0.06
 Nodes (35): _banner, _bannerAction, _bannerActionLabel, build, _buildBanner, _clearBanner, createState, _credentialsError (+27 more)
 
 ### Community 47 - "home_tab.dart"
-Cohesion: 0.06
-Nodes (32): bool?, _bellSize, build, _ChannelDropPhase, _ChannelDropTestButton, _channelDropTimer, connectivityService, createState (+24 more)
+Cohesion: 0.14
+Nodes (14): _bellSize, build, createState, height, HomeTab, _HomeTabState, _HomeTopBar, _NotificationBell (+6 more)
 
 ### Community 48 - "queue_status_card_preview.dart"
 Cohesion: 0.14
 Nodes (13): DateTime, build, createState, label, main, _recordedAt, _Scenario, _setScenario (+5 more)
 
 ### Community 49 - "home_empty_state_card_preview.dart"
-Cohesion: 0.13
-Nodes (14): AppThemeVariant, AppThemeVariant, build, child, createState, _Forced, label, main (+6 more)
+Cohesion: 0.14
+Nodes (13): AppThemeVariant, AppThemeVariant, build, child, createState, _Forced, label, main (+5 more)
 
 ### Community 50 - "onboarding_step1_basics.dart"
 Cohesion: 0.10
-Nodes (20): build, data, OnboardingStep1Basics, onChanged, onContinue, onSkip, _pickYear, build (+12 more)
+Nodes (20): OnboardingData, build, data, OnboardingStep1Basics, onChanged, onContinue, onSkip, _pickYear (+12 more)
 
 ### Community 51 - "theme_test.dart"
-Cohesion: 0.17
-Nodes (11): Brightness, DecoratedBox, package:medico/services/theme_service.dart, package:medico/widgets/home_specialty_chips.dart, _host, inner, main, mode (+3 more)
+Cohesion: 0.15
+Nodes (12): Brightness, DecoratedBox, package:medico/services/theme_service.dart, package:medico/theme/app_theme.dart, package:medico/widgets/home_specialty_chips.dart, _host, inner, main (+4 more)
 
 ### Community 52 - "app_theme.dart"
 Cohesion: 0.20
 Nodes (9): aurora_tokens.dart, AppTheme, _build, dark, light, lightScaffoldBackground, _textTheme, package:google_fonts/google_fonts.dart (+1 more)
 
 ### Community 53 - "onboarding_step_scaffold.dart"
-Cohesion: 0.13
-Nodes (14): build, children, footer, helperText, OnboardingStepFooter, OnboardingStepScaffold, onPrimary, onSkip (+6 more)
+Cohesion: 0.12
+Nodes (15): build, children, footer, helperText, OnboardingStepFooter, OnboardingStepScaffold, onPrimary, onSkip (+7 more)
 
 ### Community 54 - "onboarding_step3_notifications.dart"
 Cohesion: 0.10
-Nodes (19): Animation, AnimationController, class, build, _Chip, _ChipRow, _chips, createState (+11 more)
+Nodes (21): Animation, AnimationController, class, build, _Chip, _ChipRow, _chips, createState (+13 more)
 
 ### Community 55 - "ThemeMode"
 Cohesion: 0.67
@@ -319,7 +318,7 @@ Nodes (3): ThemeController, ThemeMode, ValueNotifier
 
 ### Community 56 - "session_expiry_test.dart"
 Cohesion: 0.06
-Nodes (31): package:http/testing.dart, package:medico/screens/auth_gate.dart, _anonKey, _boot, calls, client, didRefresh, exp (+23 more)
+Nodes (32): package:http/testing.dart, package:medico/screens/auth_gate.dart, package:medico/screens/home_screen.dart, _anonKey, _boot, calls, client, didRefresh (+24 more)
 
 ### Community 57 - "VoidCallback"
 Cohesion: 0.18
@@ -330,12 +329,12 @@ Cohesion: 0.25
 Nodes (8): _goSignUp, _resendConfirmation, _handleSubmit, _forwardToSignIn, _goSignIn, _goSignUp, MaterialPageRoute, main
 
 ### Community 60 - "package:flutter/material.dart"
-Cohesion: 0.29
-Nodes (6): BookingsTab, build, BrowseTab, build, package:flutter/material.dart, ../theme/aurora_tokens.dart
+Cohesion: 0.18
+Nodes (10): BookingsTab, build, BrowseTab, build, build, GlobalOfflineStrip, _OfflineStripBody, visible (+2 more)
 
 ### Community 61 - "sign_up_screen_test.dart"
-Cohesion: 0.07
-Nodes (34): auth_test_support.dart, Checkbox, NavigatorObserver, NavigatorState, package:medico/screens/sign_in_screen.dart, package:medico/screens/sign_up_screen.dart, package:medico/screens/welcome_screen.dart, package:medico/theme/aurora_tokens.dart (+26 more)
+Cohesion: 0.17
+Nodes (11): Checkbox, agreeToTerms, depth, didPop, didPush, didRemove, didReplace, main (+3 more)
 
 ### Community 62 - "arabic_formatting.dart"
 Cohesion: 0.11
@@ -355,11 +354,11 @@ Nodes (3): auth_gate.dart, build, SplashScreen
 
 ### Community 67 - "onboarding_flow_screen.dart"
 Cohesion: 0.06
-Nodes (33): build, _completionStep, createState, _data, dispose, _enableNotifications, _finish, _goTo (+25 more)
+Nodes (34): home_screen.dart, build, _completionStep, createState, _data, dispose, _enableNotifications, _finish (+26 more)
 
 ### Community 68 - "onboarding_completion_screen.dart"
 Cohesion: 0.08
-Nodes (23): CustomPainter, dart:ui, _badgeScale, _Blob, _blobBlue, build, _buttonFade, _checkDraw (+15 more)
+Nodes (26): CustomPainter, dart:ui, _badgeScale, _Blob, _blobBlue, build, _buttonFade, _checkDraw (+18 more)
 
 ### Community 69 - "onboarding_year_picker_sheet.dart"
 Cohesion: 0.10
@@ -373,9 +372,9 @@ Nodes (16): build, _column, _half, height, index, isActive, isDone, _labelGap (+
 Cohesion: 0.10
 Nodes (20): _blobControllers, _blobDurations, build, controller, createState, _ctaInk, didChangeDependencies, dispose (+12 more)
 
-### Community 72 - "connectivity_service.dart"
-Cohesion: 0.15
-Nodes (12): bool get, _apply, checkNow, ConnectivityService, _controller, dispose, _isOnline, isOnlineStream (+4 more)
+### Community 72 - "onboarding_data.dart"
+Cohesion: 0.17
+Nodes (11): bool get, int?, arabicLabel, birthYear, city, copyWith, fromText, hasCity (+3 more)
 
 ### Community 73 - "aurora_buttons.dart"
 Cohesion: 0.11
@@ -389,9 +388,9 @@ Nodes (8): android, DefaultFirebaseOptions, ios, macos, web, windows, package:fi
 Cohesion: 0.22
 Nodes (9): Aurora Sheet Design System, Password Policy: 8 Chars, No Composition Rule, _resetPasswordRedirect, _validateEmail, Password Reset Web Page, screens Element Map, showFatalError, showScreen (+1 more)
 
-### Community 76 - "fake_connectivity.dart"
-Cohesion: 0.13
-Nodes (14): List, return, _changes, changeSilently, dispose, emit, fake, FakeConnectivity (+6 more)
+### Community 76 - "../models/onboarding_data.dart"
+Cohesion: 0.50
+Nodes (3): OnboardingService, saveOnboarding, ../models/onboarding_data.dart
 
 ### Community 77 - "_codeMessages"
 Cohesion: 0.50
@@ -401,53 +400,61 @@ Nodes (4): _codeMessages, mapAuthError, ERROR_CODE_MESSAGES, mapUpdatePasswordEr
 Cohesion: 0.18
 Nodes (10): build, _height, _markGap, _markHeight, _MedicoMark, OnboardingStepHeader, step, _topPadding (+2 more)
 
-### Community 79 - "global_offline_strip.dart"
-Cohesion: 0.25
-Nodes (7): build, GlobalOfflineStrip, _OfflineStripBody, sideMargin, topMargin, visible, static const double
+### Community 79 - "String?"
+Cohesion: 0.20
+Nodes (9): double?, clinicName, id, name, photoUrl, rating, specialty, specialtyKey (+1 more)
 
 ### Community 80 - "auth_gate.dart"
 Cohesion: 0.06
-Nodes (33): home_screen.dart, _attemptResolve, AuthGate, _AuthGateState, build, _cache, _confirmedRejectionCodes, _connectivitySub (+25 more)
+Nodes (34): _attemptResolve, AuthGate, _AuthGateState, build, _cache, _confirmedRejectionCodes, _connectivitySub, createState (+26 more)
 
 ### Community 81 - "gender_avatar.dart"
-Cohesion: 0.15
-Nodes (11): Gender, OnboardingService, saveOnboarding, build, colorFor, _discAlpha, filled, gender (+3 more)
+Cohesion: 0.20
+Nodes (9): Gender, build, colorFor, _discAlpha, filled, gender, GenderAvatar, size (+1 more)
 
-### Community 82 - "dart:async"
+### Community 82 - "package:flutter_test/flutter_test.dart"
+Cohesion: 0.25
+Nodes (7): package:flutter_test/flutter_test.dart, package:medico/models/onboarding_data.dart, package:medico/services/onboarding_sync_service.dart, main, service, userA, userB
+
+### Community 83 - "inline_error_overflow_test.dart"
 Cohesion: 0.29
-Nodes (6): dart:async, fake_connectivity.dart, package:connectivity_plus/connectivity_plus.dart, package:medico/services/connectivity_service.dart, main, record
+Nodes (6): auth_test_support.dart, package:medico/widgets/auth_surface.dart, budgetAndroid, main, signInSubmit, signUpSubmit
 
-### Community 83 - "_OnboardingCompletionScreenState"
-Cohesion: 0.40
-Nodes (5): OnboardingCompletionScreen, _OnboardingCompletionScreenState, OnboardingStep3Notifications, _OnboardingStep3NotificationsState, SingleTickerProviderStateMixin
+### Community 84 - "welcome_screen_test.dart"
+Cohesion: 0.29
+Nodes (6): NavigatorState, package:medico/screens/sign_in_screen.dart, package:medico/screens/sign_up_screen.dart, package:medico/screens/welcome_screen.dart, package:medico/theme/aurora_tokens.dart, main
 
 ### Community 85 - "home_screen.dart"
-Cohesion: 0.07
-Nodes (30): bookings_tab.dart, browse_tab.dart, home_tab.dart, build, _connectivity, connectivityService, createState, didChangeAppLifecycleState (+22 more)
+Cohesion: 0.12
+Nodes (16): bookings_tab.dart, browse_tab.dart, home_tab.dart, build, createState, _email, HomeScreen, _HomeScreenState (+8 more)
+
+### Community 86 - "NavigatorObserver"
+Cohesion: 0.67
+Nodes (3): NavigatorObserver, _RouteCounter, _RouteCounter
 
 ## Ambiguous Edges - Review These
 - `One Screen Per File Rule` → `Graphify Skill Trigger`  [AMBIGUOUS]
   .claude/CLAUDE.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **1027 isolated node(s):** `AR`, `AURORA`, `_Mode`, `AppThemeVariant`, `label` (+1022 more)
+- **966 isolated node(s):** `_Mode`, `AppThemeVariant`, `label`, `themeMode`, `_edgeCases` (+961 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `One Screen Per File Rule` and `Graphify Skill Trigger`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `Gender` connect `gender_avatar.dart` to `onboarding_gender_control.dart`, `user_profile.dart`, `profile_tab.dart`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `AuthErrorInfo` connect `forgot_password_sheet.dart` to `sign_up_screen.dart`, `auth_error_mapper.dart`, `sign_in_screen.dart`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `OnboardingData` connect `user_profile.dart` to `onboarding_step1_basics.dart`, `onboarding_flow_screen.dart`, `onboarding_sync_service.dart`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **What connects `AR`, `AURORA`, `_Mode` to the rest of the system?**
-  _1027 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `OtpVerificationScreen` connect `Auth Fallback Chain` to `otp_verification_screen.dart`, `State`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `Auth Fallback Chain` connect `Auth Fallback Chain` to `package:supabase_flutter/supabase_flutter.dart`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **What connects `_Mode`, `AppThemeVariant`, `label` to the rest of the system?**
+  _966 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `auth_surface.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.03389830508474576 - nodes in this community are weakly interconnected._
 - **Should `sign_up_screen.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected._
+- **Should `otp_verification_screen.dart` be split into smaller, more focused modules?**
+  _Cohesion score 0.05128205128205128 - nodes in this community are weakly interconnected._
