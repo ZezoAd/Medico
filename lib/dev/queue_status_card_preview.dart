@@ -9,7 +9,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import '../widgets/global_offline_strip.dart';
+import '../services/connectivity_service.dart';
+import '../widgets/offline_status_capsule.dart';
 import '../widgets/queue_status_card.dart';
 
 void main() => runApp(const _PreviewApp());
@@ -109,8 +110,17 @@ class _PreviewAppState extends State<_PreviewApp> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  GlobalOfflineStrip(
-                    visible: _scenario == _Scenario.noInternet,
+                  // Hosted here rather than in a preview of its own. In the
+                  // real shell it docks above the bottom nav; this harness only
+                  // needs it beside the card to check that the two states read
+                  // as separate facts, so its position here is not the app's.
+                  OfflineStatusCapsule(
+                    phase: _scenario == _Scenario.noInternet
+                        ? ConnectivityPhase.confirmedOffline
+                        : ConnectivityPhase.confirmedOnline,
+                    onRefresh: () => debugPrint(
+                      'preview: OfflineStatusCapsule refresh tapped',
+                    ),
                   ),
                   const SizedBox(height: 16),
                   QueueStatusCard(

@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
 import '../services/connectivity_service.dart';
 import '../services/profile_service.dart';
-import '../widgets/global_offline_strip.dart';
+import '../widgets/offline_status_capsule.dart';
 import 'bookings_tab.dart';
 import 'browse_tab.dart';
 import 'home_tab.dart';
@@ -57,16 +57,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// An injected one outlives this screen and is the caller's to dispose.
   late final bool _ownsConnectivity;
 
-  StreamSubscription<bool>? _onlineSub;
+  StreamSubscription<ConnectivityPhase>? _phaseSub;
 
-  /// Mirrors [ConnectivityService.isOnline] for `build`.
+  /// Mirrors [ConnectivityService.phase] for `build`.
+  ///
+  /// The *committed* phase, not the raw bool: the capsule must stay on screen
+  /// through the confirmation window rather than disappearing the instant the
+  /// platform mentions a network.
   ///
   /// A local field kept in sync, not a `StreamBuilder`: this file already
   /// holds every other piece of async state ([_profile], [_email],
-  /// [_isSignedIn]) the same way, and the strip's visibility is one bool that
-  /// several future consumers may want to read without another builder in the
-  /// tree. Seeded from the service so the first frame agrees with it.
-  late bool _isOnline;
+  /// [_isSignedIn]) the same way. Seeded from the service so the first frame
+  /// agrees with it.
+  late ConnectivityPhase _phase;
 
   UserProfile? _profile;
 
@@ -85,10 +88,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     _ownsConnectivity = widget.connectivityService == null;
     _connectivity = widget.connectivityService ?? ConnectivityService();
-    _isOnline = _connectivity.isOnline;
-    _onlineSub = _connectivity.isOnlineStream.listen((online) {
+    _phase = _connectivity.phase;
+    _phaseSub = _connectivity.phaseStream.listen((phase) {
       if (!mounted) return;
-      setState(() => _isOnline = online);
+      setState(() => _phase = phase);
     });
     // The plugin's change stream may not say anything until the network next
     // moves, so the first real answer is asked for outright.
@@ -100,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _onlineSub?.cancel();
+    _phaseSub?.cancel();
     if (_ownsConnectivity) _connectivity.dispose();
     super.dispose();
   }
@@ -152,55 +155,71 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Scaffold(
         backgroundColor: const Color(0xFFFAF7F2),
         body: SafeArea(
-          // The strip sits above the IndexedStack, not inside any tab: being
-          // offline is a fact about the device, so it must not vanish when the
-          // person moves from Home to Bookings.
+          // Two rows: the tab content, then the offline capsule docked under
+          // it. Being offline is a fact about the *device*, so the capsule
+          // lives out here in the shell rather than inside any tab — it must
+          // not vanish when the person moves from Home to Bookings.
           //
-          // Above each tab's header rather than below it, for two separate
-          // reasons. Both are recorded because either one alone reads as
-          // provisional, and this position is not.
+          // It is the LAST child on purpose, so it lands directly above
+          // `bottomNavigationBar`. Superseded the top-of-screen strip that used
+          // to be the first child, for two reasons:
           //
-          // 1. Product: while the device is offline, the chrome it outranks is
-          //    close to inert anyway. Home's top bar is a search field that
-          //    cannot reach the doctor directory and a bell that cannot fetch
-          //    a notification. Ranking a live statement about *why* nothing
-          //    works above two controls that silently will not work is the
-          //    intended order, not a compromise — the strip explains the dead
-          //    search bar, so it has to be readable before it.
+          // 1. Product: docked by the nav bar it sits where the thumb already
+          //    is, so its "تحديث" is reachable one-handed, and it is out of the
+          //    reading path of whatever heading a screen opens with. At the top
+          //    it displaced the first thing every screen wanted to say.
+          // 2. Structural: the bottom nav is one Scaffold-level element shared
+          //    by all four tabs, so "below the shared chrome" is unambiguous
+          //    here in a way "below the header" never was — Browse and Bookings
+          //    have no header at all, and Profile scrolls its banner with its
+          //    content.
           //
-          // 2. Structural: there is no per-tab header to sit below on three of
-          //    the four tabs. Browse and Bookings are one centred Text apiece,
-          //    and Profile scrolls its banner with its content; only HomeTab
-          //    has a fixed top bar.
+          // A Stack, not a Column. The capsule floats *over* the tab content
+          // rather than taking a reserved row of its own, so a message that is
+          // usually absent no longer re-lays-out the page underneath it every
+          // time it appears — it reads as a mini-player bar riding above the
+          // content, which is the arrangement it is modelled on.
           //
-          // Reason 2 expires once Browse and Bookings are built out. Reason 1
-          // does not — so building those headers is not on its own a licence
-          // to move the strip beneath them. That would need its own decision,
-          // taken against the offline experience rather than against layout
-          // tidiness.
+          // The cost of dropping the Column is that nothing reclaims the space
+          // automatically any more. A scroll view that wants its last item
+          // reachable adds [OfflineStatusCapsule.overlayClearance] to its
+          // bottom padding while the capsule is showing; `home_tab.dart` does.
           //
-          // No padding wrapper here on purpose — the strip owns its own
-          // margins ([GlobalOfflineStrip.topMargin] / `sideMargin`) so that it
-          // can still collapse to genuinely zero space when hidden.
-          child: Column(
+          // No padding wrapper here on purpose — the capsule owns its own
+          // margins ([OfflineStatusCapsule.sideMargin] / `verticalMargin`) so
+          // that it still occupies nothing at all while hidden.
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              GlobalOfflineStrip(visible: !_isOnline),
-              Expanded(
-                child: IndexedStack(
-                  index: _tabIndex,
-                  children: [
-                    HomeTab(connectivityService: _connectivity),
-                    const BrowseTab(),
-                    const BookingsTab(),
-                    ProfileTab(
-                      isSignedIn: _isSignedIn,
-                      gender: gender,
-                      fullName: _profile?.fullName,
-                      phone: _profile?.phone,
-                      email: _email,
-                      onSignOut: _signOut,
-                    ),
-                  ],
+              IndexedStack(
+                index: _tabIndex,
+                children: [
+                  HomeTab(connectivityService: _connectivity),
+                  const BrowseTab(),
+                  const BookingsTab(),
+                  ProfileTab(
+                    isSignedIn: _isSignedIn,
+                    gender: gender,
+                    fullName: _profile?.fullName,
+                    phone: _profile?.phone,
+                    email: _email,
+                    onSignOut: _signOut,
+                  ),
+                ],
+              ),
+              // Pinned to the bottom of the body, so it lands just above the
+              // nav bar and floats over whichever tab is showing.
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: OfflineStatusCapsule(
+                  phase: _phase,
+                  // Routed through `recheck` rather than `checkNow` so a tap
+                  // enters the same confirming window an automatic transition
+                  // does, instead of a private disabled-while-in-flight state
+                  // only this button would understand.
+                  onRefresh: _connectivity.recheck,
                 ),
               ),
             ],

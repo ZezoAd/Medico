@@ -61,20 +61,14 @@ abstract final class AuroraColors {
   /// [primary]: it reads as a system success state, not as branding.
   static const success = Color(0xFF16A34A);
 
-  // System chrome. Not Aurora hues and not status colours — this is the app
-  // speaking about the device rather than about anything in the app. Held to
-  // one warm-neutral pair so it reads as chrome in both themes and never as a
-  // surface, a brand mark, or an error.
-
-  /// Fill of the global offline strip. A warm mid-brown, deliberately outside
-  /// the Aurora green/blue family: being offline is a *condition*, not a
-  /// failure, so it must not borrow [danger]'s red or the brand's teal. The
-  /// warmth is what separates it from the cool greys of the app's surfaces.
-  static const offlineStrip = Color(0xFF5F5240);
-
-  /// Text and icon on [offlineStrip]. A warm cream at ~9.2:1 against it —
-  /// comfortably past WCAG AA for the strip's small bold type.
-  static const offlineStripInk = Color(0xFFE8DCC8);
+  // The offline capsule once carried three bespoke tokens here
+  // (offlineCapsule / offlineCapsuleInk / offlineCapsuleAccent — a #37474F
+  // slate pair). They are gone: the 2026-09-02 redesign made it a light
+  // surface card built entirely from the existing Aurora tokens above and
+  // their dark counterparts below, so a private palette for it would have been
+  // three more colours to keep in sync for no gain. See
+  // `offline_status_capsule.dart`, which now composes its two palettes from
+  // [surface]/[ink]/[muted]/[tonal]/[accentOnTonal] and the *Dark set.
 
   // Avatar colours. The Profile tab identifies the signed-in patient with a
   // silhouette rather than a photo — `profiles` has no avatar column and one
@@ -434,6 +428,23 @@ abstract final class AuroraShadows {
       color: Color(0x24122B28), // rgba(18,43,40,0.14)
       offset: Offset(0, -8),
       blurRadius: 40,
+    ),
+  ];
+
+  /// A card with air on all four sides, reading as genuinely detached rather
+  /// than as a panel resting on the page.
+  ///
+  /// Sits between [card] and [sheet] on purpose: [card]'s 6% at 24pt is tuned
+  /// for a surface whose edges are already implied by the content around it,
+  /// and disappears entirely once a card floats free with margin on every
+  /// side. [sheet] is the other direction — it throws *upward*, for something
+  /// anchored to the bottom edge of a region. This one throws down, like every
+  /// other resting elevation in the app.
+  static const floating = [
+    BoxShadow(
+      color: Color(0x1F122B28), // rgba(18,43,40,0.12)
+      offset: Offset(0, 10),
+      blurRadius: 30,
     ),
   ];
 

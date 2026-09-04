@@ -55,7 +55,7 @@ enum StalenessReason {
 ///
 /// The card is deliberately unaware of *why* it is stale, only *that* it is.
 /// Device-level offline is a separate, global concern — see
-/// `global_offline_strip.dart`.
+/// `offline_status_capsule.dart`.
 class QueueStatusCard extends StatefulWidget {
   const QueueStatusCard({
     super.key,

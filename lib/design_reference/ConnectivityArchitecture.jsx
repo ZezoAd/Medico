@@ -30,37 +30,88 @@ function RetryRing({ pct }) {
 }
 
 /* the fact, stated once, no animation — there's nothing to visibly "retry" */
-// LOCKED (2026-09-01): an inset rounded pill, not a full-bleed banner.
+// LOCKED (2026-09-02, later same day): a light rounded CARD, still docked
+// above the bottom nav.
 //
-// Was an edge-to-edge ~44px bar in near-black green (#2B3733 / #EAF0EC). A
-// full-bleed bar read as a system-level takeover of the screen, which
-// overstates a condition the person often cannot act on or dismiss. It now
-// floats inside the same 16px gutter the tab content uses, at roughly half the
-// height, in a warm neutral — so it reads as one element on the page rather
-// than as chrome clamped over it.
+// Supersedes the earlier 2026-09-02 entry (a dark #37474F full-pill capsule
+// with a pulsing dot and a "تحديث" text link), which superseded the
+// 2026-09-01 warm-brown pill at the TOP of the shell, which superseded the
+// original edge-to-edge #2B3733 banner. Only this entry is current.
 //
-// Shipped values live in `lib/theme/aurora_tokens.dart`
-// (AuroraColors.offlineStrip / offlineStripInk) and
-// `lib/widgets/global_offline_strip.dart`. Only the strip changed; the badge
-// states and retry-ring logic below are untouched.
-function GlobalOfflineStrip({ show }) {
+// The POSITION is unchanged and is not in play here — it stays the last child
+// of the shell's Column, in its own reserved row above the bottom nav, so
+// Expanded still gives back exactly the height it asks for and nothing
+// overlaps. See `home_screen.dart`. What changed is only what lives in that
+// row:
+//
+//  * Dark pill -> light surface card. The dark slate read as a system toast
+//    clamped to the frame; on the warm page background a white card with real
+//    margin on all four sides reads as part of the app, floating, dismissable-
+//    looking without pretending to be dismissable.
+//  * Radius pill(999) -> 20 (AuroraRadius.lg), the app's existing elevated-card
+//    radius. A full pill radius on a two-line 72pt box bows its long edges.
+//  * Text link -> two circular 48dp buttons. The refresh control is now an
+//    actual 48x48 tap target rather than a small text run, and the pair reads
+//    at a glance: coloured tonal fill = does something, muted fill = says
+//    something.
+//  * Bespoke tokens retired. It is now built from the existing Aurora palette
+//    and its *Dark counterparts, with two self-contained palettes chosen off
+//    MediaQuery.platformBrightnessOf — this widget follows the OS even though
+//    the rest of the app does not yet.
+//  * Motion: the size-collapse became a slide+fade (300ms decelerate in,
+//    220ms out).
+//
+// Copy note, unchanged and still binding: the reference mock for this card
+// reads "الدور محفوظ بأمان / سنحدّثه عند عودة الاتصال", which is
+// queue-specific. The shipped card does NOT use it — it renders on Browse,
+// Bookings and Profile too, where no turn is being held, so that line would be
+// false rather than merely irrelevant. The generic pair is used instead.
+//
+// Shipped in `lib/widgets/offline_status_capsule.dart`; the class keeps the
+// name OfflineStatusCapsule as an informal one, not a claim about geometry.
+// Only this element changed; the badge states and retry-ring logic below are
+// untouched.
+function OfflineStatusCapsule({ show }) {
   return (
     <div
-      className="overflow-hidden transition-all duration-400"
-      style={{ maxHeight: show ? 36 : 0, opacity: show ? 1 : 0 }}
+      className="transition-all duration-300"
+      style={{
+        opacity: show ? 1 : 0,
+        transform: show ? "translateY(0)" : "translateY(35%)",
+      }}
     >
       <div
-        className="mx-4 mt-2 flex items-center gap-2 rounded-2xl px-3 py-1.5 text-xs font-bold"
+        className="mx-4 my-3 flex items-center gap-3 rounded-[20px] p-3"
         style={{
-          background: "#5F5240",
-          color: "#E8DCC8",
-          // AuroraShadows.pill — the existing tight lift, reused rather than
-          // a new blur/opacity pair invented for this one element.
-          boxShadow: "0 2px 8px rgba(18,43,40,0.10)",
+          background: "#FFFFFF",
+          // AuroraShadows.floating — a card with air on all four sides.
+          boxShadow: "0 10px 30px rgba(18,43,40,0.12)",
         }}
       >
-        <WifiOff className="h-3.5 w-3.5 shrink-0" />
-        لا يوجد اتصال بالإنترنت حالياً
+        {/* leads on the visual right under RTL: informational, muted fill */}
+        <span
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full"
+          style={{ background: "rgba(143,165,160,0.14)", color: "#8FA5A0" }}
+        >
+          <WifiOff className="h-5 w-5" />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[15px] font-extrabold" style={{ color: "#122B28" }}>
+            لا يوجد اتصال بالإنترنت حالياً
+          </p>
+          <p className="mt-0.5 truncate text-xs font-medium" style={{ color: "#8FA5A0" }}>
+            سيتم التحديث تلقائياً عند عودة الاتصال
+          </p>
+        </div>
+
+        {/* far left under RTL: the action, 48x48 tap target, brand tonal */}
+        <button
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full"
+          style={{ background: "#E6F1EE", color: "#0F6E56" }}
+        >
+          <RotateCw className="h-5 w-5" />
+        </button>
       </div>
     </div>
   );
@@ -160,8 +211,11 @@ export default function ConnectivityArchitecture() {
           ))}
         </div>
 
-        {/* global layer — appears ONLY for true device offline, above everything */}
-        <GlobalOfflineStrip show={scenario === "noInternet"} />
+        {/* Device layer — appears ONLY for true device offline. Rendered here,
+            beside the card, so this harness can show both states at once. In
+            the shipped app it does NOT sit here: it docks in its own row above
+            the bottom navigation bar. See the note on the component. */}
+        <OfflineStatusCapsule show={scenario === "noInternet"} />
 
         {scenario === "channelDrop" && cardMode === "retrying" && (
           <p className="text-center text-xs font-semibold" style={{ color: "#6F7D78" }}>
