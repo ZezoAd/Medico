@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medico/screens/home_tab.dart';
 import 'package:medico/widgets/home_specialty_chips.dart';
-import 'package:medico/widgets/queue_status_card.dart';
+import 'package:medico/widgets/home_empty_state_card.dart';
 
 import 'fake_connectivity.dart';
 
@@ -111,17 +111,18 @@ void main() {
   const smallPhone = Size(375, 667);
   const mediumPhone = Size(448, 998);
 
-  // Reads off whichever card is in Home's hero slot rather than naming a
-  // specific one — QueueStatusCard and HomeEmptyStateCard swap places there
-  // while the Bookings data model is outstanding, and the chips sit below
-  // either.
+  // Anchored on whichever card currently occupies Home's hero slot.
+  // QueueStatusCard and HomeEmptyStateCard swap places there while the
+  // Bookings data model is outstanding; the assertion is about the chips
+  // sitting below the hero card, whichever one that is, so this name follows
+  // the swap rather than the assertion changing.
   testWidgets('sits on Home below the hero card', (tester) async {
     await pumpHome(tester, mediumPhone);
 
     expect(find.byType(HomeSpecialtyChips), findsOneWidget);
     expect(find.text('تصفّح حسب التخصص'), findsOneWidget);
 
-    final cardBottom = tester.getBottomLeft(find.byType(QueueStatusCard)).dy;
+    final cardBottom = tester.getBottomLeft(find.byType(HomeEmptyStateCard)).dy;
     final chipsTop = tester.getTopLeft(find.byType(HomeSpecialtyChips)).dy;
     expect(chipsTop, greaterThan(cardBottom));
   });

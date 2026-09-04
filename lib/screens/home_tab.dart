@@ -4,23 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../services/connectivity_service.dart';
 import '../theme/aurora_tokens.dart';
+import '../widgets/home_empty_state_card.dart';
 import '../widgets/home_specialty_doctors.dart';
 import '../widgets/home_specialty_chips.dart';
-import '../widgets/queue_status_card.dart';
-
-/// TEMPORARY / TEST-ONLY. The simulated channel-drop cycle driven by the test
-/// button on Home — see the block in [_HomeTabState]. Deleted along with it
-/// once a real realtime channel reports its own status.
-enum _ChannelDropPhase {
-  /// No simulation running; the card follows real device connectivity.
-  none,
-
-  /// Pretending a reconnect is in flight, for the badge's countdown window.
-  retrying,
-
-  /// The pretend reconnect gave up — a stale card offering manual retry.
-  dropped,
-}
+import '../widgets/offline_status_capsule.dart';
 
 /// Home tab body.
 ///
@@ -28,10 +15,6 @@ enum _ChannelDropPhase {
 /// the browse-by-specialty chips, and the featured-doctors carousel. The rest
 /// of the Home spec (location pill, previously-visited doctors, upcoming
 /// booking) is still to come.
-///
-/// The hero slot currently holds [QueueStatusCard] as a placeholder, driven by
-/// real device connectivity plus one test-only control — see the marked block
-/// below.
 ///
 /// Everything below the top bar is presentation only. None of it has a backing
 /// query — the doctors are hardcoded and every CTA is inert — because the rows
@@ -76,125 +59,42 @@ class _HomeTabState extends State<HomeTab> {
   /// instead; it is not a deliberate minimum-spinner policy.
   static const _placeholderRefreshDelay = Duration(milliseconds: 500);
 
-  StreamSubscription<bool>? _onlineSub;
+  StreamSubscription<ConnectivityPhase>? _phaseSub;
 
-  /// The device's current connection, mirrored for `build`.
-  late bool _isOnline;
-
-  /// The last online value this tab saw, or null before the first one.
+  /// The device's *committed* connection phase, mirrored for `build`.
   ///
-  /// Null, not false, on purpose. The service's first emission only confirms
-  /// what the device was already doing, and treating that as a false→true
-  /// transition would fire a "reconnected" refresh on a launch where nothing
-  /// ever went wrong.
-  bool? _wasOnline;
+  /// Not the raw bool. A lift ride used to take the queue card straight from
+  /// live to a device-offline stale and back, twice, in under a second.
+  late ConnectivityPhase _phase;
 
-  // ===========================================================================
-  // TEMPORARY / TEST-ONLY — delete with the placeholder card below.
-  //
-  // There is no realtime channel for a doctor's queue yet, so `retrying` and a
-  // channel-drop `stale` cannot occur on their own: device connectivity only
-  // ever produces `live` or a device-offline `stale`. This block fakes the
-  // missing third case on demand so all three states can be exercised on a
-  // real handset. Everything under this banner goes when the real Supabase
-  // channel lands and starts reporting its own status.
-  // ===========================================================================
-
-  /// Which simulated channel state the test button has forced, if any.
-  _ChannelDropPhase _dropPhase = _ChannelDropPhase.none;
-
-  /// Matches `RETRY_SECONDS` in `design_reference/ConnectivityArchitecture.jsx`
-  /// and [QueueStatusCard]'s own badge window, so the ring finishes draining
-  /// exactly as the card settles into stale.
-  static const _retryWindow = Duration(seconds: 10);
-
-  Timer? _channelDropTimer;
-
-  // ======================= end TEMPORARY / TEST-ONLY =========================
-
-  /// When the queue numbers were last confirmed live.
+  /// The last *committed* phase this tab saw, or null before the first one.
   ///
-  /// Frozen once, on the live→not-live edge, and never touched again while
-  /// non-live — the contract [QueueStatusCard.recordedAt] documents, and the
-  /// same handling `queue_status_card_preview.dart` uses. Recomputing it on
-  /// rebuild would let the stale estimate creep forward while nothing was
-  /// actually being received.
-  DateTime _recordedAt = DateTime.now();
-
-  /// The card's connection state, derived rather than stored.
-  ///
-  /// A genuinely offline device outranks the simulation: there is nothing for
-  /// a retry to accomplish without a network, so the test phase must never put
-  /// a retry button on screen in that case.
-  QueueConnectionStatus get _queueStatus {
-    if (!_isOnline) return QueueConnectionStatus.stale;
-    return switch (_dropPhase) {
-      _ChannelDropPhase.retrying => QueueConnectionStatus.retrying,
-      _ChannelDropPhase.dropped => QueueConnectionStatus.stale,
-      _ChannelDropPhase.none => QueueConnectionStatus.live,
-    };
-  }
-
-  /// Only meaningful while stale. Stale *and* online can only be the simulated
-  /// channel drop, since real connectivity would have said live; stale and
-  /// offline is the device itself.
-  StalenessReason? get _stalenessReason {
-    if (_queueStatus != QueueConnectionStatus.stale) return null;
-    return _isOnline
-        ? StalenessReason.channelDrop
-        : StalenessReason.deviceOffline;
-  }
-
-  /// Applies [change] and pins [_recordedAt] if it moved the card off live.
-  ///
-  /// Wrapping every mutation that can reach [_queueStatus] is what guarantees
-  /// the timestamp is captured on the edge and only on the edge, without each
-  /// caller having to remember to check.
-  void _withQueueState(VoidCallback change) {
-    final wasLive = _queueStatus == QueueConnectionStatus.live;
-    setState(() {
-      change();
-      if (wasLive && _queueStatus != QueueConnectionStatus.live) {
-        _recordedAt = DateTime.now();
-      }
-    });
-  }
-
-  /// TEST-ONLY. Simulates the channel dropping while the device stays online:
-  /// the badge counts down for [_retryWindow], then the card settles into a
-  /// channel-drop stale that offers the manual retry button.
-  void _simulateChannelDrop() {
-    _channelDropTimer?.cancel();
-    _withQueueState(() => _dropPhase = _ChannelDropPhase.retrying);
-    _channelDropTimer = Timer(_retryWindow, () {
-      if (!mounted) return;
-      _withQueueState(() => _dropPhase = _ChannelDropPhase.dropped);
-    });
-  }
-
-  /// The card's "إعادة المحاولة الآن". With no channel to reconnect to, the
-  /// honest thing a retry can do is drop the simulation and show whatever the
-  /// device's real connectivity says.
-  void _handleQueueRetry() {
-    _channelDropTimer?.cancel();
-    _channelDropTimer = null;
-    _withQueueState(() => _dropPhase = _ChannelDropPhase.none);
-  }
+  /// Null, not a value, on purpose: the first committed phase only confirms
+  /// what the device was already doing, and treating that as a reconnect would
+  /// fire a refresh on a launch where nothing ever went wrong. Only settled
+  /// phases are recorded here — [ConnectivityPhase.confirming] is a window,
+  /// not a destination, so it never counts as the "previous" state.
+  ConnectivityPhase? _lastCommitted;
 
   @override
   void initState() {
     super.initState();
-    _isOnline = widget.connectivityService.isOnline;
-    _onlineSub = widget.connectivityService.isOnlineStream.listen((online) {
-      final wasOnline = _wasOnline;
-      _wasOnline = online;
-      // Only a genuine reconnect bumps the epoch. Going *offline* refreshes
-      // nothing — there is nothing to fetch — and the very first emission has
-      // no predecessor to be a transition from. The card below still has to
-      // repaint either way, so the setState itself is unconditional.
-      final reconnected = wasOnline == false && online;
-      _withQueueState(() {
-        _isOnline = online;
+    _phase = widget.connectivityService.phase;
+    _phaseSub = widget.connectivityService.phaseStream.listen((phase) {
+      final previous = _lastCommitted;
+      if (phase != ConnectivityPhase.confirming) _lastCommitted = phase;
+      // Only a *committed* reconnect bumps the epoch. This is the whole point
+      // of moving off the raw stream: a flicker that reverted before
+      // confirmation never reaches here at all, so it can no longer deal the
+      // carousel a fresh hand for nothing. Going offline refreshes nothing
+      // either — there is nothing to fetch — and the first committed phase has
+      // no predecessor to be a transition from. The card still has to repaint
+      // on every phase change, so the setState itself is unconditional.
+      final reconnected =
+          previous == ConnectivityPhase.confirmedOffline &&
+          phase == ConnectivityPhase.confirmedOnline;
+      setState(() {
+        _phase = phase;
         if (reconnected) _refreshEpoch++;
       });
     });
@@ -202,8 +102,7 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   void dispose() {
-    _onlineSub?.cancel();
-    _channelDropTimer?.cancel();
+    _phaseSub?.cancel();
     super.dispose();
   }
 
@@ -224,7 +123,7 @@ class _HomeTabState extends State<HomeTab> {
     // its normal dismiss animation, so the gesture still feels answered, while
     // nothing downstream is invalidated.
     //
-    // Deliberately silent: GlobalOfflineStrip is on screen throughout and
+    // Deliberately silent: OfflineStatusCapsule is on screen throughout and
     // already says this. A snackbar would be the same fact twice.
     if (!widget.connectivityService.isOnline) return;
 
@@ -259,53 +158,37 @@ class _HomeTabState extends State<HomeTab> {
               // This is what makes the pull available regardless of how much is
               // on screen.
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(
+              // The offline capsule floats over this content rather than
+              // displacing it, so the last card would sit under it. Room is
+              // added only while it is actually showing — reserving it
+              // permanently would leave a dead band at the foot of Home for a
+              // message that is almost never up.
+              padding: EdgeInsets.fromLTRB(
                 AuroraSpacing.lg,
                 AuroraSpacing.sm,
                 AuroraSpacing.lg,
-                AuroraSpacing.lg,
+                AuroraSpacing.lg +
+                    (_phase == ConnectivityPhase.confirmedOnline
+                        ? 0
+                        : OfflineStatusCapsule.overlayClearance),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // TEMPORARY: hardcoded, not a decision. Nobody can hold a
                   // queue position yet — there is no bookings table and no
-                  // booking flow — so neither placeholder here is reading real
-                  // data. This becomes a real conditional (HomeEmptyStateCard
-                  // when there is no active booking vs. QueueStatusCard when
-                  // there is) once the Booking tab and its backing data land.
+                  // booking flow — so "no active booking" is the only state
+                  // that can honestly be true, and showing it unconditionally
+                  // is more truthful than branching on data that does not
+                  // exist. This becomes a real conditional (empty state vs.
+                  // QueueStatusCard) once the Booking tab and its backing data
+                  // land; `queue_status_card.dart` stays built and ready for
+                  // that, just unreferenced from here in the meantime — see
+                  // `dev/queue_status_card_preview.dart`, which is where its
+                  // connection states are exercised.
                   //
-                  // **Currently active placeholder: QueueStatusCard**, mounted
-                  // unconditionally so its three connection states can be
-                  // exercised on a real handset. `home_empty_state_card.dart`
-                  // stays built and ready, just unreferenced from here in the
-                  // meantime — the two swapped roles, and swapping them back is
-                  // this one widget and its import.
-                  //
-                  // The doctor, location and queue numbers below mirror
-                  // `design_reference/ConnectivityArchitecture.jsx`; positions
-                  // 7 and 12 reproduce that reference's 7/12 progress bar and
-                  // its five-patients-ahead headline at the same time.
-                  QueueStatusCard(
-                    doctorName: 'د. محمد طاهر',
-                    doctorLocation: 'عيادة النخيل · الطابق الثاني',
-                    doctorAvatarUrl: null,
-                    patientsAhead: 5,
-                    avgConsultMinutes: 5,
-                    doctorQueuePosition: 7,
-                    patientQueuePosition: 12,
-                    connectionStatus: _queueStatus,
-                    stalenessReason: _stalenessReason,
-                    recordedAt: _recordedAt,
-                    // Inert, like every other CTA on this screen: there is no
-                    // detail sheet to open. The print is the seam.
-                    onTap: () =>
-                        debugPrint('TODO: open the queue detail sheet'),
-                    onRetry: _handleQueueRetry,
-                  ),
-                  // TEMPORARY / TEST-ONLY — delete with the block in the State.
-                  const SizedBox(height: AuroraSpacing.sm),
-                  _ChannelDropTestButton(onPressed: _simulateChannelDrop),
+                  // The CTA is inert for the same reason — no search flow yet.
+                  const HomeEmptyStateCard(),
                   const SizedBox(height: AuroraSpacing.xxl),
                   // The chips now drive the carousel below. The chip row still
                   // owns its own highlight; this callback only reports the key,
@@ -332,45 +215,6 @@ class _HomeTabState extends State<HomeTab> {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// TEMPORARY / TEST-ONLY.
-///
-/// Forces the queue card through the one connection state real device
-/// connectivity cannot produce — a channel drop while the device is still
-/// online. Deliberately plain and quiet: a text button, not an Aurora surface,
-/// so nobody mistakes it for shipped UI. Delete it, [_ChannelDropPhase], and
-/// the marked block in [_HomeTabState] once a real realtime channel exists for
-/// the doctor queue.
-class _ChannelDropTestButton extends StatelessWidget {
-  const _ChannelDropTestButton({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: TextButton.icon(
-        onPressed: onPressed,
-        icon: const Icon(Icons.bolt_rounded, size: 16),
-        label: Text(
-          'اختبار: انقطاع القناة',
-          style: AuroraText.body(
-            size: AuroraFontSize.caption,
-            weight: FontWeight.w700,
-            color: context.aurora.muted,
-          ),
-        ),
-        style: TextButton.styleFrom(
-          foregroundColor: context.aurora.muted,
-          padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.sm),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-      ),
     );
   }
 }

@@ -17,7 +17,7 @@ import 'package:medico/theme/app_theme.dart';
 import 'package:medico/theme/aurora_tokens.dart';
 import 'package:medico/widgets/home_specialty_chips.dart';
 import 'package:medico/widgets/home_specialty_doctors.dart';
-import 'package:medico/widgets/queue_status_card.dart';
+import 'package:medico/widgets/home_empty_state_card.dart';
 
 import 'fake_connectivity.dart';
 
@@ -621,8 +621,7 @@ void main() {
 
       // The first emission only confirms what the device was already doing.
       // Counting it as a reconnect would refresh Home on every launch.
-      connectivity.emit(online: false);
-      await tester.pumpAndSettle();
+      await connectivity.emitAndSettle(tester, online: false);
       expect(
         carousel().refreshEpoch,
         0,
@@ -631,14 +630,12 @@ void main() {
             'fetch, and the first emission has no predecessor anyway',
       );
 
-      connectivity.emit(online: true);
-      await tester.pumpAndSettle();
+      await connectivity.emitAndSettle(tester, online: true);
       expect(carousel().refreshEpoch, 1);
 
       // Redundant "still online" events are already swallowed by the service,
       // but the tab must not count them either if one ever gets through.
-      connectivity.emit(online: true);
-      await tester.pumpAndSettle();
+      await connectivity.emitAndSettle(tester, online: true);
       expect(carousel().refreshEpoch, 1);
     });
 
@@ -647,7 +644,7 @@ void main() {
     /// rest; 300 comfortably clears the trigger distance.
     Future<void> pullToRefresh(WidgetTester tester) async {
       await tester.fling(
-        find.byType(QueueStatusCard),
+        find.byType(HomeEmptyStateCard),
         const Offset(0, 300),
         1000,
       );
@@ -683,8 +680,7 @@ void main() {
       final connectivity = useFakeConnectivity(online: false);
       await pumpHome(tester, mediumPhone, connectivity: connectivity);
 
-      connectivity.emit(online: false);
-      await tester.pumpAndSettle();
+      await connectivity.emitAndSettle(tester, online: false);
       expect(epochOf(tester), 0);
 
       final before = await scrollAllCardNames(tester);
@@ -721,8 +717,7 @@ void main() {
       final connectivity = useFakeConnectivity(online: false);
       await pumpHome(tester, mediumPhone, connectivity: connectivity);
 
-      connectivity.emit(online: false);
-      await tester.pumpAndSettle();
+      await connectivity.emitAndSettle(tester, online: false);
 
       // Back online, but silently — the plugin never said so, which is the
       // case the probe inside the pull exists to catch. The reconnect is
