@@ -26,10 +26,8 @@ abstract final class AppTheme {
     scaffoldBackground: lightScaffoldBackground,
   );
 
-  static ThemeData get dark => _build(
-    brightness: Brightness.dark,
-    palette: AuroraPalette.dark,
-  );
+  static ThemeData get dark =>
+      _build(brightness: Brightness.dark, palette: AuroraPalette.dark);
 
   /// One builder for both, so a surface can never be themed in light and
   /// forgotten in dark — the whole failure mode this file exists to prevent.
@@ -172,7 +170,11 @@ abstract final class AppTheme {
       titleMedium: body(AuroraFontSize.bodyLg, FontWeight.w600, palette.ink),
       bodyLarge: body(AuroraFontSize.bodyLg, FontWeight.w400, palette.ink),
       bodyMedium: body(AuroraFontSize.body, FontWeight.w400, palette.ink),
-      bodySmall: body(AuroraFontSize.caption, FontWeight.w400, palette.secondary),
+      bodySmall: body(
+        AuroraFontSize.caption,
+        FontWeight.w400,
+        palette.secondary,
+      ),
       labelLarge: body(AuroraFontSize.body, FontWeight.w600, palette.ink),
       labelSmall: body(AuroraFontSize.micro, FontWeight.w500, palette.muted),
     );

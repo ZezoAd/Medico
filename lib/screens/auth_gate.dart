@@ -239,9 +239,9 @@ class _AuthGateState extends State<AuthGate> {
     final user = userResponse.user;
     if (user == null) throw const AuthException('Session user not found');
 
-    final profile = await const ProfileService()
-        .fetchCurrentProfile()
-        .timeout(_fetchTimeout);
+    final profile = await const ProfileService().fetchCurrentProfile().timeout(
+      _fetchTimeout,
+    );
     if (profile == null) throw const AuthException('Profile not found');
 
     if (!mounted) return;

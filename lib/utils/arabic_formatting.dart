@@ -89,13 +89,15 @@ CountedParts patientsAheadParts(int patientsAhead) {
 String minutesPhrase(int minutes, {bool afterPreposition = false}) {
   assert(minutes >= 0, 'minutes cannot be negative');
   if (minutes == 0) return 'أقل من دقيقة';
-  return _joinParts(_countedParts(
-    count: minutes,
-    wordOnlyForOne: 'دقيقة واحدة',
-    dualForm: afterPreposition ? 'دقيقتين' : 'دقيقتان',
-    pluralFewSuffix: 'دقائق',
-    singularAccusativeSuffix: 'دقيقة',
-  ));
+  return _joinParts(
+    _countedParts(
+      count: minutes,
+      wordOnlyForOne: 'دقيقة واحدة',
+      dualForm: afterPreposition ? 'دقيقتين' : 'دقيقتان',
+      pluralFewSuffix: 'دقائق',
+      singularAccusativeSuffix: 'دقيقة',
+    ),
+  );
 }
 
 /// Formats [time] as a 12-hour Arabic-Indic clock string, e.g. "٤:١٥ م".

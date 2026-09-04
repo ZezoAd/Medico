@@ -75,7 +75,9 @@ class ThemeController extends ValueNotifier<ThemeMode> {
   /// Reads the stored preference and installs [instance]. Awaited in `main()`
   /// before `runApp`, so the first frame is already the right theme — no
   /// flash of light before a stored dark preference lands.
-  static Future<void> init({ThemeService service = const ThemeService()}) async {
+  static Future<void> init({
+    ThemeService service = const ThemeService(),
+  }) async {
     instance = ThemeController(await service.load(), service: service);
   }
 
