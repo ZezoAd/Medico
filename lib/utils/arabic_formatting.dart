@@ -100,6 +100,67 @@ String minutesPhrase(int minutes, {bool afterPreposition = false}) {
   );
 }
 
+/// "Doctors" as a counted noun, e.g. "طبيب واحد", "طبيبان", "٣ أطباء",
+/// "١٢ طبيباً" — the Home section headers that report how many doctors a
+/// list holds.
+///
+/// 0 is handled separately for the same reason [patientsAheadParts] does it:
+/// zero is not part of the 1/2/3-10/11+ counting rules, and forcing it through
+/// them produces "٠ أطباء". Callers that hide their section when the list is
+/// empty will never see this branch, but it should not be a lie if they do.
+String doctorsPhrase(int count) {
+  assert(count >= 0, 'count cannot be negative');
+  if (count == 0) return 'لا يوجد أطباء';
+  return _joinParts(
+    _countedParts(
+      count: count,
+      wordOnlyForOne: 'طبيب واحد',
+      dualForm: 'طبيبان',
+      pluralFewSuffix: 'أطباء',
+      singularAccusativeSuffix: 'طبيباً',
+    ),
+  );
+}
+
+/// The Levantine/Iraqi month names, which is what an Iraqi patient reads —
+/// "أيار", not the transliterated "مايو" of the Gulf and Egypt. Indexed by
+/// `month - 1`.
+const _levantineMonths = [
+  'كانون الثاني',
+  'شباط',
+  'آذار',
+  'نيسان',
+  'أيار',
+  'حزيران',
+  'تموز',
+  'آب',
+  'أيلول',
+  'تشرين الأول',
+  'تشرين الثاني',
+  'كانون الأول',
+];
+
+/// Formats [date] as a day/month-name/year string, e.g. "٢٠ أيار ٢٠٢٥".
+///
+/// A month *name* rather than a numeral, deliberately: "٥/٨/٢٠٢٥" is ambiguous
+/// between day-first and month-first readings, and this string is read at a
+/// glance under a doctor's name where there is no room to disambiguate it.
+///
+/// The day is not zero-padded — "٩ أيلول", not "٠٩ أيلول" — because unlike
+/// [formatArabicClock12]'s minutes there is nothing here for a leading zero to
+/// keep aligned.
+///
+/// **This is the single place a date becomes digits in the UI**, which is what
+/// makes it the seam the numerals toggle plugs into. There is no toggle yet —
+/// `theme_service.dart` names it as the next app-wide preference after the
+/// theme — so this emits Arabic-Indic today, matching [formatArabicClock12]
+/// and [patientsAheadPhrase]. Nothing should format a date inline instead.
+String formatArabicDate(DateTime date) {
+  final day = toArabicDigits('${date.day}');
+  final year = toArabicDigits('${date.year}');
+  return '$day ${_levantineMonths[date.month - 1]} $year';
+}
+
 /// Formats [time] as a 12-hour Arabic-Indic clock string, e.g. "٤:١٥ م".
 /// Minutes are always two digits — "٤:٠٥ م", never "٤:٥ م".
 String formatArabicClock12(DateTime time) {

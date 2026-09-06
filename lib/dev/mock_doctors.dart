@@ -163,3 +163,42 @@ const mockDoctors = [
     clinicName: 'مركز الرعاية الأساسية',
   ),
 ];
+
+/// One doctor the patient has seen before, and when.
+///
+/// A record rather than a field on [Doctor]: "when did *this patient* last see
+/// them" is a fact about a visit, not about the doctor — it belongs to the
+/// bookings/queue-history row that does not exist yet, and hanging it off the
+/// directory model would be the wrong shape to unpick later.
+typedef VisitedDoctor = ({Doctor doctor, DateTime lastVisit});
+
+/// The three doctors Home's "زرتهم سابقاً" section shows.
+///
+/// **Placeholder, like everything else in this file** — and doubly so. There is
+/// no bookings table and no queue history, so nothing in Supabase could say who
+/// a patient has seen. This is a hand-picked slice of [mockDoctors] with dates
+/// invented for it.
+///
+/// Picked *by id out of [mockDoctors]* rather than written out again, which is
+/// the whole point: the previously-visited row and the specialty carousel show
+/// the same people under the same names and specialties, and a rename over
+/// there cannot leave a second stale copy over here. The three chosen span a
+/// general practitioner, a cardiologist and a dermatologist so the section
+/// reads as a real care history rather than three of one kind, and only the
+/// first carries a [Doctor.photoUrl] — the other two exercise the row's
+/// initials fallback.
+///
+/// The dates are fixed rather than computed backwards from `DateTime.now()`, so
+/// the section renders identically on every run and a widget test can assert on
+/// the exact string. They will drift further into the past as time passes;
+/// that is fine for seed data and is not worth a clock dependency.
+final mockPreviouslyVisited = <VisitedDoctor>[
+  (doctor: _doctorById('mock-3'), lastVisit: DateTime(2026, 8, 14)),
+  (doctor: _doctorById('mock-14'), lastVisit: DateTime(2026, 6, 22)),
+  (doctor: _doctorById('mock-12'), lastVisit: DateTime(2026, 4, 30)),
+];
+
+/// Throws if the id is gone, which is deliberate: an entry deleted from
+/// [mockDoctors] should fail loudly here at first use rather than silently
+/// shortening the section.
+Doctor _doctorById(String id) => mockDoctors.firstWhere((d) => d.id == id);

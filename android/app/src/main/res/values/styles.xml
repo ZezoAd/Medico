@@ -13,6 +13,13 @@
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">#FF2A93C9</item>
+        <!-- MUST match AppTheme.lightScaffoldBackground (#FAF7F2). This colour
+             sits behind the Flutter surface for the life of the activity, not
+             just during startup. It was the Aurora header teal (#2A93C9), which
+             showed through as thin vertical lines down both screen edges: the
+             panel is 1080px at DPR 2.75, so the logical width is 392.72… and
+             the sub-pixel remainder at each edge exposed the window beneath.
+             Any colour but the page colour reappears as that seam. -->
+        <item name="android:windowBackground">#FFFAF7F2</item>
     </style>
 </resources>

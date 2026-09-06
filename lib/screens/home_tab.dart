@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../dev/mock_doctors.dart';
 import '../services/connectivity_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
+import '../widgets/home_previously_visited.dart';
 import '../widgets/home_specialty_doctors.dart';
 import '../widgets/home_specialty_chips.dart';
 import '../widgets/offline_status_capsule.dart';
@@ -12,9 +14,9 @@ import '../widgets/offline_status_capsule.dart';
 /// Home tab body.
 ///
 /// The fixed top bar, then a pull-to-refresh scrolling column: the hero card,
-/// the browse-by-specialty chips, and the featured-doctors carousel. The rest
-/// of the Home spec (location pill, previously-visited doctors, upcoming
-/// booking) is still to come.
+/// the browse-by-specialty chips, the featured-doctors carousel, and the
+/// previously-visited doctors. The rest of the Home spec (location pill,
+/// upcoming booking) is still to come.
 ///
 /// Everything below the top bar is presentation only. None of it has a backing
 /// query — the doctors are hardcoded and every CTA is inert — because the rows
@@ -22,7 +24,25 @@ import '../widgets/offline_status_capsule.dart';
 /// one exception: it is real, but it filters the hardcoded list. Each widget
 /// carries its own note on what it is waiting for.
 class HomeTab extends StatefulWidget {
-  const HomeTab({super.key, required this.connectivityService});
+  const HomeTab({
+    super.key,
+    required this.connectivityService,
+    this.onOpenBookings,
+  });
+
+  /// Asks the shell to switch to the Bookings tab.
+  ///
+  /// A callback up to `HomeScreen` rather than a `Navigator.push` from here:
+  /// the four sections are an [IndexedStack] behind one [NavigationBar], and
+  /// the only thing that selects between them is `_HomeScreenState._tabIndex`.
+  /// Pushing a route would stack a second Bookings *over* the nav bar, leaving
+  /// the Home tab still lit underneath and the back gesture meaning "return to
+  /// Home" instead of "leave the app".
+  ///
+  /// Nullable so the tab still builds standalone — a dev preview or a widget
+  /// test that has no shell around it gets an inert CTA rather than a required
+  /// argument it has nothing to satisfy.
+  final VoidCallback? onOpenBookings;
 
   /// Owned by `HomeScreen`, which outlives every tab switch. Passed in rather
   /// than created here so this tab does not start and stop a platform
@@ -163,10 +183,22 @@ class _HomeTabState extends State<HomeTab> {
               // added only while it is actually showing — reserving it
               // permanently would leave a dead band at the foot of Home for a
               // message that is almost never up.
+              //
+              // **No horizontal padding here, deliberately.** The side gutter
+              // is applied per child instead, so the two horizontal rows below
+              // can run full-bleed: a card scrolling out of view travels to the
+              // real screen edge rather than being cut at a fixed inset. When
+              // every row stopped at the same 16pt, the hero card's edge, the
+              // clipped chip and the clipped doctor card all lined up into one
+              // continuous vertical boundary down each side of the page, which
+              // read as a pair of thin lines framing the content. Anything that
+              // should *not* bleed carries an AuroraSpacing.lg gutter of its
+              // own — the same value `OfflineStatusCapsule.sideMargin` uses, so
+              // the resting edges still line up.
               padding: EdgeInsets.fromLTRB(
-                AuroraSpacing.lg,
+                0,
                 AuroraSpacing.sm,
-                AuroraSpacing.lg,
+                0,
                 AuroraSpacing.lg +
                     (_phase == ConnectivityPhase.confirmedOnline
                         ? 0
@@ -188,7 +220,12 @@ class _HomeTabState extends State<HomeTab> {
                   // connection states are exercised.
                   //
                   // The CTA is inert for the same reason — no search flow yet.
-                  const HomeEmptyStateCard(),
+                  // Gutter applied here rather than on the scroll view, so the
+                  // rows below stay free to bleed.
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
+                    child: HomeEmptyStateCard(),
+                  ),
                   const SizedBox(height: AuroraSpacing.xxl),
                   // The chips now drive the carousel below. The chip row still
                   // owns its own highlight; this callback only reports the key,
@@ -208,6 +245,26 @@ class _HomeTabState extends State<HomeTab> {
                   HomeSpecialtyDoctors(
                     selectedSpecialtyKey: _selectedSpecialtyKey,
                     refreshEpoch: _refreshEpoch,
+                  ),
+                  const SizedBox(height: AuroraSpacing.xxl),
+                  // Same placeholder footing as the carousel above, and drawing
+                  // from the same `lib/dev/mock_doctors.dart` list so both
+                  // sections name the same people. There is no bookings table
+                  // and no queue history, so *which* doctors were "visited" is
+                  // invented too — see `mockPreviouslyVisited`.
+                  //
+                  // A card rather than a bleeding row, so it carries the page
+                  // gutter itself. `onBook` stays unwired for the same reason
+                  // the carousel's does; the footer CTA is the one live action
+                  // on this screen, and it only switches tabs.
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AuroraSpacing.lg,
+                    ),
+                    child: HomePreviouslyVisited(
+                      visited: mockPreviouslyVisited,
+                      onOpenHistory: widget.onOpenBookings,
+                    ),
                   ),
                 ],
               ),

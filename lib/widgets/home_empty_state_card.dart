@@ -161,7 +161,14 @@ class _HomeEmptyStateCardState extends State<HomeEmptyStateCard>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(AuroraSpacing.xl),
+              // Horizontal stays at xl so the card's inner gutter is unchanged;
+              // only the vertical is tightened. This card is the tallest thing
+              // above the fold on Home, and the doctor row below it was being
+              // pushed under the nav bar — see the trims through this Column.
+              padding: const EdgeInsets.symmetric(
+                horizontal: AuroraSpacing.xl,
+                vertical: AuroraSpacing.lg,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
@@ -175,7 +182,7 @@ class _HomeEmptyStateCardState extends State<HomeEmptyStateCard>
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: AuroraSpacing.md),
+                  const SizedBox(height: AuroraSpacing.sm),
                   Text(
                     'لا حاجة للانتظار في العيادة ، تابع دورك مباشرة من '
                     'هاتفك أينما كنت ، وستصلك إشعارات فورية عند اقتراب دورك.',
@@ -186,7 +193,7 @@ class _HomeEmptyStateCardState extends State<HomeEmptyStateCard>
                       height: 1.8,
                     ),
                   ),
-                  const SizedBox(height: AuroraSpacing.xl),
+                  const SizedBox(height: AuroraSpacing.md),
                   _SearchCta(onTap: widget.onSearch, ink: _ctaInk),
                 ],
               ),
@@ -218,7 +225,10 @@ class _SearchCta extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AuroraRadius.pill),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AuroraSpacing.lg),
+          // md, not lg: the pill still clears the 48dp tap-target floor (12 +
+          // 20pt icon + 12 = 44, and the Row's text carries it past 48), and
+          // the 8pt saved here comes off the tallest card above the fold.
+          padding: const EdgeInsets.symmetric(vertical: AuroraSpacing.md),
           // Under RTL the Row's first child lands on the visual right, which
           // is where the icon belongs — leading position for an Arabic
           // reader. The pair is centred as a unit.

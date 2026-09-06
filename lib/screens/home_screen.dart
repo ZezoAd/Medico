@@ -48,6 +48,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _tabIndex = 0;
 
+  /// Bookings' position in both the [IndexedStack] children and the
+  /// [NavigationBar] destinations below — the two lists are index-matched, so
+  /// this is one number, not two.
+  ///
+  /// Named rather than written as a bare `2` at the call site, so a section
+  /// inserted into that pair cannot silently repoint Home's
+  /// "عرض السجل الكامل" at Browse.
+  static const int _bookingsTabIndex = 2;
+
   /// Owned here rather than inside a tab because it must outlive tab
   /// switches, and because the offline strip it feeds is app-wide chrome
   /// sitting above the [IndexedStack] rather than part of any one tab.
@@ -194,7 +203,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               IndexedStack(
                 index: _tabIndex,
                 children: [
-                  HomeTab(connectivityService: _connectivity),
+                  HomeTab(
+                    connectivityService: _connectivity,
+                    // Home's previously-visited section points at the full
+                    // history, which lives on Bookings. Routed through the same
+                    // `_tabIndex` setState the nav bar itself uses, so the two
+                    // ways of reaching that tab cannot drift apart.
+                    onOpenBookings: () =>
+                        setState(() => _tabIndex = _bookingsTabIndex),
+                  ),
                   const BrowseTab(),
                   const BookingsTab(),
                   ProfileTab(

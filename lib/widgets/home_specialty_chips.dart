@@ -105,14 +105,19 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'تصفّح حسب التخصص',
-          // RTL-aware rather than a hardcoded `right`, matching every other
-          // heading in the app.
-          textAlign: TextAlign.start,
-          style: AuroraText.display(
-            size: AuroraFontSize.h3,
-            color: palette.ink,
+        // The heading keeps the page gutter; the row below deliberately does
+        // not — see the note on the ListView's own padding.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
+          child: Text(
+            'تصفّح حسب التخصص',
+            // RTL-aware rather than a hardcoded `right`, matching every other
+            // heading in the app.
+            textAlign: TextAlign.start,
+            style: AuroraText.display(
+              size: AuroraFontSize.h3,
+              color: palette.ink,
+            ),
           ),
         ),
         const SizedBox(height: AuroraSpacing.md),
@@ -120,13 +125,15 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
         // sits inside Home's vertically unbounded SingleChildScrollView, so
         // the height has to be stated rather than measured.
         //
-        // The row scrolls within Home's existing 16pt side padding rather than
-        // bleeding to the screen edge: escaping that padding would mean
-        // restructuring home_tab's scroll view, which this change is scoped
-        // not to touch.
+        // The row runs full-bleed and carries the page gutter as its *own*
+        // padding, which is what lets a chip scrolling out of view travel to
+        // the real screen edge instead of being cut at a fixed inset. At rest
+        // the leading chip still lines up with the heading above it, so the
+        // resting layout is unchanged — only what happens mid-scroll differs.
         SizedBox(
           height: _rowHeight,
           child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
             scrollDirection: Axis.horizontal,
             // The pills are the only thing here; the row should not add a
             // second scroll bounce on top of the page's.

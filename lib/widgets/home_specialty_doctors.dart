@@ -190,18 +190,26 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
         // left in place as an empty scroll strip — an empty row reads as a
         // widget that failed to load, not as an answer.
         if (shown.isEmpty)
-          const _NoDoctorsForSpecialty()
+          // Not a scroller, so it takes the page gutter directly.
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
+            child: _NoDoctorsForSpecialty(),
+          )
         else
           // Bounded cross-axis extent, because a horizontal list inside Home's
           // vertically unbounded SingleChildScrollView cannot measure its own.
           //
-          // The row scrolls within Home's existing 16pt side padding rather
-          // than bleeding to the screen edge — the precedent the chip row set.
-          // The peek does not need the bleed: at 200pt cards the narrowest
-          // supported phone still shows ~118pt of the second card at rest.
+          // Full-bleed, carrying the page gutter as its own padding — the
+          // precedent the chip row set. A card scrolling out of view now runs
+          // to the real screen edge instead of being cut at a fixed inset,
+          // which is what stops every row sharing one vertical boundary down
+          // the page. Resting layout is unchanged.
           SizedBox(
             height: _listHeight,
             child: ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AuroraSpacing.lg,
+              ),
               // Rebuilds the row from its start when the filter changes, so
               // switching specialties never lands mid-scroll in the new set.
               // The epoch is in the key for the same reason: a refresh deals a

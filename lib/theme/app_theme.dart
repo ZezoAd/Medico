@@ -78,6 +78,15 @@ abstract final class AppTheme {
         thickness: 1,
         space: 1,
       ),
+      // 64, against Material 3's default of 80. The default is the bar's
+      // *content* height — the system gesture/button inset is added on top of
+      // it — so on a handset with 3-button navigation the shipped bar measured
+      // 120dp in total and was pushing Home's doctor row under itself.
+      //
+      // Still a comfortable target: a destination fills the full bar height by
+      // roughly a quarter of the screen width, so 64 x ~98 clears the 48x48
+      // floor with room to spare, and labels keep their own line.
+      navigationBarTheme: const NavigationBarThemeData(height: 64),
       cardTheme: CardThemeData(
         color: palette.surface,
         surfaceTintColor: Colors.transparent,
