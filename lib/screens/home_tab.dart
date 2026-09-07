@@ -6,6 +6,7 @@ import '../dev/mock_doctors.dart';
 import '../services/connectivity_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
+import '../widgets/home_newly_joined.dart';
 import '../widgets/home_previously_visited.dart';
 import '../widgets/home_specialty_doctors.dart';
 import '../widgets/home_specialty_chips.dart';
@@ -277,6 +278,20 @@ class _HomeTabState extends State<HomeTab> {
                       onOpenHistory: widget.onOpenBookings,
                     ),
                   ),
+                  const SizedBox(height: AuroraSpacing.xxl),
+                  // Section 7, and the last row on Home. Same placeholder
+                  // footing again: there is no onboarding flow and nothing
+                  // reads a `created_at`, so *which* doctors count as recent
+                  // joins is invented — see `mockNewlyJoined`, whose order is
+                  // the newness signal a real `ORDER BY created_at DESC` will
+                  // eventually provide.
+                  //
+                  // Bleeds like the specialty carousel rather than sitting in
+                  // a gutter like the card above it: the section carries its
+                  // own header padding and lets the rail run to the screen
+                  // edge. `onSeeAll` is deliberately not passed — there is no
+                  // Browse destination, so the link renders styled and inert.
+                  HomeNewlyJoined(doctors: mockNewlyJoined),
                 ],
               ),
             ),

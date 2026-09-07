@@ -198,6 +198,36 @@ final mockPreviouslyVisited = <VisitedDoctor>[
   (doctor: _doctorById('mock-12'), lastVisit: DateTime(2026, 4, 30)),
 ];
 
+/// The five doctors Home's "انضموا حديثاً" section shows, newest first.
+///
+/// **Placeholder, like everything else in this file**, and invented for the
+/// same reason [mockPreviouslyVisited] is: `public.doctors` has no
+/// `created_at` the app reads and no onboarding flow behind it, so nothing
+/// could say who joined recently. Picked by id out of [mockDoctors] so the
+/// section names the same people as the carousel and the visited list.
+///
+/// **A plain [List<Doctor>], deliberately not a record carrying a join date.**
+/// The agreed design communicates newness through the *section* — its title
+/// and count — and never through the card, which is the same [DoctorCard] the
+/// specialty carousel draws and has to look identical in every context. With
+/// no "joined X ago" line to render, a date here would be a field nothing
+/// reads. **List order is the newness signal**: most recently joined first,
+/// which is what a real `ORDER BY created_at DESC` will hand back.
+///
+/// Five, not three: enough that the rail scrolls on a phone, so the section
+/// reads as a row to browse rather than as a short fixed set. Deliberately no
+/// overlap with [mockPreviouslyVisited] — a doctor you have already visited is
+/// a poor example of one who just joined — and five distinct specialties, with
+/// one [Doctor.photoUrl] among them so the card's photo branch is exercised
+/// alongside the initials that are the normal state.
+final mockNewlyJoined = <Doctor>[
+  _doctorById('mock-16'),
+  _doctorById('mock-11'),
+  _doctorById('mock-1'),
+  _doctorById('mock-8'),
+  _doctorById('mock-13'),
+];
+
 /// Throws if the id is gone, which is deliberate: an entry deleted from
 /// [mockDoctors] should fail loudly here at first use rather than silently
 /// shortening the section.

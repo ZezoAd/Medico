@@ -123,18 +123,37 @@ Future<void> pumpCarousel(
   await tester.pumpAndSettle();
 }
 
+/// The specialty carousel's own cards.
+///
+/// Home draws [DoctorCard] in more than one section — the newly-joined rail
+/// sits below this one and renders the identical widget — so a bare
+/// `find.byType(DoctorCard)` on Home returns cards from both. Anything
+/// asserting about *this row's* draw has to say so.
+Finder carouselCards() => find.descendant(
+  of: find.byType(HomeSpecialtyDoctors),
+  matching: find.byType(DoctorCard),
+);
+
 /// Every doctor name in the carousel, dragging the row to its end so the lazy
 /// viewport builds all of them.
 ///
 /// A count taken from whatever happens to be built at rest would pass for a
 /// filter that returned too many, since only the first two or three are ever
 /// on screen. Returns a set: names are the fixture's identity here.
+///
+/// **Scoped to [HomeSpecialtyDoctors], not to every [DoctorCard] on screen.**
+/// Home renders the same card in more than one section — the newly-joined rail
+/// below draws it too — so an unscoped search returns doctors this filter was
+/// never asked about, and every assertion about "how many did the draw return"
+/// silently becomes an assertion about the whole page.
 Future<Set<String>> scrollAllCardNames(WidgetTester tester) async {
   final row = find.descendant(
     of: find.byType(HomeSpecialtyDoctors),
     matching: find.byType(Scrollable),
   );
   if (tester.widgetList(row).isEmpty) return {};
+
+  final cards = carouselCards();
 
   final names = <String>{};
   // Under RTL the row extends off the *left* edge, which a positive dx drag
@@ -148,7 +167,7 @@ Future<Set<String>> scrollAllCardNames(WidgetTester tester) async {
   position.jumpTo(0);
   await tester.pumpAndSettle();
   for (var i = 0; i < 40; i++) {
-    for (final card in tester.widgetList<DoctorCard>(find.byType(DoctorCard))) {
+    for (final card in tester.widgetList<DoctorCard>(cards)) {
       names.add(card.doctor.name);
     }
     if (position.pixels >= position.maxScrollExtent) break;
@@ -235,7 +254,7 @@ void main() {
   ) async {
     await pumpHome(tester, tecno);
 
-    final card = find.byType(DoctorCard).first;
+    final card = carouselCards().first;
     final fold = tecno.height - shellChrome;
     expect(
       tester.getBottomLeft(card).dy,
@@ -265,7 +284,7 @@ void main() {
     await pumpHome(tester, mediumPhone);
 
     expect(
-      tester.getBottomLeft(find.byType(DoctorCard).first).dy,
+      tester.getBottomLeft(carouselCards().first).dy,
       lessThanOrEqualTo(mediumPhone.height),
       reason: 'the first card is clipped by the fold at rest',
     );
@@ -294,7 +313,7 @@ void main() {
   testWidgets('the next card peeks at rest', (tester) async {
     await pumpHome(tester, smallPhone);
 
-    final cards = find.byType(DoctorCard);
+    final cards = carouselCards();
     expect(
       tester.widgetList(cards).length,
       greaterThan(1),
