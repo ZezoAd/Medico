@@ -260,8 +260,8 @@
     "semantic_hash": ""
   },
   "lib/screens/home_tab.dart": {
-    "mtime": 1788796991.826744,
-    "ast_hash": "efd84da0afee01ae25b175b1567000e5",
+    "mtime": 1788704030.0022447,
+    "ast_hash": "b001f43aa92ca25b76b4a96938f0f20c",
     "semantic_hash": ""
   },
   "lib/utils/arabic_formatting.dart": {
@@ -515,18 +515,18 @@
     "semantic_hash": ""
   },
   "lib/dev/home_specialty_doctors_preview.dart": {
-    "mtime": 1788796277.3439023,
-    "ast_hash": "3baf540ee37a98b1854fe53995290b33",
+    "mtime": 1788188492.5000613,
+    "ast_hash": "1655bd22d24128b5a0457d98e9ee48de",
     "semantic_hash": ""
   },
   "lib/widgets/home_specialty_doctors.dart": {
-    "mtime": 1788738802.265123,
-    "ast_hash": "12c37100bed92819d7d26ade82ceefe8",
+    "mtime": 1788552087.7826912,
+    "ast_hash": "254e28e8b3e2950500e19d8fb4775fbf",
     "semantic_hash": ""
   },
   "test/home_specialty_doctors_test.dart": {
-    "mtime": 1788797971.853868,
-    "ast_hash": "629b14895a2db4db70eda41c0c92e43a",
+    "mtime": 1788531469.5912733,
+    "ast_hash": "2c5134f632c680770d43cdf5f1ae289c",
     "semantic_hash": ""
   },
   "lib/services/connectivity_service.dart": {
@@ -562,16 +562,6 @@
   "lib/widgets/home_previously_visited.dart": {
     "mtime": 1788704018.199337,
     "ast_hash": "baa0b2004234f4db88c7d93370cd9896",
-    "semantic_hash": ""
-  },
-  "lib/widgets/doctor_card.dart": {
-    "mtime": 1788797816.7710564,
-    "ast_hash": "1890afde7c9ccb057507c8b3fcd0ea64",
-    "semantic_hash": ""
-  },
-  "lib/design_reference/doctor_card_banner_shape.html": {
-    "mtime": 1788737749.0043476,
-    "ast_hash": "1dc8fd55be08c1ec87752e714cf1809a",
     "semantic_hash": ""
   }
 }
