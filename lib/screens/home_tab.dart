@@ -236,7 +236,18 @@ class _HomeTabState extends State<HomeTab> {
                     onSpecialtySelected: (key) =>
                         setState(() => _selectedSpecialtyKey = key),
                   ),
-                  const SizedBox(height: AuroraSpacing.xxl),
+                  // Deliberately tighter than the AuroraSpacing.xxl every other
+                  // pair of sections on this page is separated by, and the only
+                  // exception to that rhythm.
+                  //
+                  // The chips and the carousel are not two sections: the chips
+                  // are the carousel's control, and the row below is what they
+                  // do. Pulling them together says so — and it buys back 12pt,
+                  // which is what lets a whole doctor card sit on screen at rest
+                  // rather than having its CTA cut off by the fold. The chip
+                  // row carries ~6pt of its own slack below the pills, so the
+                  // gap still reads as ~18pt rather than as a collision.
+                  const SizedBox(height: AuroraSpacing.md),
                   // The filter is real; the doctors are not. This section draws
                   // placeholder people from `lib/dev/mock_doctors.dart` because
                   // `public.doctors` is still empty and nothing queries it — the

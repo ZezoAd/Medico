@@ -5,18 +5,23 @@
 // Its own main(), like the other two previews, so it can be launched with -t
 // without dragging their scenarios along.
 //
-// This harness exists mainly to check the card's *geometry* on a real handset.
-// The 200x236 came from an HTML mockup and the type is snapped to
-// AuroraFontSize rather than the mockup's off-scale sizes, so the text column
-// runs a little taller than it did there. The three cards at the bottom are
-// the stress cases: a long name that must ellipsise on one line, a long clinic
-// that must wrap to two and stop, and a doctor with no rating whose card must
+// This harness exists mainly to check the card's *geometry* on a real handset,
+// and it matters more since the 2026-09-07 banner redesign than it did before.
+// DoctorCard.preferredWidth/Height are a scaled-down reading of
+// lib/design_reference/doctor_card_banner_shape.html — the reference draws the
+// card at 320×440, which was far too big in the hand — and the type is snapped
+// to AuroraFontSize rather than to either set of off-scale sizes. What is worth
+// eyeballing here is whether 210×300 still gives the banner and the avatar
+// enough room to read as the reference's shape. The three cards at the bottom
+// are the stress cases: a long name that must ellipsise on one line, a long
+// clinic that must wrap to two and stop, and a short-everything card that must
 // still line up with its neighbours.
 import 'package:flutter/material.dart';
 
 import '../models/doctor.dart';
 import '../theme/app_theme.dart';
 import '../theme/aurora_tokens.dart';
+import '../widgets/doctor_card.dart';
 import '../widgets/home_specialty_doctors.dart';
 
 void main() => runApp(const _PreviewApp());
@@ -49,8 +54,12 @@ const _edgeCases = [
     clinicName: 'الأمل',
     rating: 5.0,
   ),
-  // No rating: the pill is omitted and its row's height is kept, so this card
-  // must sit flush with the two beside it rather than riding higher.
+  // Short name, short clinic — the opposite stress from the first card. It
+  // must sit flush with the two beside it rather than riding higher or
+  // shorter, which is what the clinic row's Expanded buys.
+  //
+  // The `rating` on the two above is now ignored: the redesigned card carries
+  // no rating pill. They are left set so this harness still proves that.
   Doctor(
     id: 'p3',
     name: 'د. حسين الطائي',
@@ -168,7 +177,7 @@ class _EdgeCaseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 236 + AuroraSpacing.lg,
+      height: DoctorCard.preferredHeight + AuroraSpacing.lg,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const ClampingScrollPhysics(),
@@ -177,8 +186,8 @@ class _EdgeCaseRow extends StatelessWidget {
         itemBuilder: (context, index) => Align(
           alignment: Alignment.topCenter,
           child: SizedBox(
-            width: 200,
-            height: 236,
+            width: DoctorCard.preferredWidth,
+            height: DoctorCard.preferredHeight,
             child: DoctorCard(doctor: _edgeCases[index]),
           ),
         ),

@@ -155,8 +155,8 @@
     "semantic_hash": "6bc37204fba516b78817fd51e9dd0253"
   },
   "lib/screens/home_screen.dart": {
-    "mtime": 1788633478.8013701,
-    "ast_hash": "1844ca1ae6cc14aa2d79170bc78e685f",
+    "mtime": 1788387798.470109,
+    "ast_hash": "174aba25981cebf293a8e2479fc45c4c",
     "semantic_hash": ""
   },
   "lib/screens/otp_verification_screen.dart": {
@@ -260,13 +260,13 @@
     "semantic_hash": ""
   },
   "lib/screens/home_tab.dart": {
-    "mtime": 1788704030.0022447,
-    "ast_hash": "b001f43aa92ca25b76b4a96938f0f20c",
+    "mtime": 1788531001.3521805,
+    "ast_hash": "b206224aa438a8464acccc1933294e42",
     "semantic_hash": ""
   },
   "lib/utils/arabic_formatting.dart": {
-    "mtime": 1788568285.3605533,
-    "ast_hash": "202842a10f0468fe1c2e2af967e2f7ee",
+    "mtime": 1788380975.1574955,
+    "ast_hash": "d71d97bf7946e6330e614984e4d2ffaa",
     "semantic_hash": ""
   },
   "lib/utils/wait_estimate.dart": {
@@ -415,13 +415,13 @@
     "semantic_hash": ""
   },
   "lib/widgets/home_empty_state_card.dart": {
-    "mtime": 1788542741.0449102,
-    "ast_hash": "e3c13ecbaaf2edf24645f60e891d64c5",
+    "mtime": 1787857063.1766374,
+    "ast_hash": "ff526ef2f6ffd38f4f63875723bc289f",
     "semantic_hash": ""
   },
   "lib/widgets/home_specialty_chips.dart": {
-    "mtime": 1788552074.7301865,
-    "ast_hash": "61585f26dc11654a8eac00e920e18f60",
+    "mtime": 1788182091.5367877,
+    "ast_hash": "3c8037d2868520b2d3d004340df4952c",
     "semantic_hash": ""
   },
   "test/home_specialty_chips_test.dart": {
@@ -480,8 +480,8 @@
     "semantic_hash": ""
   },
   "lib/theme/app_theme.dart": {
-    "mtime": 1788551260.0228314,
-    "ast_hash": "31473aa50b76008e2b5085a5e39ddb99",
+    "mtime": 1788380975.139496,
+    "ast_hash": "4acc05893f001108af7d1b783c12d6f5",
     "semantic_hash": ""
   },
   "test/theme_test.dart": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "lib/dev/mock_doctors.dart": {
-    "mtime": 1788568308.9019551,
-    "ast_hash": "a1e12619109750ef5cb53b12f534302f",
+    "mtime": 1788183157.7850294,
+    "ast_hash": "99fd8fccd0adf9e11045516ccb95e45d",
     "semantic_hash": ""
   },
   "lib/dev/home_specialty_doctors_preview.dart": {
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "lib/widgets/home_specialty_doctors.dart": {
-    "mtime": 1788552087.7826912,
-    "ast_hash": "254e28e8b3e2950500e19d8fb4775fbf",
+    "mtime": 1788188703.5967972,
+    "ast_hash": "9ff90651d2fdf9df95bb7cba53d3ab66",
     "semantic_hash": ""
   },
   "test/home_specialty_doctors_test.dart": {
@@ -552,16 +552,6 @@
   "test/offline_status_capsule_test.dart": {
     "mtime": 1788531469.5912733,
     "ast_hash": "7d9eb9c92ca9d9a8b6a950b18e6b3464",
-    "semantic_hash": ""
-  },
-  "lib/widgets/doctor_list_row.dart": {
-    "mtime": 1788568355.480406,
-    "ast_hash": "32b09eafd9020e6d8098ee965f9c592c",
-    "semantic_hash": ""
-  },
-  "lib/widgets/home_previously_visited.dart": {
-    "mtime": 1788704018.199337,
-    "ast_hash": "baa0b2004234f4db88c7d93370cd9896",
     "semantic_hash": ""
   }
 }

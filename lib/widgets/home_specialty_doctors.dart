@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../dev/mock_doctors.dart';
 import '../models/doctor.dart';
 import '../theme/aurora_tokens.dart';
+import 'doctor_card.dart';
 
 /// A heading and a horizontally scrolling row of fixed-size doctor cards,
 /// filtered to one specialty and capped at a handful.
@@ -70,19 +71,15 @@ class HomeSpecialtyDoctors extends StatefulWidget {
 }
 
 class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
-  /// Card height, from the agreed design. Tested only in an HTML mockup so
-  /// far — the text column below the avatar is snapped to [AuroraFontSize],
-  /// which runs ~2pt taller than the mockup's off-scale sizes, and the slack
-  /// is absorbed by the clinic row's [Expanded]. Worth re-checking on the
-  /// Tecno before treating this number as settled.
-  static const double _cardHeight = 236;
-
-  static const double _cardWidth = 200;
-
   /// The viewport is taller than a card so [AuroraPalette.cardShadow] — which
   /// throws 8pt down with a 24pt blur — is not clipped off. Same reasoning as
   /// `home_specialty_chips.dart`'s 52pt row around a 40pt pill.
-  static const double _listHeight = _cardHeight + AuroraSpacing.lg;
+  ///
+  /// The card's own geometry lives on [DoctorCard], not here: the row hosts a
+  /// shared component at the size that component is designed at, rather than
+  /// holding an opinion about how big a doctor card should be.
+  static const double _listHeight =
+      DoctorCard.preferredHeight + AuroraSpacing.lg;
 
   /// One drawn sample per specialty key, for the life of one refresh epoch.
   ///
@@ -207,9 +204,7 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
           SizedBox(
             height: _listHeight,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AuroraSpacing.lg,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.lg),
               // Rebuilds the row from its start when the filter changes, so
               // switching specialties never lands mid-scroll in the new set.
               // The epoch is in the key for the same reason: a refresh deals a
@@ -234,8 +229,8 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
                   child: SizedBox(
                     // A fixed width, not a flex: the card keeps its exact size
                     // however long or short the list turns out to be.
-                    width: _cardWidth,
-                    height: _cardHeight,
+                    width: DoctorCard.preferredWidth,
+                    height: DoctorCard.preferredHeight,
                     child: index < shown.length
                         ? _doctorCard(shown[index])
                         : ShowMoreDoctorsCard(
@@ -341,323 +336,6 @@ class _NoDoctorsForSpecialty extends StatelessWidget {
           size: AuroraFontSize.body,
           color: palette.muted,
           height: 1.6,
-        ),
-      ),
-    );
-  }
-}
-
-/// One doctor card. Sized by its parent — it fills whatever box it is given.
-///
-/// Public so the dev previews under `lib/dev/` can host it on its own, the
-/// same arrangement `queue_status_card.dart` uses.
-class DoctorCard extends StatelessWidget {
-  const DoctorCard({super.key, required this.doctor, this.onBook});
-
-  final Doctor doctor;
-  final VoidCallback? onBook;
-
-  /// The rating row's height is reserved whether or not a rating exists.
-  ///
-  /// Hiding the pill must not shift the avatar up on that one card — in a row
-  /// of cards seen side by side, a doctor without a score would otherwise
-  /// visibly sit higher than its neighbours. The pill is omitted; its space is
-  /// not. (The card's *total* height is fixed regardless, by the clinic row's
-  /// [Expanded].)
-  static const double _ratingRowHeight = 20;
-
-  static const double _avatarSize = 60;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.aurora;
-    final rating = doctor.rating;
-
-    return Container(
-      padding: const EdgeInsets.all(AuroraSpacing.md),
-      decoration: BoxDecoration(
-        color: palette.surface,
-        borderRadius: BorderRadius.circular(AuroraRadius.md),
-        boxShadow: palette.cardShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: _ratingRowHeight,
-            // [Alignment], not [AlignmentDirectional]: the pill belongs in the
-            // card's true physical left corner and must stay there under RTL
-            // rather than mirroring to the right. This is the design as
-            // agreed, not an oversight about directionality.
-            child: rating == null
-                ? null
-                : Align(
-                    alignment: Alignment.topLeft,
-                    child: _RatingPill(rating: rating),
-                  ),
-          ),
-          const SizedBox(height: AuroraSpacing.sm),
-          Center(
-            child: _DoctorAvatar(
-              size: _avatarSize,
-              photoUrl: doctor.photoUrl,
-              name: doctor.name,
-            ),
-          ),
-          const SizedBox(height: AuroraSpacing.sm),
-          Text(
-            doctor.name,
-            textAlign: TextAlign.center,
-            // Flutter's own truncation. The mockup clipped the string by hand
-            // at 20 characters, which was a workaround for a bug in the
-            // web tool it was built in — Flutter's text layout ellipsises RTL
-            // correctly on its own under the app's Directionality, so there is
-            // nothing here to work around.
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AuroraText.display(
-              size: AuroraFontSize.body,
-              color: palette.ink,
-            ),
-          ),
-          const SizedBox(height: AuroraSpacing.xs / 2),
-          Text(
-            doctor.specialty,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AuroraText.body(
-              size: AuroraFontSize.caption,
-              weight: FontWeight.w500,
-              color: palette.accentOnTonal,
-            ),
-          ),
-          // Takes whatever vertical space the rest of the column leaves and
-          // centres the clinic in it. This is what makes every card the same
-          // height regardless of how long its clinic name runs — the row grows
-          // and shrinks inside a fixed box instead of pushing the card taller.
-          Expanded(
-            child: Center(child: _ClinicRow(clinicName: doctor.clinicName)),
-          ),
-          Container(height: 1, color: palette.divider),
-          const SizedBox(height: AuroraSpacing.sm + 2),
-          _BookButton(onTap: onBook),
-        ],
-      ),
-    );
-  }
-}
-
-/// The star-and-figure rating chip.
-class _RatingPill extends StatelessWidget {
-  const _RatingPill({required this.rating});
-
-  final double rating;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.aurora;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: palette.ratingAmberBg,
-        borderRadius: BorderRadius.circular(AuroraRadius.pill),
-      ),
-      // Under RTL the first child lands on the visual right, which is the
-      // leading position for an Arabic reader — so the star sits ahead of its
-      // figure, the same ordering every other icon+label pair in the app uses.
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.star_rounded, size: 12, color: palette.ratingAmber),
-          const SizedBox(width: 2),
-          Text(
-            // Western digits, per the app default — `toStringAsFixed` emits
-            // them and `toArabicDigits` is deliberately not called here.
-            rating.toStringAsFixed(1),
-            style: AuroraText.body(
-              size: AuroraFontSize.micro,
-              weight: FontWeight.w700,
-              color: palette.ratingAmber,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The doctor's photo, or their initials on a tonal square.
-///
-/// A rounded square, not a circle: the design uses the same shape language as
-/// the queue card's doctor avatar rather than the circular patient avatar in
-/// Profile, which is a different thing being identified.
-class _DoctorAvatar extends StatelessWidget {
-  const _DoctorAvatar({
-    required this.size,
-    required this.photoUrl,
-    required this.name,
-  });
-
-  final double size;
-  final String? photoUrl;
-  final String name;
-
-  /// Two Arabic initials, e.g. "د. حسين الطائي" → "ح.ط".
-  ///
-  /// First and last name word, skipping the "د." honorific and the "ال"
-  /// definite article — "الطائي" initialises to ط, not ا, which is what makes
-  /// the pair read as two distinct letters rather than as a row of alifs.
-  static String _initialsFor(String name) {
-    final words = name
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty && w != 'د.' && w != 'د')
-        .map((w) => w.startsWith('ال') && w.length > 2 ? w.substring(2) : w)
-        .where((w) => w.isNotEmpty)
-        .toList();
-
-    if (words.isEmpty) return '؟';
-    if (words.length == 1) return words.first.substring(0, 1);
-    return '${words.first.substring(0, 1)}.${words.last.substring(0, 1)}';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.aurora;
-    final url = photoUrl;
-
-    final fallback = Center(
-      child: Text(
-        _initialsFor(name),
-        style: AuroraText.display(
-          size: AuroraFontSize.h3,
-          color: palette.accentOnTonal,
-        ),
-      ),
-    );
-
-    return Container(
-      width: size,
-      height: size,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        // Deliberately *not* [AuroraPalette.tonal], which is the obvious
-        // choice and is invisible here: the dark palette maps `tonal` and
-        // `surface` to the same #1C2624, so a tonal square on a surface card
-        // disappears completely in dark mode — verified on the Tecno, where
-        // the initials floated with no container behind them.
-        //
-        // Tinting the accent instead holds in both themes: over white it
-        // lands within a point or two of [AuroraColors.tonal], which is the
-        // light design; over the dark card it lifts clear of the surface.
-        color: palette.accentOnTonal.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(AuroraRadius.sm),
-      ),
-      child: url == null
-          ? fallback
-          : Image.network(
-              url,
-              fit: BoxFit.cover,
-              width: size,
-              height: size,
-              // A URL that fails to load degrades to exactly the same initials
-              // as a null one — a broken-image glyph on a doctor's face is
-              // worse than no photo at all. This also keeps a widget test from
-              // failing on the sandbox's blocked network.
-              errorBuilder: (_, _, _) => fallback,
-            ),
-    );
-  }
-}
-
-/// Pin plus clinic name, centred, wrapping to at most two lines.
-class _ClinicRow extends StatelessWidget {
-  const _ClinicRow({required this.clinicName});
-
-  final String clinicName;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.aurora;
-
-    return Row(
-      // Top-aligned so the pin sits beside the *first* line when the name
-      // wraps to two, rather than floating between them.
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Icon(
-            Icons.location_on_outlined,
-            size: 12,
-            color: palette.muted,
-          ),
-        ),
-        const SizedBox(width: 2),
-        // Flexible, so the text may wrap inside whatever the pin leaves rather
-        // than forcing the row wider than the card.
-        Flexible(
-          child: Text(
-            clinicName,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AuroraText.body(
-              size: AuroraFontSize.micro,
-              color: palette.muted,
-              height: 1.4,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// The gradient pill CTA.
-class _BookButton extends StatelessWidget {
-  const _BookButton({required this.onTap});
-
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AuroraRadius.pill);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        // The in-app two-stop brand ramp — the same token the selected
-        // specialty chip on this screen already paints with. Emphatically not
-        // AuroraGradients.authButton: that four-stop ramp belongs to the auth
-        // surface, and the two systems are kept apart on purpose.
-        gradient: AuroraGradients.aurora,
-        borderRadius: radius,
-      ),
-      // Transparent Material so the ripple clips to the pill and paints over
-      // the gradient rather than under it.
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            child: Text(
-              'احجز الآن',
-              textAlign: TextAlign.center,
-              // White in both themes: the fill is the brand ramp, which does
-              // not darken, so its label must not either.
-              style: AuroraText.body(
-                size: AuroraFontSize.caption,
-                weight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
         ),
       ),
     );

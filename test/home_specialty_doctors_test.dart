@@ -1,5 +1,5 @@
 /// Home's specialty doctor carousel: placement, the capped random draw and its
-/// "عرض المزيد" overflow card, fixed card geometry, the nullable rating, and
+/// "عرض المزيد" overflow card, fixed card geometry, the excluded rating, and
 /// the light/dark palette.
 ///
 /// The row draws a *random* sample from the matching pool, so nothing here may
@@ -15,6 +15,7 @@ import 'package:medico/models/doctor.dart';
 import 'package:medico/screens/home_tab.dart';
 import 'package:medico/theme/app_theme.dart';
 import 'package:medico/theme/aurora_tokens.dart';
+import 'package:medico/widgets/doctor_card.dart';
 import 'package:medico/widgets/home_specialty_chips.dart';
 import 'package:medico/widgets/home_specialty_doctors.dart';
 import 'package:medico/widgets/home_empty_state_card.dart';
@@ -73,8 +74,8 @@ Future<void> pumpCard(
         child: Scaffold(
           body: Center(
             child: SizedBox(
-              width: 200,
-              height: 236,
+              width: DoctorCard.preferredWidth,
+              height: DoctorCard.preferredHeight,
               child: DoctorCard(doctor: doctor),
             ),
           ),
@@ -208,11 +209,69 @@ void main() {
     final carouselTop = tester.getTopLeft(find.byType(HomeSpecialtyDoctors)).dy;
     expect(carouselTop, greaterThan(chipsBottom));
     // The section carries no heading of its own — the chip row above already
-    // names the selection. What separates them is home_tab's section gap.
-    expect(carouselTop - chipsBottom, AuroraSpacing.xxl);
+    // names the selection. What separates them is deliberately *tighter* than
+    // the AuroraSpacing.xxl between every other pair of sections on Home: the
+    // chips are this row's control rather than a section of their own, and the
+    // 12pt they give back is what keeps a whole card above the fold.
+    expect(carouselTop - chipsBottom, AuroraSpacing.md);
   });
 
-  testWidgets('cards keep a fixed 200x236 regardless of content length', (
+  /// The Tecno Camon 20 Pro in logical pixels — 1080×2400 at its 2.75 device
+  /// pixel ratio. The primary real-world target, and the one this card's
+  /// height was actually sized against.
+  const tecno = Size(393, 873);
+
+  /// What the shell's [NavigationBar] and the system navigation bar take off
+  /// the bottom of [tecno] before Home's scroll view sees it.
+  ///
+  /// [pumpHome] hosts [HomeTab] in a bare Scaffold with no bottom navigation,
+  /// so the test viewport is taller than the real one — measuring against the
+  /// full 873 would pass while the CTA sat under the nav bar on the device.
+  /// Read off a screenshot of the running app: the shell's bar starts at ~764.
+  const shellChrome = 109.0;
+
+  testWidgets('a whole card clears the bottom nav on the target phone', (
+    tester,
+  ) async {
+    await pumpHome(tester, tecno);
+
+    final card = find.byType(DoctorCard).first;
+    final fold = tecno.height - shellChrome;
+    expect(
+      tester.getBottomLeft(card).dy,
+      lessThanOrEqualTo(fold),
+      reason:
+          'the card runs under the bottom navigation bar — its CTA is the '
+          'one control on the card and must not need a scroll to reach',
+    );
+  });
+
+  testWidgets('a whole card is on screen at rest on the target phone', (
+    tester,
+  ) async {
+    // The point of both the card's 210×300 and the tightened chips-to-carousel
+    // gap: at rest, without scrolling, a patient must see a complete doctor
+    // card — CTA included — rather than one cut off by the bottom of the
+    // screen. A card whose booking button is below the fold reads as the end of
+    // the page rather than as something to act on.
+    //
+    // Asserted at [mediumPhone] because that is the primary target. It is
+    // **not** true on [smallPhone], and no gap on this page can make it true:
+    // at 375×667 the card's top lands at ~531, so the fold cuts it with 164pt
+    // still to go. Closing that needs the empty-state hero above it to shrink
+    // or go, which is a separate decision — the hero is a deliberate
+    // placeholder for the queue card. Do not "fix" this by asserting the small
+    // phone here; it will just fail.
+    await pumpHome(tester, mediumPhone);
+
+    expect(
+      tester.getBottomLeft(find.byType(DoctorCard).first).dy,
+      lessThanOrEqualTo(mediumPhone.height),
+      reason: 'the first card is clipped by the fold at rest',
+    );
+  });
+
+  testWidgets('cards keep their designed size regardless of content length', (
     tester,
   ) async {
     await pumpHome(tester, mediumPhone);
@@ -227,8 +286,8 @@ void main() {
             .widgetList<DoctorCard>(cards)
             .indexed
             .map((e) => tester.getSize(cards.at(e.$1)))) {
-      expect(size.width, 200);
-      expect(size.height, 236);
+      expect(size.width, DoctorCard.preferredWidth);
+      expect(size.height, DoctorCard.preferredHeight);
     }
   });
 
@@ -266,10 +325,12 @@ void main() {
     expect(text.overflow, TextOverflow.ellipsis);
   });
 
+  /// The banner redesign dropped the rating pill outright — the card no longer
+  /// reads [Doctor.rating] at all, where the 200×236 card rendered a pill
+  /// whenever a score was present. These now guard the *exclusion*, against a
+  /// locally rated fixture rather than against the mocks, which is what lets
+  /// the mock data carry no scores while this still means something.
   group('rating', () {
-    // The pill's behaviour is exercised against the local fixtures below, not
-    // against the mocks — which is what lets the mock data carry no scores at
-    // all while these still test both states.
     test('no mock doctor carries a score', () {
       expect(
         mockDoctors.where((doctor) => doctor.rating != null),
@@ -283,19 +344,13 @@ void main() {
       expect(find.byIcon(Icons.star_rounded), findsNothing);
     });
 
-    testWidgets('renders in Western digits when present', (tester) async {
-      await pumpCard(tester, _rated);
-      expect(find.text('4.9'), findsOneWidget);
-      expect(find.text('٤٫٩'), findsNothing);
-      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
-    });
-
-    testWidgets('pill is hidden entirely when the score is null', (
+    testWidgets('a scored doctor still renders no rating anywhere', (
       tester,
     ) async {
-      await pumpCard(tester, _unrated);
+      await pumpCard(tester, _rated);
 
       expect(find.byIcon(Icons.star_rounded), findsNothing);
+      expect(find.text('4.9'), findsNothing);
       // Nothing stands in for it either — no zero, no placeholder dash. Match
       // on the rating's shape rather than on "contains a dot", which the
       // initials ("ز.ق") and the honorific ("د.") both legitimately do.
@@ -307,7 +362,7 @@ void main() {
       );
     });
 
-    testWidgets('an unrated card is the same height as a rated one', (
+    testWidgets('a scored card is laid out identically to an unscored one', (
       tester,
     ) async {
       await pumpCard(tester, _rated);
@@ -318,19 +373,98 @@ void main() {
 
       expect(unrated, rated);
     });
+  });
 
-    testWidgets('the pill sits in the true physical left corner under RTL', (
+  group('banner and avatar', () {
+    /// The gradient banner: the first of the card's two [AuroraGradients.aurora]
+    /// boxes, the other being the CTA at the foot.
+    Finder banner() => find
+        .byWidgetPredicate(
+          (w) =>
+              w is DecoratedBox &&
+              w.decoration is BoxDecoration &&
+              (w.decoration as BoxDecoration).gradient ==
+                  AuroraGradients.aurora,
+        )
+        .first;
+
+    testWidgets('the banner cuts the avatar across its middle', (tester) async {
+      await pumpCard(tester, _unrated);
+
+      // The initials stand in for the avatar's centre — no fixture here
+      // carries a photo, which is the state nearly every real doctor is in.
+      final avatar = find.text('ز.ق');
+      expect(avatar, findsOneWidget);
+
+      // The whole point of the shape: the gradient's lower edge passes through
+      // the avatar's centre line, so the avatar reads as bisected by the
+      // banner rather than as dropped on top of it and clipped near its foot.
+      expect(
+        tester.getCenter(avatar).dy,
+        closeTo(tester.getBottomLeft(banner()).dy, 1.0),
+      );
+    });
+
+    testWidgets('the avatar straddles the banner and the card body', (
       tester,
     ) async {
-      await pumpCard(tester, _rated);
+      await pumpCard(tester, _unrated);
 
-      final cardLeft = tester.getTopLeft(find.byType(DoctorCard)).dx;
-      final cardRight = tester.getTopRight(find.byType(DoctorCard)).dx;
-      final pillLeft = tester.getTopLeft(find.byIcon(Icons.star_rounded)).dx;
+      final avatar = find.text('ز.ق');
+      final cardTop = tester.getTopLeft(find.byType(DoctorCard)).dy;
+      final cardBottom = tester.getBottomLeft(find.byType(DoctorCard)).dy;
+      final cardHeight = cardBottom - cardTop;
+      final avatarCentre = tester.getCenter(avatar).dy - cardTop;
 
-      // Left half, comfortably — an AlignmentDirectional.topStart would have
-      // mirrored it to the right under this Directionality.
-      expect(pillLeft, lessThan((cardLeft + cardRight) / 2));
+      // Stated as a fraction of the card rather than in points, so resizing
+      // the card does not silently retune the assertion — an earlier absolute
+      // threshold here was pinned to a banner height that has since changed.
+      // Straddling means the avatar's centre is well clear of the top edge and
+      // still in the card's upper half.
+      expect(avatarCentre, greaterThan(cardHeight * 0.10));
+      expect(avatarCentre, lessThan(cardHeight * 0.45));
+    });
+
+    testWidgets('the hairlines bracket the clinic tightly, not a gap', (
+      tester,
+    ) async {
+      await pumpCard(tester, _longName);
+
+      // The clinic's own two lines, and little else. The band used to be the
+      // column's flex child, so it swallowed every spare point in the card and
+      // the rules read as a box rather than as a bracket.
+      final clinic = find.text(_longName.clinicName);
+      expect(clinic, findsOneWidget);
+
+      final clinicHeight = tester.getSize(clinic).height;
+      final band = tester
+          .getSize(
+            find.ancestor(of: clinic, matching: find.byType(SizedBox)).first,
+          )
+          .height;
+
+      expect(
+        band - clinicHeight,
+        lessThan(AuroraSpacing.md),
+        reason: 'the hairlines are bracketing air, not the clinic name',
+      );
+    });
+
+    testWidgets('the CTA runs the full width inside the card gutter', (
+      tester,
+    ) async {
+      await pumpCard(tester, _unrated);
+
+      final cta = find.text('احجز الآن');
+      expect(cta, findsOneWidget);
+
+      final cardWidth = tester.getSize(find.byType(DoctorCard)).width;
+      final ctaWidth = tester
+          .getSize(find.ancestor(of: cta, matching: find.byType(InkWell)))
+          .width;
+
+      // The card's 16pt side gutter either side, and nothing else.
+      expect(ctaWidth, cardWidth - AuroraSpacing.lg * 2);
     });
   });
 
@@ -339,11 +473,18 @@ void main() {
       await pumpCard(tester, _rated, mode: ThemeMode.light);
 
       expect(
-        tester.widget<Text>(find.text('4.9')).style!.color,
-        AuroraPalette.light.ratingAmber,
+        tester.widget<Text>(find.text('د. زينب قاسم')).style!.color,
+        AuroraPalette.light.ink,
       );
       expect(
         tester.widget<Text>(find.text('أسنان')).style!.color,
+        AuroraPalette.light.accentOnTonal,
+      );
+      // The initials, which are the avatar's normal state rather than a
+      // fallback — and the one place the card's teal has to hold as *type* on
+      // a tinted fill rather than as a gradient behind white.
+      expect(
+        tester.widget<Text>(find.text('ز.ق')).style!.color,
         AuroraPalette.light.accentOnTonal,
       );
     });
@@ -352,11 +493,15 @@ void main() {
       await pumpCard(tester, _rated, mode: ThemeMode.dark);
 
       expect(
-        tester.widget<Text>(find.text('4.9')).style!.color,
-        AuroraPalette.dark.ratingAmber,
+        tester.widget<Text>(find.text('د. زينب قاسم')).style!.color,
+        AuroraPalette.dark.ink,
       );
       expect(
         tester.widget<Text>(find.text('أسنان')).style!.color,
+        AuroraPalette.dark.accentOnTonal,
+      );
+      expect(
+        tester.widget<Text>(find.text('ز.ق')).style!.color,
         AuroraPalette.dark.accentOnTonal,
       );
     });
