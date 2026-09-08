@@ -352,6 +352,26 @@ abstract final class AuroraMotion {
   static const standard = Duration(milliseconds: 300);
   static const page = Duration(milliseconds: 520);
   static const genderSlideDuration = Duration(milliseconds: 420);
+
+  /// The selection crossfade on a chip or tab — faster than [standard],
+  /// because a filter change should feel like a state flip, not a transition.
+  static const select = Duration(milliseconds: 180);
+
+  /// [full], or [Duration.zero] when the platform asks for reduced motion.
+  ///
+  /// **Every animation added for polish should come through here.** "Remove
+  /// animations" is an OS-level accessibility setting — it exists for people
+  /// whom motion makes ill, not as a performance toggle — and an implicit
+  /// animation like [AnimatedScale] or [AnimatedSwitcher] does *not* honour it
+  /// on its own. Passing a zero duration is what makes them snap.
+  ///
+  /// It also makes widget tests deterministic for free: `pumpHome` already
+  /// sets `disableAnimations`, so anything routed through this settles on the
+  /// first frame instead of leaving the harness to pump a transition out.
+  static Duration timed(BuildContext context, Duration full) =>
+      (MediaQuery.maybeDisableAnimationsOf(context) ?? false)
+      ? Duration.zero
+      : full;
 }
 
 /// The two type faces. Loaded through `google_fonts` at the call site, which

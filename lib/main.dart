@@ -15,7 +15,6 @@ class _NoStretchScrollBehavior extends MaterialScrollBehavior {
     Widget child,
     ScrollableDetails details,
   ) {
-    // No glow, no stretch — scrolling just stops cleanly at the edges.
     return child;
   }
 }
@@ -25,9 +24,6 @@ Future<void> main() async {
 
   await dotenv.load(fileName: '.env', isOptional: true);
 
-  // Before `runApp`, so the very first frame is already the stored theme.
-  // Loading it inside the widget tree instead would paint one light frame and
-  // then swap, which is the flash this ordering exists to avoid.
   await ThemeController.init();
 
   final supabaseUrl = dotenv.env['SUPABASE_URL'];
@@ -40,11 +36,6 @@ Future<void> main() async {
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
-      // Password recovery links open in a separate mobile browser that has
-      // no access to the app's local storage, so the PKCE code verifier
-      // can never be exchanged there — implicit flow delivers the session
-      // directly in the URL fragment instead, which reset-password.html
-      // already listens for via onAuthStateChange/detectSessionInUrl.
       authOptions: const FlutterAuthClientOptions(
         authFlowType: AuthFlowType.implicit,
       ),

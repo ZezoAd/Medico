@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/doctor.dart';
 import '../theme/aurora_tokens.dart';
+import 'aurora_buttons.dart';
 
 /// Gradient banner, a rounded-square avatar straddling its lower edge, then a
 /// centred name/specialty/clinic column over a full-width "احجز الآن" CTA.
@@ -509,32 +510,18 @@ class _BookButton extends StatelessWidget {
     // ~36pt tall on the smaller card.
     final radius = BorderRadius.circular(AuroraRadius.sm);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        // The in-app two-stop brand ramp, matching the banner above it — the
-        // same token the selected specialty chip already paints with.
-        // Emphatically not AuroraGradients.authButton: that four-stop ramp
-        // belongs to the auth surface, and the two systems are kept apart on
-        // purpose.
-        gradient: AuroraGradients.aurora,
-        borderRadius: radius,
-      ),
-      // Transparent Material so the ripple clips to the button and paints over
-      // the gradient rather than under it.
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          // A declared height rather than padding around the label, so the CTA
-          // occupies exactly the zone the card's grid budgeted for it whatever
-          // the font does. [DoctorCard._ctaHeight] is that budget.
-          child: const SizedBox(
-            height: DoctorCard._ctaHeight,
-            child: Center(child: _BookLabel()),
-          ),
-        ),
+    // The gradient, the ripple and the press scale all come from the shared
+    // control — the same surface the visited row's CTAs use, so every "book"
+    // affordance on Home answers a finger the same way.
+    return AuroraGradientTap(
+      onTap: onTap,
+      borderRadius: radius,
+      // A declared height rather than padding around the label, so the CTA
+      // occupies exactly the zone the card's grid budgeted for it whatever the
+      // font does. [DoctorCard._ctaHeight] is that budget.
+      child: const SizedBox(
+        height: DoctorCard._ctaHeight,
+        child: Center(child: _BookLabel()),
       ),
     );
   }

@@ -21,6 +21,21 @@ import '../models/doctor.dart';
 /// standing check that selecting a specialty nobody practises renders the
 /// carousel's empty state rather than an empty scroll strip.
 ///
+/// **Most carry a [Doctor.photoUrl], so the card can be reviewed with faces on
+/// it.** They are `randomuser.me` portraits — stable numbered endpoints,
+/// gender-matched to each name (an Arabic given name reads as one or the
+/// other, and a mismatch is the first thing a patient would notice), and ~5KB
+/// each so a rail of them is not a download. Verified reachable when added.
+///
+/// `mock-7` and `mock-15` are deliberately left photoless. The initials
+/// fallback is the state nearly every *real* doctor will be in — `public.
+/// doctors` has no photo column and no upload path — so it must stay visible
+/// on Home rather than being something only a unit test ever sees. Do not
+/// "finish the set" by giving those two portraits.
+///
+/// These are placeholder faces standing in for people who do not exist. They
+/// go when real data does, and nothing should ship to a store with them in it.
+///
 /// **Every `rating` here is null, on purpose.** Reviews were deferred to V2:
 /// there is no review system, no rating column on `public.doctors`, and so no
 /// source that could produce a score. Inventing figures for placeholder people
@@ -39,7 +54,7 @@ const mockDoctors = [
     specialty: 'أسنان',
     specialtyKey: 'dental',
     clinicName: 'لؤلؤة للأسنان',
-    photoUrl: 'https://i.pravatar.cc/200?img=47',
+    photoUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
   ),
   Doctor(
     id: 'mock-2',
@@ -47,6 +62,7 @@ const mockDoctors = [
     specialty: 'طب عام',
     specialtyKey: 'general',
     clinicName: 'مجمع الرافدين',
+    photoUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
   ),
   // Was the set's only eye doctor, reading "طب عيون". Refiled under `general`
   // so `ophthalmology` ends up empty and the no-doctors state has something to
@@ -59,7 +75,7 @@ const mockDoctors = [
     specialty: 'طب عام',
     specialtyKey: 'general',
     clinicName: 'عيادة النظر الواضح',
-    photoUrl: 'https://i.pravatar.cc/200?img=32',
+    photoUrl: 'https://randomuser.me/api/portraits/men/51.jpg',
   ),
   Doctor(
     id: 'mock-4',
@@ -69,6 +85,7 @@ const mockDoctors = [
     specialty: 'نساء وتوليد',
     specialtyKey: 'obgyn',
     clinicName: 'مستشفى الأمل',
+    photoUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
   ),
   Doctor(
     id: 'mock-5',
@@ -76,7 +93,7 @@ const mockDoctors = [
     specialty: 'عظام',
     specialtyKey: 'orthopedics',
     clinicName: 'مركز العظام التخصصي',
-    photoUrl: 'https://i.pravatar.cc/200?img=68',
+    photoUrl: 'https://randomuser.me/api/portraits/men/75.jpg',
   ),
   // The name is deliberately far too long for the card: it is the standing
   // check that the name ellipsises on one line instead of wrapping or
@@ -87,7 +104,11 @@ const mockDoctors = [
     specialty: 'طب عام',
     specialtyKey: 'general',
     clinicName: 'مجمع الشفاء للرعاية الصحية التخصصية',
+    photoUrl: 'https://randomuser.me/api/portraits/men/9.jpg',
   ),
+  // Photoless on purpose, with `mock-15` — see the note on this list. The
+  // initials fallback is the normal state for a real doctor and has to stay
+  // visible on the running app.
   Doctor(
     id: 'mock-7',
     name: 'د. أحمد كريم عبدالله',
@@ -101,6 +122,7 @@ const mockDoctors = [
     specialty: 'نساء وتوليد',
     specialtyKey: 'obgyn',
     clinicName: 'عيادة الأمومة والطفولة',
+    photoUrl: 'https://randomuser.me/api/portraits/women/25.jpg',
   ),
   Doctor(
     id: 'mock-9',
@@ -108,6 +130,7 @@ const mockDoctors = [
     specialty: 'نساء وتوليد',
     specialtyKey: 'obgyn',
     clinicName: 'مستوصف الحياة',
+    photoUrl: 'https://randomuser.me/api/portraits/women/12.jpg',
   ),
   Doctor(
     id: 'mock-10',
@@ -115,6 +138,7 @@ const mockDoctors = [
     specialty: 'أطفال',
     specialtyKey: 'pediatrics',
     clinicName: 'عيادة الطفولة السعيدة',
+    photoUrl: 'https://randomuser.me/api/portraits/women/90.jpg',
   ),
   Doctor(
     id: 'mock-11',
@@ -122,6 +146,7 @@ const mockDoctors = [
     specialty: 'أطفال',
     specialtyKey: 'pediatrics',
     clinicName: 'مركز براعم الصحة',
+    photoUrl: 'https://randomuser.me/api/portraits/men/46.jpg',
   ),
   Doctor(
     id: 'mock-12',
@@ -129,6 +154,7 @@ const mockDoctors = [
     specialty: 'جلدية',
     specialtyKey: 'dermatology',
     clinicName: 'عيادة الجمال الطبي',
+    photoUrl: 'https://randomuser.me/api/portraits/men/83.jpg',
   ),
   Doctor(
     id: 'mock-13',
@@ -136,6 +162,7 @@ const mockDoctors = [
     specialty: 'عظام',
     specialtyKey: 'orthopedics',
     clinicName: 'مركز العظام والمفاصل',
+    photoUrl: 'https://randomuser.me/api/portraits/men/22.jpg',
   ),
   Doctor(
     id: 'mock-14',
@@ -143,6 +170,7 @@ const mockDoctors = [
     specialty: 'قلبية',
     specialtyKey: 'cardiology',
     clinicName: 'عيادة القلب السليم',
+    photoUrl: 'https://randomuser.me/api/portraits/men/60.jpg',
   ),
   // These two take `general` to six, past HomeSpecialtyDoctors.perSpecialtyCap
   // — so the "عرض المزيد" card is reachable from a specific chip and not only
@@ -161,6 +189,7 @@ const mockDoctors = [
     specialty: 'طب عام',
     specialtyKey: 'general',
     clinicName: 'مركز الرعاية الأساسية',
+    photoUrl: 'https://randomuser.me/api/portraits/women/57.jpg',
   ),
 ];
 
@@ -184,9 +213,10 @@ typedef VisitedDoctor = ({Doctor doctor, DateTime lastVisit});
 /// the same people under the same names and specialties, and a rename over
 /// there cannot leave a second stale copy over here. The three chosen span a
 /// general practitioner, a cardiologist and a dermatologist so the section
-/// reads as a real care history rather than three of one kind, and only the
-/// first carries a [Doctor.photoUrl] — the other two exercise the row's
-/// initials fallback.
+/// reads as a real care history rather than three of one kind, and all three
+/// now carry a [Doctor.photoUrl], so the row is reviewed with faces on it. The
+/// row's initials fallback is still reachable from the carousel above, whose
+/// pool holds the two deliberately photoless entries.
 ///
 /// The dates are fixed rather than computed backwards from `DateTime.now()`, so
 /// the section renders identically on every run and a widget test can assert on
@@ -217,9 +247,11 @@ final mockPreviouslyVisited = <VisitedDoctor>[
 /// Five, not three: enough that the rail scrolls on a phone, so the section
 /// reads as a row to browse rather than as a short fixed set. Deliberately no
 /// overlap with [mockPreviouslyVisited] — a doctor you have already visited is
-/// a poor example of one who just joined — and five distinct specialties, with
-/// one [Doctor.photoUrl] among them so the card's photo branch is exercised
-/// alongside the initials that are the normal state.
+/// a poor example of one who just joined — and five distinct specialties, all
+/// five carrying a [Doctor.photoUrl] so the rail can be judged with faces in
+/// it. The initials state is not represented here on purpose: it is the
+/// carousel's pool that holds the photoless entries, and this rail is the one
+/// most often looked at while the card's design is still moving.
 final mockNewlyJoined = <Doctor>[
   _doctorById('mock-16'),
   _doctorById('mock-11'),

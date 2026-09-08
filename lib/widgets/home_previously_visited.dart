@@ -7,6 +7,7 @@ import '../dev/mock_doctors.dart';
 import '../models/doctor.dart';
 import '../theme/aurora_tokens.dart';
 import '../utils/arabic_formatting.dart';
+import 'aurora_buttons.dart';
 import 'doctor_list_row.dart';
 
 /// A titled card holding a short column of [DoctorListRow]s and a footer CTA
@@ -211,45 +212,40 @@ class _FullHistoryCta extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(AuroraRadius.pill);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: AuroraGradients.aurora,
-        borderRadius: radius,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AuroraSpacing.md),
-            // Under RTL the Row's first child lands on the visual right, so
-            // the label reads from the right and the arrow trails it on the
-            // left — the pair centred as a unit.
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'عرض السجل الكامل',
-                  style: AuroraText.body(
-                    size: AuroraFontSize.bodyLg,
-                    weight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: AuroraSpacing.sm),
-                Icon(
-                  // Points the way an Arabic reader moves — forward is *left*
-                  // under RTL. Explicitly the non-directional glyph, following
-                  // `ShowMoreDoctorsCard`, so it cannot flip back to the right.
-                  Icons.arrow_back_rounded,
-                  size: 18,
-                  color: Colors.white,
-                ),
-              ],
+    // Gradient, ripple and press scale from the shared control. A shade less
+    // scale than the small pills above it: this CTA runs the full width of the
+    // card, and the house ratio on a bar this wide reads as the whole card
+    // flinching rather than as a button being pressed.
+    return AuroraGradientTap(
+      onTap: onTap,
+      borderRadius: radius,
+      pressedScale: 0.98,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AuroraSpacing.md),
+        // Under RTL the Row's first child lands on the visual right, so
+        // the label reads from the right and the arrow trails it on the
+        // left — the pair centred as a unit.
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'عرض السجل الكامل',
+              style: AuroraText.body(
+                size: AuroraFontSize.bodyLg,
+                weight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
-          ),
+            const SizedBox(width: AuroraSpacing.sm),
+            Icon(
+              // Points the way an Arabic reader moves — forward is *left*
+              // under RTL. Explicitly the non-directional glyph, following
+              // `ShowMoreDoctorsCard`, so it cannot flip back to the right.
+              Icons.arrow_back_rounded,
+              size: 18,
+              color: Colors.white,
+            ),
+          ],
         ),
       ),
     );

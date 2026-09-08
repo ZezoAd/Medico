@@ -59,6 +59,85 @@ class _AuroraPressableState extends State<AuroraPressable> {
   }
 }
 
+/// A brand-gradient surface that both ripples and scales under a finger.
+///
+/// **The press half of this was missing everywhere on Home.** The doctor
+/// card's "احجز الآن", the visited row's "احجز" and the visited card's footer
+/// CTA were each a hand-rolled `DecoratedBox → Material → InkWell` with the
+/// same gradient and the same ripple — and no scale, so a tap was acknowledged
+/// only by a ripple that the gradient largely swallows. This is that stack
+/// written once, with [AuroraPressable]'s press feedback folded in.
+///
+/// Not a replacement for [AuroraPrimaryButton], which is the 56pt full-width
+/// action with its own glow and disabled state. This is the smaller in-card
+/// CTA: the caller owns the size, the padding and the label.
+///
+/// A null [onTap] renders the surface fully styled but inert — the honest
+/// state while a flow does not exist yet — and takes the press feedback with
+/// it, so a dead control does not pretend to respond.
+class AuroraGradientTap extends StatefulWidget {
+  const AuroraGradientTap({
+    super.key,
+    required this.child,
+    required this.onTap,
+    required this.borderRadius,
+    this.pressedScale = 0.96,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final BorderRadius borderRadius;
+
+  /// Slightly deeper than [AuroraPressable]'s 0.97: these controls are small,
+  /// and the same ratio reads as nothing at this size.
+  final double pressedScale;
+
+  @override
+  State<AuroraGradientTap> createState() => _AuroraGradientTapState();
+}
+
+class _AuroraGradientTapState extends State<AuroraGradientTap> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (widget.onTap == null || _pressed == value) return;
+    setState(() => _pressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _pressed ? widget.pressedScale : 1,
+      duration: AuroraMotion.timed(context, AuroraMotion.press),
+      curve: AuroraMotion.easeOut,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          // The in-app two-stop brand ramp. Emphatically not
+          // AuroraGradients.authButton — that four-stop ramp belongs to the
+          // auth surface, and the two systems are kept apart on purpose.
+          gradient: AuroraGradients.aurora,
+          borderRadius: widget.borderRadius,
+        ),
+        // Transparent Material so the ripple clips to the shape and paints
+        // over the gradient rather than under it.
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: widget.borderRadius,
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: widget.borderRadius,
+            // Tracks the *highlight*, not raw pointer events, so the scale
+            // follows the same press/cancel rules the ripple already does —
+            // dragging a finger off the control releases both together.
+            onHighlightChanged: _setPressed,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// 56px gradient pill-ish primary action. Falls back to a flat disabled fill
 /// — and drops its glow — when [onTap] is null.
 class AuroraPrimaryButton extends StatelessWidget {

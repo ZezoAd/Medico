@@ -2,6 +2,8 @@
 library;
 
 import 'package:flutter/material.dart';
+// For HapticFeedback, which material.dart does not re-export.
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../theme/aurora_tokens.dart';
@@ -85,10 +87,44 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
 
   String _selectedKey = _specialties.first.key;
 
+  /// One key per chip, so a newly selected chip can be scrolled into view.
+  /// Built once and reused — a fresh [GlobalKey] every build would detach and
+  /// re-attach the whole row on each rebuild.
+  late final Map<String, GlobalKey> _chipKeys = {
+    for (final specialty in _specialties) specialty.key: GlobalKey(),
+  };
+
   void _select(String key) {
     if (key == _selectedKey) return;
+
+    // A selection *tick*, not an impact: this is the same class of gesture as
+    // moving a picker or switching a segment, and `selectionClick` is the
+    // lightest of the haptics — the one Android reserves for exactly this.
+    // Anything heavier would be shouting about a filter change.
+    HapticFeedback.selectionClick();
+
     setState(() => _selectedKey = key);
     widget.onSpecialtySelected?.call(key);
+    _revealChip(key);
+  }
+
+  /// Brings the newly selected chip fully into view.
+  ///
+  /// Without this, tapping a chip that is half off the edge leaves it half off
+  /// the edge — now highlighted, so the row reads as having a selected item
+  /// the patient cannot fully see. Centring rather than nudging is the tab-strip
+  /// convention, and it clamps at both ends on its own, so selecting the
+  /// leading "الكل" simply returns the row to its start.
+  void _revealChip(String key) {
+    final chipContext = _chipKeys[key]?.currentContext;
+    if (chipContext == null) return;
+
+    Scrollable.ensureVisible(
+      chipContext,
+      alignment: 0.5,
+      duration: AuroraMotion.timed(context, AuroraMotion.standard),
+      curve: AuroraMotion.easeOut,
+    );
   }
 
   @override
@@ -143,6 +179,7 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
             itemBuilder: (context, index) {
               final specialty = _specialties[index];
               return _SpecialtyChip(
+                key: _chipKeys[specialty.key],
                 label: specialty.label,
                 icon: specialty.icon,
                 selected: specialty.key == _selectedKey,
@@ -158,8 +195,17 @@ class _HomeSpecialtyChipsState extends State<HomeSpecialtyChips> {
 
 /// One pill. Gradient-filled with white content when selected, tonal with
 /// [AuroraColors.secondary] content otherwise.
-class _SpecialtyChip extends StatelessWidget {
+///
+/// **The two states are crossfaded, not swapped.** Selection used to flip the
+/// fill, the shadow and the content colour between two frames, which read as
+/// the row redrawing itself rather than as one chip handing off to another —
+/// and gave the eye nothing to follow from the chip you left to the chip you
+/// chose. The gradient now fades up over the tonal base while the label and
+/// icon travel to white, and it fades back down on the chip being deselected,
+/// so the two halves of the change are visibly one movement.
+class _SpecialtyChip extends StatefulWidget {
   const _SpecialtyChip({
+    super.key,
     required this.label,
     required this.icon,
     required this.selected,
@@ -172,63 +218,118 @@ class _SpecialtyChip extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_SpecialtyChip> createState() => _SpecialtyChipState();
+}
+
+class _SpecialtyChipState extends State<_SpecialtyChip> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) return;
+    setState(() => _pressed = value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final palette = context.aurora;
-    // White on the gradient in both themes — the selected pill's fill is the
-    // brand ramp, which does not darken, so its content must not either.
-    final content = selected ? Colors.white : palette.secondary;
-
     final radius = BorderRadius.circular(AuroraRadius.pill);
+    final selected = widget.selected ? 1.0 : 0.0;
 
     return Align(
       // The ListView hands each item the full 52pt height; without this the
       // pill would stretch to fill it instead of keeping its own 40pt.
       alignment: Alignment.topCenter,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: selected ? AuroraGradients.aurora : null,
-          color: selected ? null : palette.tonal,
-          borderRadius: radius,
-          // Empty in dark, where a drop shadow reads as grime rather than
-          // lift — the palette carries that decision, not this widget.
-          boxShadow: selected ? palette.pillShadow : null,
-        ),
-        // Transparent Material so the ripple clips to the pill and paints over
-        // the gradient rather than under it.
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: radius,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: radius,
-            child: Semantics(
-              selected: selected,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AuroraSpacing.lg,
-                  vertical: AuroraSpacing.md - 2,
-                ),
-                // Under RTL the first child lands on the visual right, which
-                // is the leading position for an Arabic reader — so the icon
-                // comes first in code to sit ahead of its label.
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FaIcon(icon, size: 15, color: content),
-                    const SizedBox(width: AuroraSpacing.sm),
-                    Text(
-                      label,
-                      style: AuroraText.body(
-                        size: AuroraFontSize.body,
-                        weight: FontWeight.w700,
-                        color: content,
+      child: AnimatedScale(
+        // A touch deeper than the 0.97 house press: a chip is small, and the
+        // gradient swallows most of the ripple on the selected one, so the
+        // scale is doing most of the acknowledging here.
+        scale: _pressed ? 0.95 : 1,
+        duration: AuroraMotion.timed(context, AuroraMotion.press),
+        curve: AuroraMotion.easeOut,
+        child: TweenAnimationBuilder<double>(
+          // `begin` is read only on the first build; after that
+          // TweenAnimationBuilder animates from wherever it currently is to
+          // the new `end`, which is what makes a mid-flight reselection pick
+          // up from the partial state instead of jumping.
+          tween: Tween(begin: selected, end: selected),
+          duration: AuroraMotion.timed(context, AuroraMotion.select),
+          curve: AuroraMotion.easeOut,
+          builder: (context, t, child) {
+            // White on the gradient in both themes — the selected pill's fill
+            // is the brand ramp, which does not darken, so its content must
+            // not either.
+            final content = Color.lerp(palette.secondary, Colors.white, t)!;
+
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                color: palette.tonal,
+                borderRadius: radius,
+                // Empty in dark, where a drop shadow reads as grime rather
+                // than lift — the palette carries that decision, not this
+                // widget, and lerping to an empty list simply keeps it absent.
+                boxShadow: BoxShadow.lerpList(const [], palette.pillShadow, t),
+              ),
+              child: Stack(
+                children: [
+                  // The gradient rides *over* the tonal fill rather than
+                  // replacing it, so the crossfade is one layer's opacity
+                  // rather than two decorations being interpolated — which
+                  // cannot be done cleanly between a gradient and a flat
+                  // colour.
+                  Positioned.fill(
+                    child: Opacity(
+                      opacity: t,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: AuroraGradients.aurora,
+                          borderRadius: radius,
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  // Transparent Material so the ripple clips to the pill and
+                  // paints over the gradient rather than under it.
+                  Material(
+                    color: Colors.transparent,
+                    borderRadius: radius,
+                    child: InkWell(
+                      onTap: widget.onTap,
+                      borderRadius: radius,
+                      onHighlightChanged: _setPressed,
+                      child: Semantics(
+                        selected: widget.selected,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AuroraSpacing.lg,
+                            vertical: AuroraSpacing.md - 2,
+                          ),
+                          // Under RTL the first child lands on the visual
+                          // right, which is the leading position for an Arabic
+                          // reader — so the icon comes first in code to sit
+                          // ahead of its label.
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FaIcon(widget.icon, size: 15, color: content),
+                              const SizedBox(width: AuroraSpacing.sm),
+                              Text(
+                                widget.label,
+                                style: AuroraText.body(
+                                  size: AuroraFontSize.body,
+                                  weight: FontWeight.w700,
+                                  color: content,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

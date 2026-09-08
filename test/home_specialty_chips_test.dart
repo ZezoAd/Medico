@@ -56,18 +56,28 @@ Future<void> pumpHome(WidgetTester tester, Size logical) async {
   await tester.pumpAndSettle();
 }
 
-/// The gradient-filled box is the selected chip; the tonal ones are not. This
-/// reads the paint rather than any private state, so it stays honest about
-/// what the patient actually sees.
+/// The chip whose gradient is actually painted is the selected one; the tonal
+/// ones are not. This reads the paint rather than any private state, so it
+/// stays honest about what the patient actually sees.
+///
+/// **Every chip now carries a gradient layer**, so "has a gradient" no longer
+/// distinguishes them: since the selection crossfade landed, the layer is held
+/// at opacity 0 when unselected, 1 when selected, and somewhere between while
+/// a change is in flight. Fully opaque is therefore the honest test, and it is
+/// a stricter one than before — it catches a chip that is *becoming* selected
+/// as well as one that is.
+///
+/// The gradient is a sibling of the label rather than its ancestor, which is
+/// why this walks up to the chip's [Stack] and back down to its [Text] instead
+/// of nesting one `descendant` in another.
 Finder selectedChipLabel() {
+  final paintedGradient = find.descendant(
+    of: find.byType(HomeSpecialtyChips),
+    matching: find.byWidgetPredicate((w) => w is Opacity && w.opacity == 1.0),
+  );
+
   return find.descendant(
-    of: find.descendant(
-      of: find.byType(HomeSpecialtyChips),
-      matching: find.byWidgetPredicate((w) {
-        return w is DecoratedBox &&
-            (w.decoration as BoxDecoration).gradient != null;
-      }),
-    ),
+    of: find.ancestor(of: paintedGradient, matching: find.byType(Stack)).first,
     matching: find.byType(Text),
   );
 }

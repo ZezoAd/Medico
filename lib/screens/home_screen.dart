@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+// For HapticFeedback, which material.dart does not re-export.
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_profile.dart';
@@ -161,8 +163,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     return Directionality(
       textDirection: TextDirection.rtl,
+      // No `backgroundColor` override. It used to hardcode 0xFFFAF7F2, which
+      // is [AppTheme.lightScaffoldBackground] — so in dark mode the page stayed
+      // cream while every surface on it went dark, and the "تصفّح حسب التخصص"
+      // heading became near-white type on a near-white ground. The theme
+      // already carries this exact colour for light and [AuroraColors.bgDark]
+      // for dark, so letting it through is both correct and unchanged in light.
       child: Scaffold(
-        backgroundColor: const Color(0xFFFAF7F2),
         body: SafeArea(
           // Two rows: the tab content, then the offline capsule docked under
           // it. Being offline is a fact about the *device*, so the capsule
@@ -244,7 +251,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _tabIndex,
-          onDestinationSelected: (index) => setState(() => _tabIndex = index),
+          // NavigationBar animates its own indicator, but says nothing to the
+          // hand. A tab switch is the largest move on the screen and the one
+          // most often made without looking — a thumb reaching the bar by
+          // memory — so it gets the same selection tick the specialty chips
+          // do. `selectionClick` rather than a heavier impact: this confirms a
+          // choice, it does not report an event.
+          //
+          // Re-tapping the current tab is deliberately silent. It changes
+          // nothing, and buzzing for it would teach the hand that the haptic
+          // means "touched" rather than "moved".
+          onDestinationSelected: (index) {
+            if (index == _tabIndex) return;
+            HapticFeedback.selectionClick();
+            setState(() => _tabIndex = index);
+          },
           destinations: [
             const NavigationDestination(
               icon: Icon(Icons.home_outlined),

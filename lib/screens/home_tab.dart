@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../dev/mock_doctors.dart';
+import '../models/doctor.dart';
 import '../services/connectivity_service.dart';
 import '../theme/aurora_tokens.dart';
 import '../widgets/home_empty_state_card.dart';
@@ -153,6 +154,23 @@ class _HomeTabState extends State<HomeTab> {
     setState(() => _refreshEpoch++);
   }
 
+  /// Every "احجز" / "احجز الآن" on this screen.
+  ///
+  /// **A live seam, not a flow.** There is no booking screen to open, so this
+  /// only prints — the same placeholder `ShowMoreDoctorsCard` uses for its own
+  /// missing destination, and the one line that gets replaced when the flow
+  /// lands.
+  ///
+  /// It is wired rather than left null for a reason that is not cosmetic: a
+  /// null callback *disables* the underlying [InkWell], which takes the ripple
+  /// and the press scale with it. The buttons then sat there looking pressable
+  /// and answering nothing at all, which reads as a broken control rather than
+  /// as an unfinished one. Passing a handler keeps the card honest about being
+  /// touchable while staying honest about having nowhere to go.
+  void _handleBook(Doctor doctor) {
+    debugPrint('TODO: open the booking flow for ${doctor.id} (${doctor.name})');
+  }
+
   @override
   Widget build(BuildContext context) {
     // The top bar sits outside the scroll view so it stays put while the
@@ -252,11 +270,12 @@ class _HomeTabState extends State<HomeTab> {
                   // The filter is real; the doctors are not. This section draws
                   // placeholder people from `lib/dev/mock_doctors.dart` because
                   // `public.doctors` is still empty and nothing queries it — the
-                  // list is replaced wholesale once a real query exists. `onBook`
-                  // stays unwired: there is no booking flow for it to open.
+                  // list is replaced wholesale once a real query exists.
+                  // `onBook` prints and nothing else — see `_handleBook`.
                   HomeSpecialtyDoctors(
                     selectedSpecialtyKey: _selectedSpecialtyKey,
                     refreshEpoch: _refreshEpoch,
+                    onBook: _handleBook,
                   ),
                   const SizedBox(height: AuroraSpacing.xxl),
                   // Same placeholder footing as the carousel above, and drawing
@@ -276,6 +295,7 @@ class _HomeTabState extends State<HomeTab> {
                     child: HomePreviouslyVisited(
                       visited: mockPreviouslyVisited,
                       onOpenHistory: widget.onOpenBookings,
+                      onBook: _handleBook,
                     ),
                   ),
                   const SizedBox(height: AuroraSpacing.xxl),
@@ -291,7 +311,10 @@ class _HomeTabState extends State<HomeTab> {
                   // own header padding and lets the rail run to the screen
                   // edge. `onSeeAll` is deliberately not passed — there is no
                   // Browse destination, so the link renders styled and inert.
-                  HomeNewlyJoined(doctors: mockNewlyJoined),
+                  HomeNewlyJoined(
+                    doctors: mockNewlyJoined,
+                    onBook: _handleBook,
+                  ),
                 ],
               ),
             ),

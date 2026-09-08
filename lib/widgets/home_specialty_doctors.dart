@@ -97,11 +97,19 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
   /// holding a stale generation.
   late int _cachedEpoch;
 
+  /// Whether the content on screen right now is the empty state.
+  late bool _wasEmpty;
+
+  /// Whether the swap being built crosses between "has doctors" and "has
+  /// none" — the only swap that changes this section's height.
+  bool _crossesEmptiness = false;
+
   @override
   void initState() {
     super.initState();
     _cachedEpoch = widget.refreshEpoch;
     _ensureDrawn();
+    _wasEmpty = _cache[widget.selectedSpecialtyKey]!.isEmpty;
   }
 
   @override
@@ -120,6 +128,11 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
     // Cheap and idempotent — draws only for a key with no entry this epoch, so
     // an unrelated rebuild passes straight through it.
     _ensureDrawn();
+
+    // Recorded here rather than in `build`, which stays free of side effects.
+    final nowEmpty = _cache[widget.selectedSpecialtyKey]!.isEmpty;
+    _crossesEmptiness = nowEmpty != _wasEmpty;
+    _wasEmpty = nowEmpty;
   }
 
   /// Draws for the current selection if this epoch has not drawn it yet.
@@ -175,7 +188,66 @@ class _HomeSpecialtyDoctorsState extends State<HomeSpecialtyDoctors> {
     // fall out of reach.
     final itemCount = shown.length + (hasMore ? 1 : 0);
 
+    // Crossfaded on the specialty key, so changing filters reads as this row
+    // answering rather than as the page redrawing. The old set fades out and
+    // the new one rises a few points into place — a short travel, because the
+    // content is *replaced* rather than moved, and a longer slide would imply
+    // the doctors went somewhere.
+    //
+    // Keyed on the epoch too: a pull-to-refresh deals a genuinely new hand,
+    // and that deserves the same acknowledgement as a filter change. Without
+    // the epoch in the key a refresh would silently swap the cards underneath.
+    // Crossfaded between one set of doctors and another, and **snapped**
+    // whenever the swap crosses the empty state.
+    //
+    // The distinction is the whole design, and it falls out of one fact: every
+    // populated state is exactly [_listHeight] tall, so a doctors-to-doctors
+    // swap changes nothing about this section's size and the crossfade is pure
+    // content. Crossing to or from the empty message is the only swap that
+    // changes the height — and animating *that* is what makes the section feel
+    // broken, whichever way it is done. Holding the old height keeps a one-line
+    // message floating in a card-sized hole; animating the height instead drags
+    // every section below it up the page for the duration, and clips the
+    // outgoing cards on the way. Neither is worth having: an absence should
+    // just be there.
+    //
+    // So the rule is "never animate a height change", and the crossfade
+    // survives exactly where it earns its place.
+    final motion = _crossesEmptiness
+        ? Duration.zero
+        : AuroraMotion.timed(context, AuroraMotion.standard);
+
+    return AnimatedSwitcher(
+      duration: motion,
+      switchInCurve: AuroraMotion.easeOut,
+      switchOutCurve: AuroraMotion.easeOut,
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.03),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+      ),
+      child: _content(
+        key: ValueKey('${widget.refreshEpoch}:${widget.selectedSpecialtyKey}'),
+        shown: shown,
+        hasMore: hasMore,
+        itemCount: itemCount,
+      ),
+    );
+  }
+
+  Widget _content({
+    required Key key,
+    required List<Doctor> shown,
+    required bool hasMore,
+    required int itemCount,
+  }) {
     return Column(
+      key: key,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // No heading. The chip row directly above already names the selection —

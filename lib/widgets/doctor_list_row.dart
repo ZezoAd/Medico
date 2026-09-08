@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/doctor.dart';
 import '../theme/aurora_tokens.dart';
+import 'aurora_buttons.dart';
 
 /// Circular avatar, a stacked name/specialty/meta column, and a pill action
 /// button — the row shape Home's vertical doctor lists are built from.
@@ -242,38 +243,25 @@ class _ActionPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(AuroraRadius.pill);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        // The in-app two-stop brand ramp, same as the carousel card's button
-        // and the selected specialty chip. Not AuroraGradients.authButton —
-        // that four-stop ramp belongs to the auth surface.
-        gradient: AuroraGradients.aurora,
-        borderRadius: radius,
-      ),
-      // Transparent Material so the ripple clips to the pill and paints over
-      // the gradient rather than under it.
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AuroraSpacing.lg,
-              vertical: AuroraSpacing.sm + 2,
-            ),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              // White in both themes: the fill is the brand ramp, which does
-              // not darken, so its label must not either.
-              style: AuroraText.body(
-                size: AuroraFontSize.caption,
-                weight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
+    // Gradient, ripple and press scale from the shared control, so this pill
+    // and the carousel card's "احجز الآن" answer a finger identically.
+    return AuroraGradientTap(
+      onTap: onTap,
+      borderRadius: radius,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AuroraSpacing.lg,
+          vertical: AuroraSpacing.sm + 2,
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          // White in both themes: the fill is the brand ramp, which does not
+          // darken, so its label must not either.
+          style: AuroraText.body(
+            size: AuroraFontSize.caption,
+            weight: FontWeight.w700,
+            color: Colors.white,
           ),
         ),
       ),
