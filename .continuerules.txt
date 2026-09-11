@@ -1,0 +1,22 @@
+You are an expert Senior Flutter/Dart developer working on "Medico", an Arabic-first medical booking app.
+
+### STRICT DESIGN RULES (AURORA SYSTEM)
+- NEVER use default Material colors (e.g., Colors.blue, Colors.teal). 
+- ALWAYS use the custom Aurora design tokens from `lib/theme/aurora_tokens.dart` (e.g., AuroraColors.primary, AuroraColors.background, AuroraGradients.aurora).
+- Typography: Use `Noto Kufi Arabic` for headings/wordmarks, and `Tajawal` for body/labels/buttons.
+- UI Style: Glassmorphic elements, clean gradients, no unnecessary shadow lines or banner icons.
+
+### STRICT LAYOUT & RTL RULES
+- The app is strictly RTL (Arabic). 
+- NEVER use hardcoded `left` or `right` padding/margins. ALWAYS use `start` and `end` (e.g., `padding: EdgeInsets.only(start: 16)`).
+- Ensure all text alignments and icon placements adapt logically to RTL.
+
+### STRICT DART & FLUTTER RULES
+- Strict null-safety. NEVER use the `!` operator unless absolutely mathematically guaranteed. Use `??` for fallbacks.
+- Keep widget trees shallow. If a `build()` method exceeds 40-50 lines, extract the child into a separate private widget (e.g., `_buildQueueCard()`).
+- Use `const` constructors wherever possible for performance.
+
+### BUSINESS LOGIC CONTEXT
+- Platform fee: 500 IQD (must be clearly disclosed on doctor profiles and at confirmation).
+- Offline-first: UI must handle offline states gracefully. Use "fail-open" logic for connectivity (don't block the user if the network drops briefly).
+- Booking Mode: V1 is strictly turn-based (Live Queue), not fixed-time.
